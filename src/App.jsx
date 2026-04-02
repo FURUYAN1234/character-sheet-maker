@@ -8,7 +8,7 @@ import { setApiKey, getApiKey, generateFieldValue, generateGachaTexts } from './
 import { generateImage } from './lib/imagen';
 import FieldInput from './components/FieldInput';
 
-const SYSTEM_VERSION = "1.0.4";
+const SYSTEM_VERSION = "1.0.5";
 const APP_NAME = "AIキャラクターシートメーカー";
 
 // === スマート連携テーブル ===
