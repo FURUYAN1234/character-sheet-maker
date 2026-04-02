@@ -68,28 +68,29 @@ Minimal linkages that respect randomness while preventing contradictions:
 
 ### 📡 Nano Banana 2 Powered Super AI 4-koma System OCR連携 / OCR Integration
 キャラクターシートに**OCR読み取り用の追加情報**を埋め込み、[Nano Banana 2 Powered Super AI 4-koma System](https://github.com/FURUYAN1234/nano-banana-pro)のマンガ生成精度を向上：
-- **得意アクション** — 戦闘スタイル（格闘、剣術、魔法等）
-- **感情レンジ** — 表情の振り幅（冷静型〜激情型）
-- **演出傾向** — マンガのコマ割りに影響（ダイナミック〜叙情的）
-- **変身・覚醒** — 変身要素の有無
+Embeds additional information for OCR reading into the character sheet, improving the manga generation accuracy of the Nano Banana 2 Powered Super AI 4-koma System:
+- **得意アクション** — 戦闘スタイル（格闘、剣術、魔法等） / Action Tendency - Combat style (melee, swordplay, magic, etc.)
+- **感情レンジ** — 表情の振り幅（冷静型〜激情型） / Emotion Range - Range of expressions (calm to passionate)
+- **演出傾向** — マンガのコマ割りに影響（ダイナミック〜叙情的） / Direction Style - Influences manga panel layout (dynamic to lyrical)
+- **変身・覚醒** — 変身要素の有無 / Awakening - Presence of transformation elements
 
 ### 🔄 A/B比較モード / A/B Comparison
 2つのスロット（A/B）で独立した設定と生成結果を管理・比較可能。
 Compare two independent character configurations side by side.
 
 ### 📜 その他 / Other
-- **リアルタイムプロンプト表示** — パラメータ変更で即座に更新（APIは叩かない）
-- **生成履歴** — セッション中の生成結果を保存・個別削除
-- **画像ダウンロード** — PNG形式で保存
-- **全リセット** — 全設定を初期状態に戻す
+- **リアルタイムプロンプト表示** — パラメータ変更で即座に更新（APIは叩かない） / Real-time Prompt Display
+- **生成履歴** — セッション中の生成結果を保存・個別削除 / Generation History
+- **画像ダウンロード** — PNG形式で保存 / Image Download
+- **全リセット** — 全設定を初期状態に戻す / Full Reset
 
 ---
 
 ## 🔑 APIキーについて / About API Key
 
-- APIキーは**セッション限定**（メモリ内保持のみ）
-- **ブラウザには保存されません**（localStorage不使用）
-- ページをリロードするとAPIキーの再入力が必要です
+- APIキーは**セッション限定**（メモリ内保持のみ） / API key is session-limited (stored only in memory)
+- **ブラウザには保存されません**（localStorage不使用） / Not saved in the browser (no localStorage used)
+- ページをリロードするとAPIキーの再入力が必要です / Reloading the page requires re-entering the API key
 
 All API keys exist only in memory during the session. No persistent storage.
 
@@ -126,8 +127,9 @@ All API keys exist only in memory during the session. No persistent storage.
 - **API Management**: Zenith Protocol (Auto-failover)
 - **Security**: Session-only API key (no localStorage)
 
-### Zenith Protocol（AIモデル自動切替）
+### 🧠 Zenith Protocol（AIモデル自動切替 / Auto AI Model Fallback）
 APIエラー時に自動的に別モデルへフォールバック：
+Automatically falls back to alternative models upon API error:
 
 **テキスト生成 / Text**:
 1. gemini-2.5-flash-preview → 2. gemini-2.0-flash → 3. gemini-1.5-flash → ...
@@ -141,25 +143,25 @@ APIエラー時に自動的に別モデルへフォールバック：
 
 ```
 character_sheet/
-├── index.html                          # エントリーHTML
-├── start_character_sheet_app.bat       # Windows起動バッチ
-├── package.json                        # 依存関係
-├── vite.config.js                      # Vite設定
+├── index.html                          # エントリーHTML / Entry HTML
+├── start_character_sheet_app.bat       # Windows起動バッチ / Windows Startup Batch
+├── package.json                        # 依存関係 / Dependencies
+├── vite.config.js                      # Vite設定 / Vite Config
 ├── src/
-│   ├── main.jsx                        # Reactエントリー
-│   ├── App.jsx                         # メインアプリ
-│   ├── App.css                         # コンポーネントCSS
-│   ├── index.css                       # グローバルCSS
+│   ├── main.jsx                        # Reactエントリー / React Entry
+│   ├── App.jsx                         # メインアプリ / Main App
+│   ├── App.css                         # コンポーネントCSS / Component CSS
+│   ├── index.css                       # グローバルCSS / Global CSS
 │   ├── components/
-│   │   └── FieldInput.jsx              # 3モード入力コンポーネント
+│   │   └── FieldInput.jsx              # 3モード入力コンポーネント / 3-Mode Input Component
 │   └── lib/
-│       ├── gemini.js                   # テキスト生成（Zenith Protocol）
-│       ├── imagen.js                   # 画像生成（Zenith Protocol）
-│       ├── options.js                  # 全選択肢・初期値・プリセット
-│       └── prompt.js                   # プロンプト構築ロジック（18画風対応）
+│       ├── gemini.js                   # テキスト生成 / Text Generation (Zenith Protocol)
+│       ├── imagen.js                   # 画像生成 / Image Generation (Zenith Protocol)
+│       ├── options.js                  # 全選択肢・初期値・プリセット / Options, Defaults, Presets
+│       └── prompt.js                   # プロンプト構築ロジック / Prompt Builder Logic
 └── scripts/
-    ├── update_version.js               # バージョン自動更新
-    └── generate_release_text.js        # リリースノート生成
+    ├── update_version.js               # バージョン自動更新 / Auto Version Updater
+    └── generate_release_text.js        # リリースノート生成 / Release Note Generator
 ```
 
 ---
@@ -168,14 +170,14 @@ character_sheet/
 
 ### V1.0.0 Alpha (2026-04-02)
 - 🆕 初回リリース / Initial release
-- 10カテゴリ・45以上のパラメータ設定
-- 18種の画風（固有スタイルキーワード付き）
-- 3モード入力（選択/自由入力/AI生成）
-- スマート連携（性別↔髭、年齢↔体型、世界観↔衣装）
-- Nano Banana 2 Powered Super AI 4-koma System OCR連携フィールド
-- A/B比較モード
-- Zenith Protocol（AIモデル自動フォールバック）
-- セッション限定APIキー管理
+- 10カテゴリ・45以上のパラメータ設定 / 10 categories, 45+ parameters
+- 18種の画風（固有スタイルキーワード付き） / 18 art styles with unique keywords
+- 3モード入力（選択/自由入力/AI生成） / 3-mode input (Select / Free text / AI Generate)
+- スマート連携（性別↔髭、年齢↔体型、世界観↔衣装） / Smart Linkages (Gender↔Beard, Age↔Build, Era↔Costume)
+- Nano Banana 2 Powered Super AI 4-koma System OCR連携フィールド / OCR Integration for Nano Banana 2
+- A/B比較モード / A/B Comparison Mode
+- Zenith Protocol（AIモデル自動フォールバック） / Zenith Protocol (Auto AI Model Fallback)
+- セッション限定APIキー管理 / Session-only API Key Management
 
 ---
 

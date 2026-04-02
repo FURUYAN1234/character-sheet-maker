@@ -52,7 +52,9 @@ export const buildPrompt = (formData) => {
   // レイアウト
   const layoutInstruction = d.layoutType.includes('三面図')
     ? `[レイアウト：三面図] (full_body_standing_poses:3.2). 水平整列：正面、真横、背面。`
-    : `[レイアウト：12分割グリッド] 3x4 layout. 1段目：スペック、2-3段目：表情集、4段目：全身三面図。`;
+    : d.layoutType.includes('12分割') || d.layoutType.includes('グリッド')
+      ? `[レイアウト：12分割グリッド] 3x4 layout. 1段目：スペック、2-3段目：表情集、4段目：全身三面図。`
+      : `[レイアウト：カスタム] ${d.layoutType}`;
 
   // OCR連携フィールド（Nano Banana Proが読み取る追加情報）
   const ocrExtras = [];
@@ -64,6 +66,11 @@ export const buildPrompt = (formData) => {
 
   return `
 # 【キャラクターシート設計：V1.1】
+
+【絶対遵守の出力要件】
+- 画像アスペクト比：A4縦サイズ（portrait / 3:4 または 9:16 ベースの縦長）を厳守。横長や正方形式は禁止。
+- 背景設定：純白（#FFFFFF）の無地背景限定。風景・背景描写は禁止。
+- 着色スタイル：画風・プロンプトの指定（カラー・モノクロ等）に原則従う。白黒の強制はなし。
 
 [0. アートスタイル最優先指令 — この指示が全体の画風を支配する]
 - ${styleKw}

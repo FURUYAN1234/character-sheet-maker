@@ -8,7 +8,7 @@ import { setApiKey, getApiKey, generateFieldValue, generateGachaTexts } from './
 import { generateImage } from './lib/imagen';
 import FieldInput from './components/FieldInput';
 
-const SYSTEM_VERSION = "1.0.2";
+const SYSTEM_VERSION = "1.0.3";
 const APP_NAME = "AIキャラクターシートメーカー";
 
 // === スマート連携テーブル ===
@@ -230,10 +230,9 @@ const App = () => {
   };
 
   const downloadImage = () => {
-    const img = (compareMode && activeSlot === 'B') ? slotBImage : generatedImage;
-    if (!img) return;
+    if (!displayImage) return;
     const link = document.createElement('a');
-    link.href = img; link.download = `character_sheet_${Date.now()}.png`; link.click();
+    link.href = displayImage; link.download = `character_sheet_${Date.now()}.png`; link.click();
   };
 
   // === 履歴 ===
@@ -330,27 +329,17 @@ const App = () => {
             <button className={`btn-compare-toggle${compareMode ? ' active' : ''}`} onClick={toggleCompare}>
               {compareMode ? '🔀 A/B比較 ON' : '🔀 A/B比較'}
             </button>
-            <button className="btn-section-ctrl" onClick={expandAll}>📂 全展開</button>
-            <button className="btn-section-ctrl" onClick={collapseAll}>📁 全折りたたみ</button>
           </div>
         </div>
-
-        {/* A/B比較スロットタブ */}
-        {compareMode && (
-          <div className="compare-tabs">
-            <button className={`compare-tab${activeSlot === 'A' ? ' active-a' : ''}`} onClick={switchToSlotA}>
-              🅰️ スロットA{activeSlot === 'A' ? '（編集中）' : ''}
-            </button>
-            <button className={`compare-tab${activeSlot === 'B' ? ' active-b' : ''}`} onClick={switchToSlotB}>
-              🅱️ スロットB{activeSlot === 'B' ? '（編集中）' : ''}
-            </button>
-          </div>
-        )}
 
         {/* メイングリッド */}
         <div className="main-grid">
           {/* 左側：設定パネル */}
           <div className={`form-panel${isWorking ? ' form-working' : ''}`}>
+            <div className="form-panel-header-ctrl" style={{ display: 'flex', gap: '8px', marginBottom: '1rem' }}>
+               <button className="btn-section-ctrl" onClick={expandAll} style={{flex: 1}}>📂 全展開</button>
+               <button className="btn-section-ctrl" onClick={collapseAll} style={{flex: 1}}>📁 全折りたたみ</button>
+            </div>
             {SECTIONS.map(section => (
               <div key={section.id} style={{ marginBottom: '1rem' }}>
                 <div className="section-header" data-color={section.color} onClick={() => toggleSection(section.id)}>
@@ -376,7 +365,7 @@ const App = () => {
           </div>
 
           {/* 右側 */}
-          <div>
+          <div className="right-column">
             {/* プロンプト */}
             <div className="prompt-panel">
               <div className="prompt-header">
@@ -398,9 +387,25 @@ const App = () => {
               </div>
             </div>
 
-            {/* 画像パネル */}
-            <div className="image-panel">
-              <div className="image-panel-header">
+            {/* A/B比較タブ（プロンプトと画像スクロールの中間に固定配置） */}
+            {compareMode && (
+              <div className="compare-tabs-container" style={{ margin: '0 10px 10px 10px' }}>
+                <div className="compare-tabs">
+                  <button className={`compare-tab${activeSlot === 'A' ? ' active-a' : ''}`} onClick={switchToSlotA}>
+                    🅰️ スロットA{activeSlot === 'A' ? '（表示中）' : ''}
+                  </button>
+                  <button className={`compare-tab${activeSlot === 'B' ? ' active-b' : ''}`} onClick={switchToSlotB}>
+                    🅱️ スロットB{activeSlot === 'B' ? '（表示中）' : ''}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* 画像スクロールエリア */}
+            <div className="image-scroll-area">
+              {/* 画像パネル */}
+              <div className="image-panel">
+                <div className="image-panel-header">
                 <p className="image-panel-title">🎨 生成結果</p>
                 {isImageGenerating && <span className="animate-pulse" style={{ fontSize: '0.7rem', color: 'var(--amber)' }}>◉ 画像鋳造中...</span>}
               </div>
@@ -428,7 +433,7 @@ const App = () => {
               )}
               <div className="image-actions">
                 <button className="btn-download" onClick={downloadImage} disabled={!displayImage}>📥 ダウンロード</button>
-                <button className="btn-regen" onClick={handleImageGenerate} disabled={isWorking || !isUnlocked}>🔄 再生成</button>
+                <button className="btn-regen" onClick={handleImageGenerate} disabled={isWorking || !isUnlocked}>🔄 {compareMode ? `スロット${activeSlot} 再生成` : '再生成'}</button>
               </div>
             </div>
 
@@ -449,6 +454,7 @@ const App = () => {
                 </div>
               </div>
             )}
+            </div>
           </div>
         </div>
         <footer className="app-footer"><p>{APP_NAME} V{SYSTEM_VERSION} © 2026</p></footer>

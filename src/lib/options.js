@@ -291,7 +291,7 @@ export const SECTIONS = [
   },
   {
     id: 'manga',
-    label: '9. マンガ演出連携（Nano Banana OCR）',
+    label: '9. マンガ演出連携',
     color: 'cyan',
     fields: [
       { key: 'actionTendency', label: '得意アクション' },
