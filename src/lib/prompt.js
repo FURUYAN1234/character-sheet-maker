@@ -88,18 +88,18 @@ export const buildPrompt = (formData) => {
   ■言動：口癖：${d.catchphrase} / 台詞：${d.dialogue}
   ${d.archetype ? `■役割：${d.archetype}` : ''}${d.organization ? ` / 所属：${d.organization}` : ''}${ocrBlock}
 
-[2. 生体・造形構造]
+[2. 生体・造形構造（超重要：3.5〜2.8）]
+- 特殊部位: (${d.subhumanPart}:3.5). 紋様: (${d.bodyArt}:3.2).
+- 肉体：(${d.bodyBuild}:2.8), (${d.muscleType}:2.5). 肌質: (${d.skinType}:2.2).
+- 髪：(${d.hairStyle}:2.8) (${d.hairColor}:2.8).
+- 頭部：(${d.faceType}:2.8), (${d.eyeShape}:2.8). 瞳色: (${d.eyeColor}:2.5).
 - 性別基盤：${genderWeight} (${d.ageGroup}:2.5).
-- 肉体：(${d.bodyBuild}:2.5), (${d.muscleType}:2.0). 肌質: (${d.skinType}:2.2). 紋様: ${d.bodyArt}.
-- 頭部：(${d.faceType}:2.5), (${d.eyeShape}:2.5), 瞳色: (${d.eyeColor}:2.2), 髭: ${d.facialHair}, メイク: ${d.makeup}.
-- 髪：(${d.hairStyle}:2.5) (${d.hairColor}:2.5). 特殊部位: ${d.subhumanPart}.
 
-[3. 装飾・衣装・装備]
-- 世界観：(${d.eraStyle}:2.8).
-- 衣装：(${d.costume}:2.8), 状態: ${d.outfitCondition}, 着こなし: ${d.outfitFit}, 素材: (${d.material}:2.2).
-- 装飾：眼鏡: ${d.glassesStyle}, 頭部: ${d.headAccessory}, 耳: ${d.earAccessory}, 首: ${d.neckAccessory}, ピアス: ${d.facePiercing}.
-- 武装：メイン: (${d.weapon}:2.5), サブ: ${d.subWeapon}, 小物: ${d.accessory}.
-- 演出：(${d.magicEffect}:2.8), (${d.auraColor}:2.5).
+[3. 装飾・衣装・装備（重要：3.2〜1.5）]
+- メイン武装: (${d.weapon}:3.2). ベース衣装：(${d.costume}:3.0). 世界観：(${d.eraStyle}:2.5).
+- 演出：(${d.magicEffect}:2.8), (${d.auraColor}:2.5). 状態: (${d.outfitCondition}:2.5).
+- マイナー装飾品（優先度低）: 眼鏡: (${d.glassesStyle}:1.8), 頭飾: (${d.headAccessory}:2.0), サブ武器: (${d.subWeapon}:2.0), 耳・首・ピアス・小物: (${d.earAccessory}, ${d.neckAccessory}, ${d.facePiercing}, ${d.accessory}:1.5).
+- その他詳細（優先度微）: 髭: (${d.facialHair}:1.8), メイク: (${d.makeup}:1.8), 着こなし: (${d.outfitFit}:1.8), 衣装素材: (${d.material}:1.8).
 
 [4. ポーズ ＆ 表現]
 - ベースポーズ：(${d.basePose}:3.2).
