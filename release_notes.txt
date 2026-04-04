@@ -1,0 +1,11 @@
+English/Japanese Release Notes.
+
+EN:
+- Completely removed the "-alpha" suffix from tags to simplify versioning.
+- Fixed a recurring caching/packaging bug where the downloaded ZIP contained outdated code (v1.0.2). This release is guaranteed to be 1.0.6.
+- Assorted bug fixes and version string updates.
+
+JA:
+- タグ名に「-alpha」が付く形式を廃止し、今後はシンプルなバージョン番号で統一するようにしました。
+- 一部の環境でダウンロードファイルが古いバージョン（1.0.2）になってしまっていた問題を完全に解消しました。本リリースでは最新の1.0.6のコードが含まれています。
+- その他軽微なバグ修正・バージョン文字列の更新。
