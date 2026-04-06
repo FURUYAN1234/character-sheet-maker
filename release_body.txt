@@ -1,3 +1,7 @@
 ## Overview / 概要
 - Fixed the numbering for remaining UI sections (from 8-10 to 7-9) after the removal of the Background category.
-- 背景設定セクションを削除した影響で番号が飛んでいたため、「7. ロール＆演技設定」以降のカテゴリ番号を正しく連番（7〜9）になるよう振り直しました。
+- 背景設定を削除した影響で番号が飛んでいたUIカテゴリについて、「7. ロール＆演技設定」以降の番号を正しく振り直しました。
+
+## Fixes / 修正内容
+- Correctly updated `options.js` to ensure the UI renders the correct numbering without caching issues.
+- キャッシュ問題などでUIが古く見えてしまう問題を解消するため、確実に `options.js` の設定カテゴリが最新の連番になるよう再構築しました。

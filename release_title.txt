@@ -1,1 +1,1 @@
-Release v1.0.10: Fix UI Section Numbering / カテゴリ番号の振り直し
+Release v1.0.11: Fix UI Section Numbering / カテゴリ番号の振り直し再構築
