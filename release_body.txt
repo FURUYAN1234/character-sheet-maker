@@ -1,0 +1,3 @@
+## Overview / 概要
+- Removed the unused "Background & Atmosphere" section from the UI to avoid user confusion. The generator enforces a pure white background for consistent character sheet structure.
+- キャラクターシートのOCR連携一貫性を保つため、完全な白無地背景を強制する仕様に合わせ、機能していなかった「背景＆雰囲気」設定メニューをUIから完全に削除しました。
