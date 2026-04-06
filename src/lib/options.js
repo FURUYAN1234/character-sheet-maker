@@ -260,18 +260,8 @@ export const SECTIONS = [
     ]
   },
   {
-    id: 'background',
-    label: '7. 背景 ＆ 雰囲気',
-    color: 'sky',
-    fields: [
-      { key: 'backgroundMode', label: '背景モード' },
-      { key: 'atmosphere', label: '雰囲気・ムード' },
-      { key: 'weatherTime', label: '天候・時間帯' },
-    ]
-  },
-  {
     id: 'role',
-    label: '8. ロール ＆ 演技設定',
+    label: '7. ロール ＆ 演技設定',
     color: 'orange',
     fields: [
       { key: 'archetype', label: '役割（アーキタイプ）' },
@@ -283,7 +273,7 @@ export const SECTIONS = [
   },
   {
     id: 'manga',
-    label: '9. マンガ演出連携',
+    label: '8. マンガ演出連携',
     color: 'cyan',
     fields: [
       { key: 'actionTendency', label: '得意アクション' },
@@ -294,7 +284,7 @@ export const SECTIONS = [
   },
   {
     id: 'extra',
-    label: '10. 自由記述',
+    label: '9. 自由記述',
     color: 'slate',
     fields: [
       { key: 'details', label: '詳細補足', type: 'textarea' },

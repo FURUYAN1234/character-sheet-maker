@@ -1,1 +1,1 @@
-Release v1.0.9: Remove Unused Background Options / 背景設定項目の廃止
+Release v1.0.10: Fix UI Section Numbering / カテゴリ番号の振り直し

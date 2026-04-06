@@ -1,3 +1,3 @@
 ## Overview / 概要
-- Removed the unused "Background & Atmosphere" section from the UI to avoid user confusion. The generator enforces a pure white background for consistent character sheet structure.
-- キャラクターシートのOCR連携一貫性を保つため、完全な白無地背景を強制する仕様に合わせ、機能していなかった「背景＆雰囲気」設定メニューをUIから完全に削除しました。
+- Fixed the numbering for remaining UI sections (from 8-10 to 7-9) after the removal of the Background category.
+- 背景設定セクションを削除した影響で番号が飛んでいたため、「7. ロール＆演技設定」以降のカテゴリ番号を正しく連番（7〜9）になるよう振り直しました。
