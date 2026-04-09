@@ -8,7 +8,7 @@ import { setApiKey, getApiKey, generateFieldValue, generateGachaTexts } from './
 import { generateImage } from './lib/imagen';
 import FieldInput from './components/FieldInput';
 
-const SYSTEM_VERSION = "1.1.1";
+const SYSTEM_VERSION = "1.1.2";
 const APP_NAME = "AIキャラクターシートメーカー";
 
 // === スマート連携テーブル ===
@@ -343,44 +343,46 @@ const App = () => {
       )}
 
       <div className={!isUnlocked ? 'app-locked' : ''}>
-        {/* ヘッダー */}
-        <header className="app-header">
-          <div className="header-brand">
-            <div className="header-icon">⚒️</div>
-            <div>
-              <h1 className="header-title">{APP_NAME} <span>V{SYSTEM_VERSION}</span></h1>
-              <p className="header-subtitle">AI Character Sheet Maker</p>
+          <div className="sticky-top-area">
+          {/* ヘッダー */}
+          <header className="app-header">
+            <div className="header-brand">
+              <div className="header-icon">⚒️</div>
+              <div>
+                <h1 className="header-title">{APP_NAME} <span>V{SYSTEM_VERSION}</span></h1>
+                <p className="header-subtitle">AI Character Sheet Maker</p>
+              </div>
             </div>
-          </div>
-          <div className="header-actions">
-            <button className="btn-gacha" onClick={handleFullRandom} disabled={isWorking || !isUnlocked}>
-              {isGenerating ? '⏳ 生成中...' : '🎲 全項目ランダム'}
-            </button>
-            <button className="btn-generate" onClick={handleImageGenerate} disabled={isWorking || !isUnlocked}>
-              {isImageGenerating ? '⏳ 画像生成中...' : '🎨 画像生成'}
-            </button>
-            <button className="btn-icon-only" onClick={handleReset} title="全リセット">↺</button>
-          </div>
-        </header>
-
-        {/* ステータス（生成中は持続表示） */}
-        {statusMessage && (
-          <div className="inline-status">
-            <span>{statusMessage}</span>
-            <button onClick={() => setStatusMessage('')}>✕</button>
-          </div>
-        )}
-
-        {/* ツールバー: プリセット + A/B比較トグル + 全展開/折りたたみ */}
-        <div className="toolbar-row">
-          <div className="preset-bar">
-            {PRESETS.map(p => (
-              <button key={p.name} className="preset-chip" onClick={() => applyPreset(p)}>
-                {p.icon} {p.name}
+            <div className="header-actions">
+              <button className="btn-gacha" onClick={handleFullRandom} disabled={isWorking || !isUnlocked}>
+                {isGenerating ? '⏳ 生成中...' : '🎲 全項目ランダム'}
               </button>
-            ))}
+              <button className="btn-generate" onClick={handleImageGenerate} disabled={isWorking || !isUnlocked}>
+                {isImageGenerating ? '⏳ 画像生成中...' : '🎨 画像生成'}
+              </button>
+              <button className="btn-icon-only" onClick={handleReset} title="全リセット">↺</button>
+            </div>
+          </header>
+
+          {/* ステータス（生成中は持続表示） */}
+          {statusMessage && (
+            <div className="inline-status">
+              <span>{statusMessage}</span>
+              <button onClick={() => setStatusMessage('')}>✕</button>
+            </div>
+          )}
+
+          {/* ツールバー: プリセット + A/B比較トグル + 全展開/折りたたみ */}
+          <div className="toolbar-row">
+            <div className="preset-bar">
+              {PRESETS.map(p => (
+                <button key={p.name} className="preset-chip" onClick={() => applyPreset(p)}>
+                  {p.icon} {p.name}
+                </button>
+              ))}
+            </div>
+            <div className="toolbar-right"></div>
           </div>
-          <div className="toolbar-right"></div>
         </div>
 
         {/* メイングリッド */}
