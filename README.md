@@ -66,8 +66,8 @@ Minimal linkages that respect randomness while preventing contradictions:
 | 粘土・3Dフィギュア風 | 3D Clay Model |
 | 工業設計図風 | Blueprint |
 
-### 📡 Nano Banana 2 Powered Super AI 4-koma System OCR連携 / OCR Integration
-キャラクターシートに**OCR読み取り用の追加情報**を埋め込み、[Nano Banana 2 Powered Super AI 4-koma System](https://github.com/FURUYAN1234/nano-banana-pro)のマンガ生成精度を向上：
+### 📡 Nano Banana 2 and ChatGPT image 2.0 Powered Super AI 4-koma System OCR連携 / OCR Integration
+キャラクターシートに**OCR読み取り用の追加情報**を埋め込み、[Nano Banana 2 and ChatGPT image 2.0 Powered Super AI 4-koma System](https://github.com/FURUYAN1234/nano-banana-pro)のマンガ生成精度を向上：
 Embeds additional information for OCR reading into the character sheet, improving the manga generation accuracy of the Nano Banana 2 Powered Super AI 4-koma System:
 - **得意アクション** — 戦闘スタイル（格闘、剣術、魔法等） / Action Tendency - Combat style (melee, swordplay, magic, etc.)
 - **感情レンジ** — 表情の振り幅（冷静型〜激情型） / Emotion Range - Range of expressions (calm to passionate)
