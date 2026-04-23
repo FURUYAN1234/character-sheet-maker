@@ -3,7 +3,7 @@
 **v1.1.3-alpha** — Gemini API を使ったAIキャラクターシート自動生成ツール
 
 > **[[Nano Banana 2 Powered Super AI 4-koma System](https://github.com/FURUYAN1234/nano-banana-pro/blob/main/README.md)](https://github.com/FURUYAN1234/nano-banana-pro) 連携対応**
-> 生成されたキャラクターシートを [[Nano Banana 2 Powered Super AI 4-koma System](https://github.com/FURUYAN1234/nano-banana-pro/blob/main/README.md)](https://github.com/FURUYAN1234/nano-banana-pro) の OCR で読み取り、マンガ制作の幅を広げることができます。
+> 生成されたキャラクターシートを [[[Nano Banana 2 Powered Super AI 4-koma Syste](https://github.com/FURUYAN1234/nano-banana-pro/blob/main/README.md)](https://github.com/FURUYAN1234/nano-banana-pro) の OCR で読み取り、マンガ制作の幅を広げることができます。
 
 ---
 
