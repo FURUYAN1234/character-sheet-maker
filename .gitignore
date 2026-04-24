@@ -3,3 +3,8 @@ dist/
 .DS_Store
 *.log
 .env
+
+AGENTS.codex-local-before-antigravity-pull.md
+docs/codex_pc_sync.md
+docs/onedrive_conflicts_20260417/
+
