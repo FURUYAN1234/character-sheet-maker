@@ -1,17 +1,58 @@
 # PROJECT RULES: character-sheet-maker
 
 ## Project Overview
-キャラクター設定やシートをAI（Gemini等）を用いて補助・生成・管理するツール。
+`character-sheet-maker` is the real product app in this workspace.
 
-## Architecture Guardrails (絶対防衛ライン)
-AI（Codex等）の過剰な最適化によるシステム破壊を絶対に防ぐこと。以下のロジックは、冗長・特殊・長すぎるように見えても、推測で削除・短縮・単純化してはいけない。
+It is not disposable scaffolding, not a temporary shell, and not a place to build unrelated UI experiments by overwriting the current app.
 
-### 1. API特有のエラーハンドリング
-- Gemini API 等の `429 Too Many Requests` 回避や、意図的な `wait loop`, `retry` 処理を勝手に削らないこと。
+## Architecture Guardrails
 
-### 2. プロンプトの物理強制力
-- AI出力のブレ（不要なマークダウン装飾、JSONフォーマット崩れ）を防ぐための強固なプロンプト制約を指定している場合、削らないこと。
+### 1. API handling
+- Keep defensive handling for Gemini-style API limits such as `429 Too Many Requests`.
+- Do not remove retry loops, wait handling, or fallback behavior without an explicit task.
 
-## Forbidden Files / Settings (変更禁止)
-- バージョン情報等（`APP_VERSION`）は `package.json` と連動させておく。
-- API Key などの機密情報をフロントエンドコードにハードコードしないこと。
+### 2. Character-sheet logic
+- Treat character profile generation, JSON or structured output shaping, and sheet formatting as product behavior.
+- Do not simplify or replace core behavior just because another app or prototype wants a lighter UI.
+
+### 3. Version / config handling
+- Keep any user-visible versioning aligned with `package.json` and the intended release flow.
+- Do not make isolated version tweaks without an explicit request.
+
+## Forbidden Changes
+
+### Protected product files
+Unless the user explicitly says to modify `character-sheet-maker` itself, do not edit:
+
+- `src/App.jsx`
+- `src/App.css`
+- `src/index.css`
+- `src/lib/**`
+- `public/**`
+- `README.md`
+- `package.json`
+- `package-lock.json`
+- `vite.config.js`
+- `dist/**`
+
+### Sensitive settings
+- Never hardcode API keys, secrets, or private credentials into frontend files.
+- Keep runtime secrets in user input flow or proper environment handling.
+
+### Separate-app rule
+- If the user asks for a separate app, public-safe clone, mock UI, experiment, prototype, or rewrite not explicitly for `character-sheet-maker`, create a new subfolder.
+- Never satisfy those requests by replacing this app's root files.
+
+### No-assumption rule
+- Similarity of visible UI, category structure, or workflow is not permission to overwrite this app.
+- If it is not explicit that `character-sheet-maker` is the target, do not edit product files.
+- If the target app cannot be identified with confidence, stop and clarify before editing.
+
+## Build / Deploy Safety
+- Do not run `npm run build`, `npm run deploy`, or any command that rewrites `dist/` unless `character-sheet-maker` is the confirmed target.
+- Do not infer deploy behavior from any other app in OneDrive.
+
+## Recovery Rule
+- If the wrong app is modified by mistake, stop all feature work immediately.
+- Restore the changed files first.
+- Restore generated outputs such as `dist/` if they were rewritten.
