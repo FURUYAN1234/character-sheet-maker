@@ -1,6 +1,6 @@
 # AIキャラクターシートメーカー / AI Character Sheet Maker
 
-**v1.1.3-alpha** — Gemini API を使ったAIキャラクターシート自動生成ツール
+**v1.1.4-alpha** — Gemini API を使ったAIキャラクターシート自動生成ツール
 
 > **[[Nano Banana 2 and ChatGPT image 2.0 Powered Super AI 4-koma System](https://github.com/FURUYAN1234/nano-banana-pro/blob/main/README.md)](https://github.com/FURUYAN1234/nano-banana-pro) 連携対応**
 > 生成されたキャラクターシートを[[Nano Banana 2 and ChatGPT image 2.0 Powered Super AI 4-koma System](https://github.com/FURUYAN1234/nano-banana-pro/blob/main/README.md)](https://github.com/FURUYAN1234/nano-banana-pro) の OCR で読み取り、マンガ制作の幅を広げることができます。
@@ -77,6 +77,10 @@ Embeds additional information for OCR reading into the character sheet, improvin
 ### 🔄 A/B比較モード / A/B Comparison
 2つのスロット（A/B）で独立した設定と生成結果を管理・比較可能。
 Compare two independent character configurations side by side.
+
+### 🤖 ChatGPT image 2.0 プロンプト出力 / ChatGPT image 2.0 Prompt Export
+キャラクターシートの設定を、ChatGPT image 2.0 に最適化された「英語のメタプロンプト（高画質化・縦長指定・厳密な要素指定）」付きでワンクリックコピーできます。
+One-click copy of the character sheet with an English meta-prompt optimized for ChatGPT image 2.0, including high-quality, portrait-ratio, and strict element instructions.
 
 ### 🖼️ キャンバス正規化＆透かし保護 / Canvas Normalization & Watermarking
 生成された画像は、一律で **1024x1536 (アスペクト比2:3)** の高品質な縦長キャンバスに自動正規化されます。
@@ -191,6 +195,9 @@ character_sheet/
 ---
 
 ## 📋 バージョン履歴 / Changelog
+
+### v1.1.4-alpha (2026-04-27)
+- **[Feature]** ChatGPT image 2.0 向けの高画質化・最適化指示文付きプロンプトのコピペボタンを追加 / Added a copy button for ChatGPT image 2.0 that includes high-quality and optimization instructions.
 
 ### v1.1.3-alpha (2026-04-23)
 - **[Docs]** Nano Banana 2 and ChatGPT image 2.0 Powered Super AI 4-koma Systemのドキュメントに準拠し、最新のアーキテクチャやシステム仕様に合わせてREADMEを大幅刷新 / Comprehensively updated README to reflect modern architecture and align with Nano Banana 2 and ChatGPT image 2.0 Powered Super AI 4-koma System documentation standards.

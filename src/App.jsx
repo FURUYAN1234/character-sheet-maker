@@ -8,7 +8,7 @@ import { setApiKey, getApiKey, generateFieldValue, generateGachaTexts } from './
 import { generateImage } from './lib/imagen';
 import FieldInput from './components/FieldInput';
 
-const SYSTEM_VERSION = "1.1.3";
+const SYSTEM_VERSION = "1.1.4";
 const APP_NAME = "AIキャラクターシートメーカー";
 
 // === スマート連携テーブル ===
@@ -42,6 +42,7 @@ const App = () => {
   const [lockedFields, setLockedFields] = useState({});
   const [collapsedSections, setCollapsedSections] = useState({});
   const [copied, setCopied] = useState(false);
+  const [chatGptCopied, setChatGptCopied] = useState(false);
 
   // === 生成状態（APIは明示操作のみ） ===
   const [isGenerating, setIsGenerating] = useState(false);
@@ -281,6 +282,24 @@ const App = () => {
     });
   };
 
+  const copyForChatGPT = () => {
+    const gptPrompt = `Please generate an illustration of a character perfectly reflecting the settings below.
+Make it a masterpiece, highest quality, and highly detailed anime style.
+
+# Image Generation Instructions:
+- Aspect ratio: Vertical/Portrait.
+- Composition: Full body or upper body (from thighs up).
+- Strictly include all elements mentioned in the "Character Settings" (hairstyle, clothing, accessories, colors, etc.) without missing any details.
+- Automatically generate a background that fits the character's attributes and world setting.
+
+# Character Settings:
+${generatedPrompt}`;
+
+    navigator.clipboard.writeText(gptPrompt).then(() => {
+      setChatGptCopied(true); setTimeout(() => setChatGptCopied(false), 2000);
+    });
+  };
+
   const downloadImage = () => {
     if (!displayImage) return;
     // ウォーターマークは既に焼き込み済み、そのままダウンロード
@@ -429,7 +448,16 @@ const App = () => {
                     <p className="prompt-subtitle">パラメータ変更で即時更新（API呼び出しなし）</p>
                   </div>
                 </div>
-                <button className="btn-copy" onClick={copyPrompt}>{copied ? '✓ コピー済' : '📋 コピー'}</button>
+                <div className="prompt-actions" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button className="btn-copy" onClick={copyPrompt}>{copied ? '✓ コピー済' : '📋 標準コピー'}</button>
+                    <button className="btn-copy-chatgpt" onClick={copyForChatGPT}>{chatGptCopied ? '✓ コピー済' : '🤖 ChatGPT image 2.0用'}</button>
+                  </div>
+                  <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textAlign: 'right', lineHeight: '1.4' }}>
+                    <div>※<strong style={{color:'var(--text-secondary)'}}>標準コピー</strong>: 設定テキストのみ（Geminiや他画像生成AI向け）</div>
+                    <div>※<strong style={{color:'var(--emerald)'}}>ChatGPT image 2.0用</strong>: 高画質化・縦長指定のメタ指示を自動付与してコピーします</div>
+                  </div>
+                </div>
               </div>
               <div className="prompt-content"><pre className="prompt-text">{generatedPrompt}</pre></div>
               <div className="status-bar">
