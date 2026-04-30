@@ -27,20 +27,20 @@
 - `vite.config.js` の `base` を推測で変更しない
 
 ## Done (前回作業)
-- `AGENTS.md`, `docs/project_standards.md`, `docs/deploy.md` の整備完了
-- README の AI ツール強化反映
+- セキュリティ監査完了（APIキーメモリ管理、ハードコードなし確認）
+- ガベージコレクション（`start_character_sheet_app.bat` および古い一時ファイル関連のクリーンアップ）完了
 
 ## Remaining Tasks
 - 特になし（ユーザーからの新たな指示を待機中）
 
 ## Verification State
-- GitHub Pages デプロイ済み (v1.1.3)
+- GitHub Pages デプロイ済み (v1.1.5)
 
 ## Risks
 なし
 
 ## Notes
-- ルートに `extracted_v12_source.jsx`, `release_notes.txt`, `tmp_*.json` 等の一時ファイルが散在。クリーンアップ推奨だが、ユーザー確認なしに削除しないこと。
+- プロジェクトルートはクリーンな状態を保っています。
 
 ## Entry Points for Codex
 1. `AGENTS.md` → 全体ルール
