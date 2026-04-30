@@ -1,2 +1,0 @@
-﻿origin	https://github.com/FURUYAN1234/character-sheet-maker.git (fetch)
-origin	https://github.com/FURUYAN1234/character-sheet-maker.git (push)
