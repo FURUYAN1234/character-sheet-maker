@@ -1,6 +1,6 @@
 # AIキャラクターシートメーカー / AI Character Sheet Maker
 
-**v1.1.4-alpha** — Gemini API を使ったAIキャラクターシート自動生成ツール
+**v1.1.6-alpha** — Gemini API を使ったAIキャラクターシート自動生成ツール
 
 > **[[Nano Banana 2 and ChatGPT Images 2.0 Powered Super AI 4-koma System](https://github.com/FURUYAN1234/nano-banana-pro/blob/main/README.md)](https://github.com/FURUYAN1234/nano-banana-pro) 連携対応**
 > 生成されたキャラクターシートを[[Nano Banana 2 and ChatGPT Images 2.0 Powered Super AI 4-koma System](https://github.com/FURUYAN1234/nano-banana-pro/blob/main/README.md)](https://github.com/FURUYAN1234/nano-banana-pro) の OCR で読み取り、マンガ制作の幅を広げることができます。
@@ -195,6 +195,10 @@ character_sheet/
 ---
 
 ## 📋 バージョン履歴 / Changelog
+
+### v1.1.6-alpha (2026-05-02)
+- **[Feature]** 「性別・属性」項目を純粋な「性別」とファンタジー用の「種族・属性」の2つに完全分離し、設定の自由度とAIの認識精度を向上 / Split "Gender/Attribute" into separate "Sex" and "Species" fields for better combination freedom and AI accuracy.
+- **[Feature]** ランダム生成時に、選択された性別に基づいて口調や体型・声質などが自動で相関する「スマート連携（Story Maker準拠）」を追加実装 / Implemented "Smart Linkage" (Story Maker style) during random generation, statistically correlating speech style, body build, and voice type based on the selected sex.
 
 ### v1.1.4-alpha (2026-04-27)
 - **[Feature]** ChatGPT Images 2.0 向けの高画質化・最適化指示文付きプロンプトのコピペボタンを追加 / Added a copy button for ChatGPT Images 2.0 that includes high-quality and optimization instructions.

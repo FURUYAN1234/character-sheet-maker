@@ -160,7 +160,13 @@ export const generateFieldValue = async (fieldKey, fieldLabel, context, onStatus
  */
 export const generateGachaTexts = async (context, onStatusUpdate) => {
   const prompt = `プロのキャラクターデザイナーとして、以下の設定に基づいて魅力的なキャラクター情報を日本語で生成してください。
-設定: 性別=${context.gender}, 性格=${context.personality}, 世界観=${context.eraStyle}, 画風=${context.artStyle}, 役割=${context.archetype || '主人公'}
+
+設定: 性別=${context.gender}, 年齢=${context.ageGroup}, 性格=${context.personality}, 話し方=${context.speechStyle}, 世界観=${context.eraStyle}, 役割=${context.archetype || '主人公'}
+
+【厳守事項】
+- 「性別（${context.gender}）」と「話し方（${context.speechStyle}）」に極めて忠実な一人称（俺、僕、私、あたし等）および語尾（〜だ、〜よ、〜のじゃ等）を採用すること。
+- 男性キャラに女性言葉を使わせたり、その逆の不自然な言葉遣いは絶対に避けること。
+
 以下をJSON形式で生成:
 - name: 氏名（世界観に適した名前）
 - catchphrase: 口癖（15字以内、「」付き）

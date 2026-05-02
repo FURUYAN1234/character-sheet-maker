@@ -8,12 +8,10 @@ import { setApiKey, getApiKey, generateFieldValue, generateGachaTexts } from './
 import { generateImage } from './lib/imagen';
 import FieldInput from './components/FieldInput';
 
-const SYSTEM_VERSION = "1.1.5";
+const SYSTEM_VERSION = "1.1.6";
 const APP_NAME = "AIキャラクターシートメーカー";
 
 // === スマート連携テーブル ===
-// 性別 → 髭: 女性系は髭なし
-const FEMALE_GENDERS = ['女性', '少女', '老女', 'ケモノ（メス）'];
 // 幼児系 → 体型制限
 const CHILD_AGES = ['乳幼児（1〜3歳）', '幼児（4〜6歳）', '児童（7〜12歳）'];
 const CHILD_BUILDS = ['標準的・バランス重視', '華奢・小柄', '細身（ガリガリ）'];
@@ -228,10 +226,25 @@ const App = () => {
     });
 
     // Step 2: スマート連携（ランダム性を尊重しつつ矛盾だけ防ぐ）
-    // 連携1: 性別 ↔ 髭（女性系は髭なし）
-    if (!lockedFields.facialHair && FEMALE_GENDERS.includes(newData.gender)) {
-      newData.facialHair = '髭なし';
+    const currentSex = newData.sex;
+    
+    // 【新連携】性別ベースの口調・外見・性格の相関（Story Maker風）
+    if (currentSex === '男性') {
+      if (!lockedFields.speechStyle && Math.random() < 0.7) newData.speechStyle = getRandom(['標準的（男性寄り）', '乱暴・荒い', '古風・武家言葉', '寡黙（最小限）', '敬語と暴言の混在']);
+      if (!lockedFields.bodyBuild && Math.random() < 0.7) newData.bodyBuild = getRandom(['鍛え上げられたアスリート型', '圧倒的な筋肉質', '標準的・バランス重視', '細身（ガリガリ）']);
+      if (!lockedFields.voiceType && Math.random() < 0.8) newData.voiceType = getRandom(['低く渋い', 'ハスキー', '堂々とした']);
+    } else if (currentSex === '女性') {
+      if (!lockedFields.speechStyle && Math.random() < 0.7) newData.speechStyle = getRandom(['標準的（女性寄り）', '丁寧語', 'お嬢様言葉', '早口']);
+      if (!lockedFields.bodyBuild && Math.random() < 0.7) newData.bodyBuild = getRandom(['しなやかなモデル体格', '華奢・小柄', '標準的・バランス重視', '小太り・肉感的']);
+      if (!lockedFields.voiceType && Math.random() < 0.8) newData.voiceType = getRandom(['高く透明', '甲高い', '囁くような']);
+      if (!lockedFields.facialHair) newData.facialHair = '髭なし';
+    } else if (currentSex === '無性' || currentSex === '回答なし') {
+      if (!lockedFields.speechStyle && Math.random() < 0.6) newData.speechStyle = getRandom(['中性的', '丁寧語', '寡黙（最小限）']);
+      if (!lockedFields.bodyBuild && Math.random() < 0.6) newData.bodyBuild = getRandom(['しなやかなモデル体格', '細身（ガリガリ）', '標準的・バランス重視']);
+      if (!lockedFields.voiceType && Math.random() < 0.6) newData.voiceType = getRandom(['高く透明', 'ハスキー', '囁くような', '機械的・無感情']);
+      if (!lockedFields.facialHair && Math.random() < 0.8) newData.facialHair = '髭なし';
     }
+
     // 連携2: 年齢 ↔ 体型（幼児系は小柄な体型に制限）
     if (!lockedFields.bodyBuild && CHILD_AGES.includes(newData.ageGroup)) {
       newData.bodyBuild = getRandom(CHILD_BUILDS);
@@ -249,14 +262,14 @@ const App = () => {
     showStatus('🤖 AIが名前・台詞を生成中...');
     const aiResult = await generateGachaTexts(newData, (s) => showStatus(s));
 
-    const genderKey = (newData.gender.includes('男') || newData.gender.includes('オス') || newData.gender.includes('巨漢'))
-      ? 'maleNames'
-      : (newData.gender.includes('女') || newData.gender.includes('少女') || newData.gender.includes('老女') || newData.gender.includes('メス'))
-        ? 'femaleNames' : 'neutralNames';
+    const genderKey = (newData.sex === '男性')
+      ? 'male'
+      : (newData.sex === '女性')
+        ? 'female' : 'neutral';
 
-    if (!lockedFields.name) newData.name = aiResult?.name || getRandom(BACKUP_DATA[genderKey]);
-    if (!lockedFields.catchphrase) newData.catchphrase = aiResult?.catchphrase || getRandom(BACKUP_DATA.phrases);
-    if (!lockedFields.dialogue) newData.dialogue = aiResult?.dialogue || getRandom(BACKUP_DATA.dialogues);
+    if (!lockedFields.name) newData.name = aiResult?.name || getRandom(BACKUP_DATA[`${genderKey}Names`]);
+    if (!lockedFields.catchphrase) newData.catchphrase = aiResult?.catchphrase || getRandom(BACKUP_DATA[`${genderKey}Phrases`]);
+    if (!lockedFields.dialogue) newData.dialogue = aiResult?.dialogue || getRandom(BACKUP_DATA[`${genderKey}Dialogues`]);
     if (!lockedFields.likes) newData.likes = aiResult?.likes || getRandom(BACKUP_DATA.likes);
     if (!lockedFields.dislikes) newData.dislikes = aiResult?.dislikes || getRandom(BACKUP_DATA.dislikes);
     if (!lockedFields.nickname) newData.nickname = aiResult?.nickname || getRandom(BACKUP_DATA.nicknames);
@@ -462,7 +475,7 @@ ${generatedPrompt}`;
               <div className="prompt-content"><pre className="prompt-text">{generatedPrompt}</pre></div>
               <div className="status-bar">
                 <div className="status-item"><span style={{ color: 'var(--emerald)' }}>●</span> 同期正常</div>
-                <div className="status-item"><span style={{ color: 'var(--rose)' }}>●</span> {currentFormData.gender}</div>
+                <div className="status-item"><span style={{ color: 'var(--rose)' }}>●</span> {currentFormData.sex} / {currentFormData.species}</div>
                 {textModel && <div className="status-item"><span style={{ color: 'var(--cyan)' }}>●</span> TXT: {textModel}</div>}
                 {imageModel && <div className="status-item"><span style={{ color: 'var(--amber)' }}>●</span> IMG: {imageModel}</div>}
               </div>

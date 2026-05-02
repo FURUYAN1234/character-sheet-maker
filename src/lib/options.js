@@ -3,7 +3,8 @@
 
 export const OPTIONS = {
   // === 1. 生体・身体・精神プロファイル ===
-  gender: ['男性', '女性', '中性・無性別', '老人', '老女', '少年', '少女', '幼児', '筋肉質の巨漢', 'ケモノ（オス）', 'ケモノ（メス）', 'ケモノ（中立）', 'アンドロイド', 'サイボーグ', '悪魔・魔族', '神体・神霊', '異形の怪物'],
+  sex: ['男性', '女性', '無性', '回答なし'],
+  species: ['人間', 'ケモノ', '獣人', 'エルフ', 'ドワーフ', '吸血鬼', 'アンドロイド', 'サイボーグ', '悪魔・魔族', '神体・神霊', '異形の怪物', 'スライム', 'その他'],
   ageGroup: ['乳幼児（1〜3歳）', '幼児（4〜6歳）', '児童（7〜12歳）', '少年・少女（13〜15歳）', '高校生世代（16〜18歳）', '青年（19〜25歳）', '成人（26〜39歳）', '壮年（40〜55歳）', '熟年（56〜70歳）', '老人（71歳以上）', '長寿（不老）', '外見年齢不明'],
   height: Array.from({length: 41}, (_, i) => `${80 + i * 5}cm`).concat(['300cm以上', '不明']),
   weight: Array.from({length: 35}, (_, i) => `${20 + i * 5}kg`).concat(['200kg以上', '不明']),
@@ -71,7 +72,7 @@ export const OPTIONS = {
   // === 8. キャラクター関係性 & ロール ★新カテゴリ ===
   archetype: ['主人公', 'ライバル', '師匠', 'ヒロイン', 'ラスボス', '相棒', '裏切り者', 'モブ', '語り部', '救世主', '復讐者', '放浪者'],
   voiceType: ['低く渋い', '高く透明', 'ハスキー', '機械的・無感情', '甲高い', '囁くような', '堂々とした', '幼い'],
-  speechStyle: ['丁寧語', '乱暴・荒い', '古風・武家言葉', '早口', '寡黙（最小限）', '関西弁', '敬語と暴言の混在', 'カタコト'],
+  speechStyle: ['標準的（男性寄り）', '標準的（女性寄り）', '丁寧語', 'お嬢様言葉', '乱暴・荒い', '古風・武家言葉', '早口', '寡黙（最小限）', '関西弁', '敬語と暴言の混在', 'カタコト', '中性的'],
 
   // === 9. マンガ演出連携（Nano Banana OCR対応） ===
   actionTendency: ['なし', '近接格闘・体術', '剣術・刀技', '銃撃戦・射撃', '魔法詠唱・術式', 'ステルス・暗殺', '空中機動・飛行', '迷彩・伽彩', '取り調べ・探索', '志援・回復魔法', '指揮・戦術', '巨大武器・力任せ'],
@@ -83,7 +84,8 @@ export const OPTIONS = {
 // フォームの初期値
 export const DEFAULT_FORM_DATA = {
   name: '',
-  gender: '男性',
+  sex: '男性',
+  species: '人間',
   ageGroup: '青年（19〜25歳）',
   height: '175cm',
   weight: '70kg',
@@ -151,8 +153,12 @@ export const BACKUP_DATA = {
   maleNames: ['カイ', 'ゼノン', 'ハヤト', '剛士', '剛門', '烈', 'レオン', '蒼一', '鷹斗', '銀河'],
   femaleNames: ['零華', '雪音', 'サクラ', 'ミナト', '栞', '紅蓮', 'ルナ', '暁', '美鈴', '凛'],
   neutralNames: ['クロノ', 'レイ', 'サイファー', 'ノア', 'ミライ', 'アキラ', 'ユウ', 'ソラ', 'ナギ', 'シオン'],
-  phrases: ['「俺がやる。それだけだ」', '「排除を開始する」', '「すべては計算通りよ」', '「……了解」', '「面白い。やってみろ」', '「退屈だな……」'],
-  dialogues: ['「……退け。死にたくなければな」', '「データ上、あなたの勝算は0.2%以下よ」', '「あァ？何見てんだよ」', '「私を甘く見ないで」', '「この世界に、正義など存在しない」'],
+  malePhrases: ['「俺がやる。それだけだ」', '「排除を開始する」', '「面白い。やってみろ」', '「退屈だな……」'],
+  femalePhrases: ['「すべては計算通りよ」', '「私を甘く見ないで」', '「仕方ないわね」', '「終わらせるわ」'],
+  neutralPhrases: ['「……了解」', '「任務を遂行する」', '「これ以上の抵抗は無意味だ」', '「分析完了」'],
+  maleDialogues: ['「……退け。死にたくなければな」', '「あァ？何見てんだよ」', '「俺の邪魔をするな」', '「力こそすべてだ」'],
+  femaleDialogues: ['「データ上、あなたの勝算は0.2%以下よ」', '「私に触れないで」', '「ふふっ、可愛いわね」', '「覚悟はいいかしら？」'],
+  neutralDialogues: ['「この世界に、正義など存在しない」', '「全ては運命のままに」', '「無駄な足掻きはやめろ」', '「我らが行く手を遮るな」'],
   likes: ['バイク・機械整備', '読書・古文書', '格闘技', '甘いもの', '星空観察', '音楽・楽器演奏', '料理', '武器収集'],
   dislikes: ['馴れ合い・集団行動', '嘘つき', '退屈な日常', '弱者いじめ', '束縛・規則', '騒がしい場所'],
   nicknames: ['黒き閃光', '鉄血の聖女', '暴風の牙', '沈黙の刃', '紅蓮の魔導師', '氷の瞳', '影の支配者', '不死鳥'],
@@ -173,7 +179,8 @@ export const SECTIONS = [
     color: 'indigo',
     fields: [
       { key: 'name', label: '氏名', type: 'text' },
-      { key: 'gender', label: '性別・属性' },
+      { key: 'sex', label: '性別' },
+      { key: 'species', label: '種族・属性' },
       { key: 'ageGroup', label: '年齢層' },
       { key: 'height', label: '身長' },
       { key: 'weight', label: '体重' },
@@ -297,31 +304,31 @@ export const PRESETS = [
   {
     name: 'ダークファンタジー戦士',
     icon: '⚔️',
-    data: { gender: '男性', ageGroup: '成人（26〜39歳）', bodyBuild: '鍛え上げられたアスリート型', personality: '冷静沈着・冷酷', eraStyle: '中世ファンタジー', costume: '西洋鎧', weapon: '巨大な大剣', artStyle: '劇画（重厚・劇的）', archetype: '主人公', basePose: '武器を構える', expressionSet: '冷徹な目つき' }
+    data: { sex: '男性', species: '人間', ageGroup: '成人（26〜39歳）', bodyBuild: '鍛え上げられたアスリート型', personality: '冷静沈着・冷酷', eraStyle: '中世ファンタジー', costume: '西洋鎧', weapon: '巨大な大剣', artStyle: '劇画（重厚・劇的）', archetype: '主人公', basePose: '武器を構える', expressionSet: '冷徹な目つき' }
   },
   {
     name: '学園ラブコメヒロイン',
     icon: '🌸',
-    data: { gender: '女性', ageGroup: '高校生世代（16〜18歳）', bodyBuild: '標準的・バランス重視', personality: '勝気・負けず嫌い', eraStyle: '現代・日常・学園', costume: '学生服', weapon: '武器なし', artStyle: '少女漫画（華麗・繊細）', archetype: 'ヒロイン', basePose: 'ニュートラル立ちポーズ', expressionSet: '照れ・赤面' }
+    data: { sex: '女性', species: '人間', ageGroup: '高校生世代（16〜18歳）', bodyBuild: '標準的・バランス重視', personality: '勝気・負けず嫌い', eraStyle: '現代・日常・学園', costume: '学生服', weapon: '武器なし', artStyle: '少女漫画（華麗・繊細）', archetype: 'ヒロイン', basePose: 'ニュートラル立ちポーズ', expressionSet: '照れ・赤面' }
   },
   {
     name: 'サイバーパンク傭兵',
     icon: '🤖',
-    data: { gender: '中性・無性別', ageGroup: '青年（19〜25歳）', bodyBuild: '重厚な機械化ボディ', personality: '神秘的な無口', eraStyle: '近未来・サイバーパンク', costume: 'サイバーウェア', weapon: '自動小銃', artStyle: '躍動感のあるダイナミックなスタイル', archetype: '放浪者', basePose: '戦闘構え', expressionSet: 'デフォルト（無表情）', lighting: 'シネマティック（ネオン光）' }
+    data: { sex: '無性', species: 'サイボーグ', ageGroup: '青年（19〜25歳）', bodyBuild: '重厚な機械化ボディ', personality: '神秘的な無口', eraStyle: '近未来・サイバーパンク', costume: 'サイバーウェア', weapon: '自動小銃', artStyle: '躍動感のあるダイナミックなスタイル', archetype: '放浪者', basePose: '戦闘構え', expressionSet: 'デフォルト（無表情）', lighting: 'シネマティック（ネオン光）' }
   },
   {
     name: '和風伝奇の剣客',
     icon: '🗡️',
-    data: { gender: '男性', ageGroup: '青年（19〜25歳）', bodyBuild: 'しなやかなモデル体格', personality: '誠実・生真面目', eraStyle: '和風伝奇・戦国', costume: '伝統和装', weapon: '日本刀', artStyle: '青年漫画（写実・硬派）', archetype: '主人公', basePose: '武器を構える', hairStyle: 'ポニーテール' }
+    data: { sex: '男性', species: '人間', ageGroup: '青年（19〜25歳）', bodyBuild: 'しなやかなモデル体格', personality: '誠実・生真面目', eraStyle: '和風伝奇・戦国', costume: '伝統和装', weapon: '日本刀', artStyle: '青年漫画（写実・硬派）', archetype: '主人公', basePose: '武器を構える', hairStyle: 'ポニーテール' }
   },
   {
     name: '異世界魔導師',
     icon: '✨',
-    data: { gender: '女性', ageGroup: '外見年齢不明', bodyBuild: '華奢・小柄', personality: '高貴・傲慢', eraStyle: '異世界', costume: '魔道士ローブ', weapon: '魔導杖', magicEffect: '幾何学魔法陣', artStyle: '透明感のある繊細なアニメ風', archetype: '救世主', expressionSet: '不敵な笑み', auraColor: '黄金の輝き' }
+    data: { sex: '女性', species: '人間', ageGroup: '外見年齢不明', bodyBuild: '華奢・小柄', personality: '高貴・傲慢', eraStyle: '異世界', costume: '魔道士ローブ', weapon: '魔導杖', magicEffect: '幾何学魔法陣', artStyle: '透明感のある繊細なアニメ風', archetype: '救世主', expressionSet: '不敵な笑み', auraColor: '黄金の輝き' }
   },
   {
     name: 'レトロ怪獣映画の怪物',
     icon: '👹',
-    data: { gender: '異形の怪物', ageGroup: '外見年齢不明', bodyBuild: '超巨漢', personality: '野性的・本能的', eraStyle: '昭和レトロ', costume: 'ストリート・カジュアル', subhumanPart: '龍の鱗と尾', artStyle: '90年代のレトロなセル画風', archetype: 'ラスボス', basePose: '戦闘構え', expressionSet: '激怒' }
+    data: { sex: '無性', species: '異形の怪物', ageGroup: '外見年齢不明', bodyBuild: '超巨漢', personality: '野性的・本能的', eraStyle: '昭和レトロ', costume: 'ストリート・カジュアル', subhumanPart: '龍の鱗と尾', artStyle: '90年代のレトロなセル画風', archetype: 'ラスボス', basePose: '戦闘構え', expressionSet: '激怒' }
   },
 ];

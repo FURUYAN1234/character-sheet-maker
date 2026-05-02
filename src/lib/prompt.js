@@ -35,9 +35,9 @@ export const buildPrompt = (formData) => {
   const styleKw = ART_STYLE_KEYWORDS[d.artStyle] || d.artStyle;
 
   // 性別の自然言語指示
-  const genderDesc = (d.gender.includes('男') || d.gender.includes('オス') || d.gender.includes('巨漢'))
+  const genderDesc = (d.sex === '男性')
     ? 'Depict as unmistakably masculine with strong rugged features. Absolutely no feminine traits.'
-    : (d.gender.includes('女') || d.gender.includes('少女') || d.gender.includes('老女') || d.gender.includes('メス'))
+    : (d.sex === '女性')
       ? 'Depict as clearly feminine with soft graceful anatomy and delicate features.'
       : 'Depict with androgynous gender-neutral features.';
 
@@ -83,7 +83,7 @@ ${bgControl}
 ## 3. CHARACTER INFO (Render as bold black Japanese text at the top of the image)
 Display the following information as styled Japanese typography at the top of the sheet:
   ■氏名：${finalName}${d.nickname ? ` 【${d.nickname}】` : ''}
-  ■属性：${d.gender} / ${d.ageGroup} / ${d.ethnicity}
+  ■属性：${d.sex} / ${d.species} / ${d.ageGroup} / ${d.ethnicity}
   ■身体：${d.height} / ${d.weight} / ${d.bodyBuild}(${d.muscleType})
   ■精神：${d.personality} / 好き：${d.likes} / 嫌い：${d.dislikes}
   ■言動：口癖：${d.catchphrase} / 台詞：${d.dialogue}
