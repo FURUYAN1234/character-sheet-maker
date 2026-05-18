@@ -3,9 +3,12 @@
  * Dual Engine 抽象化レイヤー
  */
 
-import { generateFieldValue as geminiGenerateField, generateGachaTexts as geminiGenerateGacha, setApiKey as setGeminiApiKey } from './gemini';
+import { generateFieldValue as geminiGenerateField, generateGachaTexts as geminiGenerateGacha, setApiKey as setGeminiApiKey, getApiKey as getGeminiApiKey } from './gemini';
 import { generateImage as geminiGenerateImage } from './imagen';
-import { generateFieldValueOAI, generateGachaTextsOAI, generateImageOAI, setOpenAIApiKey } from './openai';
+import { generateFieldValueOAI, generateGachaTextsOAI, generateImageOAI, setOpenAIApiKey, getOpenAIApiKey } from './openai';
+
+// 個別APIキー取得をre-export
+export { getGeminiApiKey, getOpenAIApiKey };
 
 // 'gemini' | 'openai'
 let activeEngine = 'gemini';

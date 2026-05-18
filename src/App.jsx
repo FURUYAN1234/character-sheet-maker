@@ -7,7 +7,7 @@ import { buildPrompt } from './lib/prompt';
 import { generateFieldValueAI, generateGachaTextsAI, generateImageAI, setActiveEngine, getEngineDisplayName, setApiKeys, getActiveEngine } from './lib/ai-provider';
 import FieldInput from './components/FieldInput';
 
-const SYSTEM_VERSION = "1.2.3";
+const SYSTEM_VERSION = "1.2.4";
 const APP_NAME = "AIキャラクターシートメーカー";
 
 // === スマート連携テーブル ===
@@ -34,6 +34,8 @@ const App = () => {
   const [apiKeyInput, setApiKeyInput] = useState('');
   const [selectedEngine, setSelectedEngine] = useState(null);
   const [isUnlocked, setIsUnlocked] = useState(false);
+
+
 
   // === フォームデータ ===
   const [formData, setFormData] = useState({ ...DEFAULT_FORM_DATA });
@@ -89,6 +91,8 @@ const App = () => {
     else if (trimmed.startsWith('AIza')) setSelectedEngine('gemini');
     else setSelectedEngine(null);
   };
+
+
 
   // === 現在のフォームデータ ===
   const getCurrentData = () => {
@@ -401,7 +405,12 @@ const App = () => {
             <button className="api-gate-btn" onClick={handleApiKeySubmit} disabled={!selectedEngine}>
               {selectedEngine ? `🔓 ${selectedEngine === 'gemini' ? 'Gemini' : 'OpenAI'} エンジンで起動` : '🔓 APIキーを入力してください'}
             </button>
-            <p className="api-gate-note">※ APIキーはセッション限定（ブラウザに保存されません）<br/>※Gemini: ai.google.dev / OpenAI: platform.openai.com</p>
+            <div className="api-gate-links">
+              <a href="https://aistudio.google.com/apikey" target="_blank" rel="noreferrer">🔑 Gemini APIキー取得</a>
+              <span className="api-gate-links-sep">|</span>
+              <a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer">🔑 OpenAI APIキー取得</a>
+            </div>
+            <p className="api-gate-note">※ APIキーはセッション限定（ブラウザに保存されません）<br/>※ キーはメモリ内のみ保持・ページを閉じると消去・外部送信一切なし</p>
           </div>
         </div>
       )}
@@ -425,6 +434,9 @@ const App = () => {
                 {isImageGenerating ? '⏳ 画像生成中...' : '🎨 画像生成'}
               </button>
               <button className="btn-icon-only" onClick={handleReset} title="全リセット">↺</button>
+              <button className="btn-api-switch" onClick={() => { setApiKeyInput(''); setSelectedEngine(null); setIsUnlocked(false); }} title="API切替">
+                🔄 API切替
+              </button>
             </div>
           </header>
 
@@ -436,7 +448,7 @@ const App = () => {
             </div>
           )}
 
-          {/* ツールバー: プリセット + A/B比較トグル + 全展開/折りたたみ */}
+          {/* ツールバー: プリセット + エンジン表示 */}
           <div className="toolbar-row">
             <div className="preset-bar">
               {PRESETS.map(p => (
@@ -445,26 +457,10 @@ const App = () => {
                 </button>
               ))}
             </div>
-            <div className="toolbar-right" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 'bold' }}>⚙️ 思考エンジン:</span>
-              <select 
-                className="form-select" 
-                value={getActiveEngine()} 
-                onChange={(e) => {
-                  const newEngine = e.target.value;
-                  if (newEngine === 'gemini' && getActiveEngine() !== 'gemini') alert("Gemini APIキーを入力して再起動してください");
-                  else if (newEngine === 'openai' && getActiveEngine() !== 'openai') alert("OpenAI APIキーを入力して再起動してください");
-                  else {
-                    setActiveEngine(newEngine);
-                    showStatus(`⚙️ エンジンを ${getEngineDisplayName()} に切り替えました`, true);
-                    setSelectedEngine(newEngine); // this triggers re-render
-                  }
-                }}
-                style={{ padding: '4px 8px', width: 'auto', background: 'var(--bg-card)', fontSize: '0.85rem' }}
-              >
-                <option value="gemini">Gemini (Google)</option>
-                <option value="openai">ChatGPT (OpenAI)</option>
-              </select>
+            <div className="toolbar-right">
+              <span className="engine-badge">
+                {getActiveEngine() === 'openai' ? '🤖 ChatGPT' : '✨ Gemini'}
+              </span>
             </div>
           </div>
         </div>
