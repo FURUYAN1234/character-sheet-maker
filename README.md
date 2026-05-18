@@ -1,6 +1,6 @@
 # AIキャラクターシートメーカー / AI Character Sheet Maker
 
-**v1.2.0-alpha** — Gemini & OpenAI (ChatGPT) 両対応のAIキャラクターシート自動生成ツール
+**v1.2.1-alpha** — Gemini & OpenAI (ChatGPT) 両対応のAIキャラクターシート自動生成ツール
 
 > **[[Nano Banana 2 and ChatGPT Images 2.0 Powered Super AI 4-koma System](https://github.com/FURUYAN1234/nano-banana-pro/blob/main/README.md)](https://github.com/FURUYAN1234/nano-banana-pro) 連携対応**
 > 生成されたキャラクターシートを[[Nano Banana 2 and ChatGPT Images 2.0 Powered Super AI 4-koma System](https://github.com/FURUYAN1234/nano-banana-pro/blob/main/README.md)](https://github.com/FURUYAN1234/nano-banana-pro) の OCR で読み取り、マンガ制作の幅を広げることができます。
@@ -202,6 +202,11 @@ character_sheet/
 ---
 
 ## 📋 バージョン履歴 / Changelog
+
+### v1.2.1-alpha (2026-05-18)
+- **[Fix]** OpenAI(gpt-image-2)の画像生成仕様に合わせてAPIパラメータ(response_format)の最適化を実施 / Fixed OpenAI (gpt-image-2) image generation parameters to prevent 400 response_format error.
+- **[Feature]** APIキー入力時の自動判別機能（sk- / AIza）を追加実装し、UI/UXを向上 / Added automatic API key detection to streamline engine selection.
+- **[Fix]** OpenAI選択時のUIタブの視認性を改善（背景色と同化する不具合を修正）/ Fixed poor visibility on the OpenAI tab selection.
 
 ### v1.2.0-alpha (2026-05-18)
 - **[Major]** Dual API Architecture (Gemini & OpenAI) 統合。ChatGPTエンジンによるテキスト生成(GPT-4o)および画像生成(DALL-E 3)に対応。 / Integrated Dual API Architecture (Gemini & OpenAI). Added support for GPT-4o text generation and DALL-E 3 image generation.

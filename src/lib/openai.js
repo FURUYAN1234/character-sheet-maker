@@ -16,7 +16,7 @@ const TEXT_MODEL_IDS = [
 ];
 
 // ── 画像生成用モデル ──
-const IMAGE_MODEL_ID = "dall-e-3";
+const IMAGE_MODEL_ID = "gpt-image-2";
 
 /**
  * OpenAI Chat Completions API 共通呼び出し
@@ -178,8 +178,7 @@ ${prompt}`;
         prompt: dallePrompt,
         n: 1,
         size: "1024x1792", // 縦長
-        response_format: "b64_json",
-        quality: "hd"
+        quality: "high"
       }),
       signal: controller.signal
     });

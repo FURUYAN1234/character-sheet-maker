@@ -7,7 +7,7 @@ import { buildPrompt } from './lib/prompt';
 import { generateFieldValueAI, generateGachaTextsAI, generateImageAI, setActiveEngine, getEngineDisplayName, setApiKeys, getActiveEngine } from './lib/ai-provider';
 import FieldInput from './components/FieldInput';
 
-const SYSTEM_VERSION = "1.2.0";
+const SYSTEM_VERSION = "1.2.1";
 const APP_NAME = "AIキャラクターシートメーカー";
 
 // === スマート連携テーブル ===
@@ -31,9 +31,8 @@ const ERA_COSTUME_MAP = {
 
 const App = () => {
   // === API認証 ===
-  const [geminiKeyInput, setGeminiKeyInput] = useState('');
-  const [openAIKeyInput, setOpenAIKeyInput] = useState('');
-  const [selectedEngine, setSelectedEngine] = useState('gemini');
+  const [apiKeyInput, setApiKeyInput] = useState('');
+  const [selectedEngine, setSelectedEngine] = useState(null);
   const [isUnlocked, setIsUnlocked] = useState(false);
 
   // === フォームデータ ===
@@ -67,19 +66,27 @@ const App = () => {
 
   // === API認証 ===
   const handleApiKeySubmit = () => {
-    const gKey = geminiKeyInput.trim();
-    const oKey = openAIKeyInput.trim();
-    if (selectedEngine === 'gemini' && gKey.length > 10) {
-      setApiKeys(gKey, oKey);
+    const key = apiKeyInput.trim();
+    if (selectedEngine === 'gemini' && key.length > 10) {
+      setApiKeys(key, '');
       setActiveEngine('gemini');
       setIsUnlocked(true);
-    } else if (selectedEngine === 'openai' && oKey.length > 10) {
-      setApiKeys(gKey, oKey);
+    } else if (selectedEngine === 'openai' && key.length > 10) {
+      setApiKeys('', key);
       setActiveEngine('openai');
       setIsUnlocked(true);
     } else {
-      alert(`${selectedEngine === 'gemini' ? 'Gemini' : 'OpenAI'} APIキーを正しく入力してください。`);
+      alert("APIキーが正しく認識できませんでした。Gemini (AIza...) または OpenAI (sk-...) の正しいキーを入力してください。");
     }
+  };
+
+  const handleApiKeyChange = (e) => {
+    const val = e.target.value;
+    setApiKeyInput(val);
+    const trimmed = val.trim();
+    if (trimmed.startsWith('sk-')) setSelectedEngine('openai');
+    else if (trimmed.startsWith('AIza')) setSelectedEngine('gemini');
+    else setSelectedEngine(null);
   };
 
   // === 現在のフォームデータ ===
@@ -370,23 +377,19 @@ const App = () => {
               <button 
                 className={`compare-tab ${selectedEngine === 'openai' ? 'active-b' : ''}`}
                 onClick={() => setSelectedEngine('openai')}
-                style={{ flex: 1, background: selectedEngine === 'openai' ? 'var(--rose)' : '' }}
+                style={{ flex: 1 }}
               >
                 OpenAI Engine
               </button>
             </div>
 
-            {selectedEngine === 'gemini' ? (
-              <input type="password" className="api-gate-input" placeholder="Gemini API キーを入力..."
-                value={geminiKeyInput} onChange={(e) => setGeminiKeyInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleApiKeySubmit()} />
-            ) : (
-              <input type="password" className="api-gate-input" placeholder="OpenAI API キーを入力..."
-                value={openAIKeyInput} onChange={(e) => setOpenAIKeyInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleApiKeySubmit()} />
-            )}
+            <input type="password" className="api-gate-input" placeholder="APIキーを入力すると自動判別します"
+              value={apiKeyInput} onChange={handleApiKeyChange}
+              onKeyDown={(e) => e.key === 'Enter' && handleApiKeySubmit()} />
             
-            <button className="api-gate-btn" onClick={handleApiKeySubmit}>🔓 起動する</button>
+            <button className="api-gate-btn" onClick={handleApiKeySubmit} disabled={!selectedEngine}>
+              {selectedEngine ? `🔓 ${selectedEngine === 'gemini' ? 'Gemini' : 'OpenAI'} エンジンで起動` : '🔓 APIキーを入力してください'}
+            </button>
             <p className="api-gate-note">※ APIキーはセッション限定（ブラウザに保存されません）<br/>※Gemini: ai.google.dev / OpenAI: platform.openai.com</p>
           </div>
         </div>
@@ -438,8 +441,8 @@ const App = () => {
                 value={getActiveEngine()} 
                 onChange={(e) => {
                   const newEngine = e.target.value;
-                  if (newEngine === 'gemini' && !geminiKeyInput) alert("Gemini APIキーが未入力です（リロードして入力してください）");
-                  else if (newEngine === 'openai' && !openAIKeyInput) alert("OpenAI APIキーが未入力です（リロードして入力してください）");
+                  if (newEngine === 'gemini' && getActiveEngine() !== 'gemini') alert("Gemini APIキーを入力して再起動してください");
+                  else if (newEngine === 'openai' && getActiveEngine() !== 'openai') alert("OpenAI APIキーを入力して再起動してください");
                   else {
                     setActiveEngine(newEngine);
                     showStatus(`⚙️ エンジンを ${getEngineDisplayName()} に切り替えました`, true);
