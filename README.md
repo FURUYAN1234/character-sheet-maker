@@ -1,6 +1,6 @@
 # AIキャラクターシートメーカー / AI Character Sheet Maker
 
-**v1.1.6-alpha** — Gemini API を使ったAIキャラクターシート自動生成ツール
+**v1.1.7-alpha** — Gemini API を使ったAIキャラクターシート自動生成ツール
 
 > **[[Nano Banana 2 and ChatGPT Images 2.0 Powered Super AI 4-koma System](https://github.com/FURUYAN1234/nano-banana-pro/blob/main/README.md)](https://github.com/FURUYAN1234/nano-banana-pro) 連携対応**
 > 生成されたキャラクターシートを[[Nano Banana 2 and ChatGPT Images 2.0 Powered Super AI 4-koma System](https://github.com/FURUYAN1234/nano-banana-pro/blob/main/README.md)](https://github.com/FURUYAN1234/nano-banana-pro) の OCR で読み取り、マンガ制作の幅を広げることができます。
@@ -195,6 +195,9 @@ character_sheet/
 ---
 
 ## 📋 バージョン履歴 / Changelog
+
+### v1.1.7-alpha (2026-05-18)
+- **[Fix]** 起動用バッチファイル(`start_character_sheet_app.bat`)の修正と起動プロセスの安定性向上 / Fixed and stabilized the startup batch script.
 
 ### v1.1.6-alpha (2026-05-02)
 - **[Feature]** 「性別・属性」項目を純粋な「性別」とファンタジー用の「種族・属性」の2つに完全分離し、設定の自由度とAIの認識精度を向上 / Split "Gender/Attribute" into separate "Sex" and "Species" fields for better combination freedom and AI accuracy.
