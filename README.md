@@ -1,6 +1,6 @@
 # AIキャラクターシートメーカー / AI Character Sheet Maker
 
-**v1.2.1-alpha** — Gemini & OpenAI (ChatGPT) 両対応のAIキャラクターシート自動生成ツール
+**v1.2.2-alpha** — Gemini & OpenAI (ChatGPT) 両対応のAIキャラクターシート自動生成ツール
 
 > **[[Nano Banana 2 and ChatGPT Images 2.0 Powered Super AI 4-koma System](https://github.com/FURUYAN1234/nano-banana-pro/blob/main/README.md)](https://github.com/FURUYAN1234/nano-banana-pro) 連携対応**
 > 生成されたキャラクターシートを[[Nano Banana 2 and ChatGPT Images 2.0 Powered Super AI 4-koma System](https://github.com/FURUYAN1234/nano-banana-pro/blob/main/README.md)](https://github.com/FURUYAN1234/nano-banana-pro) の OCR で読み取り、マンガ制作の幅を広げることができます。
@@ -202,6 +202,9 @@ character_sheet/
 ---
 
 ## 📋 バージョン履歴 / Changelog
+
+### v1.2.2-alpha (2026-05-18)
+- **[Feature]** API稼働中（特に時間のかかる画像生成中）に、ステータスバーと画像パネルで「経過秒数」を1秒単位でリアルタイム表示する機能を追加 / Added a real-time elapsed seconds counter to the API status bar to improve wait-time UX during image generation.
 
 ### v1.2.1-alpha (2026-05-18)
 - **[Fix]** OpenAI(gpt-image-2)の画像生成仕様に合わせてAPIパラメータ(response_format)の最適化を実施 / Fixed OpenAI (gpt-image-2) image generation parameters to prevent 400 response_format error.

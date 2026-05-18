@@ -1,13 +1,13 @@
 // AIキャラクターシートメーカー V1.0 — メインアプリ
 // 完全独立アプリ。他アプリとは混ぜない。
-import React, { useState, useMemo, useCallback, useRef } from 'react';
+import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import './App.css';
 import { OPTIONS, DEFAULT_FORM_DATA, BACKUP_DATA, SECTIONS, PRESETS } from './lib/options';
 import { buildPrompt } from './lib/prompt';
 import { generateFieldValueAI, generateGachaTextsAI, generateImageAI, setActiveEngine, getEngineDisplayName, setApiKeys, getActiveEngine } from './lib/ai-provider';
 import FieldInput from './components/FieldInput';
 
-const SYSTEM_VERSION = "1.2.1";
+const SYSTEM_VERSION = "1.2.2";
 const APP_NAME = "AIキャラクターシートメーカー";
 
 // === スマート連携テーブル ===
@@ -46,6 +46,7 @@ const App = () => {
   const [isImageGenerating, setIsImageGenerating] = useState(false);
   const [fieldGenerating, setFieldGenerating] = useState(null);
   const [statusMessage, setStatusMessage] = useState('');
+  const [elapsedTime, setElapsedTime] = useState(0);
 
   // === 画像結果 ===
   const [generatedImage, setGeneratedImage] = useState(null);
@@ -355,6 +356,16 @@ const App = () => {
 
   const isWorking = isGenerating || isImageGenerating || fieldGenerating !== null;
 
+  useEffect(() => {
+    let timer;
+    if (isWorking) {
+      timer = setInterval(() => setElapsedTime(prev => prev + 1), 1000);
+    } else {
+      setElapsedTime(0);
+    }
+    return () => clearInterval(timer);
+  }, [isWorking]);
+
   // === レンダリング ===
   return (
     <div className="app-container">
@@ -420,7 +431,7 @@ const App = () => {
           {/* ステータス（生成中は持続表示） */}
           {statusMessage && (
             <div className="inline-status">
-              <span>{statusMessage}</span>
+              <span>{statusMessage} {isWorking ? `[${elapsedTime}s]` : ''}</span>
               <button onClick={() => setStatusMessage('')}>✕</button>
             </div>
           )}
@@ -521,7 +532,7 @@ const App = () => {
               <div className="image-panel">
                 <div className="image-panel-header">
                 <p className="image-panel-title">🎨 生成結果</p>
-                {isImageGenerating && <span className="animate-pulse" style={{ fontSize: '0.7rem', color: 'var(--amber)' }}>◉ 画像鋳造中...</span>}
+                {isImageGenerating && <span className="animate-pulse" style={{ fontSize: '0.7rem', color: 'var(--amber)' }}>◉ 画像鋳造中... ({elapsedTime}s)</span>}
               </div>
               {/* A/B比較タブ（画像パネル直下に配置） */}
               {compareMode && (
