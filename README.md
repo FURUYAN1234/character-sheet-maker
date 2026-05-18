@@ -1,6 +1,6 @@
 # AIキャラクターシートメーカー / AI Character Sheet Maker
 
-**v1.1.7-alpha** — Gemini API を使ったAIキャラクターシート自動生成ツール
+**v1.2.0-alpha** — Gemini & OpenAI (ChatGPT) 両対応のAIキャラクターシート自動生成ツール
 
 > **[[Nano Banana 2 and ChatGPT Images 2.0 Powered Super AI 4-koma System](https://github.com/FURUYAN1234/nano-banana-pro/blob/main/README.md)](https://github.com/FURUYAN1234/nano-banana-pro) 連携対応**
 > 生成されたキャラクターシートを[[Nano Banana 2 and ChatGPT Images 2.0 Powered Super AI 4-koma System](https://github.com/FURUYAN1234/nano-banana-pro/blob/main/README.md)](https://github.com/FURUYAN1234/nano-banana-pro) の OCR で読み取り、マンガ制作の幅を広げることができます。
@@ -78,9 +78,10 @@ Embeds additional information for OCR reading into the character sheet, improvin
 2つのスロット（A/B）で独立した設定と生成結果を管理・比較可能。
 Compare two independent character configurations side by side.
 
-### 🤖 ChatGPT image 2.0 プロンプト出力 / ChatGPT Images 2.0 Prompt Export
-キャラクターシートの設定を、ChatGPT Images 2.0 に最適化された「英語のメタプロンプト（高画質化・縦長指定・厳密な要素指定）」付きでワンクリックコピーできます。
-One-click copy of the character sheet with an English meta-prompt optimized for ChatGPT Images 2.0, including high-quality, portrait-ratio, and strict element instructions.
+### 🔄 Dual API Architecture / デュアルエンジン切り替え
+**Gemini**と**OpenAI (ChatGPT)**の2つの思考・画像生成エンジンを搭載。設定画面から用途に合わせてワンクリックで切り替えが可能です。
+- **Gemini**: 巨大なコンテキストを活かした設定の一貫性、Imagen 4.0 等による縦長キャラクターシート生成
+- **OpenAI**: GPT-4o による圧倒的な語彙力と感情豊かな自然言語生成、DALL-E 3 による高品質イラスト生成
 
 ### 🖼️ キャンバス正規化＆透かし保護 / Canvas Normalization & Watermarking
 生成された画像は、一律で **1024x1536 (アスペクト比2:3)** の高品質な縦長キャンバスに自動正規化されます。
@@ -120,10 +121,10 @@ All API keys exist only in memory during the session. No persistent storage.
 
 ### 🌍 Cloud / Browser (Deploy)
 
-1. **Get API Key**: Obtain a Gemini API key at [Google AI Studio](https://aistudio.google.com/).
-   [Google AI Studio](https://aistudio.google.com/) で Gemini API キーを取得してください。
+1. **Get API Key**: Obtain a Gemini API key at [Google AI Studio](https://aistudio.google.com/) or an OpenAI API key at [OpenAI Platform](https://platform.openai.com/).
+   [Google AI Studio](https://aistudio.google.com/) で Gemini API キー、または [OpenAI Platform](https://platform.openai.com/) で OpenAI API キーを取得してください。
 2. **Access**: Open the deployed web app.
-   Webアプリにアクセスし、APIキーを入力してスタートします。
+   Webアプリにアクセスし、使いたいエンジンのAPIキーを入力してスタートします。
    > **Demo Link / デモサイト:** [https://furuyan1234.github.io/character-sheet-maker/](https://furuyan1234.github.io/character-sheet-maker/)
 
 ### 💻 Local Launch (Windows) / ローカルでの起動 (Windows)
@@ -143,14 +144,16 @@ All API keys exist only in memory during the session. No persistent storage.
 ## 💻 Tech Stack / 技術スタック
 
 - **Frontend**: React / Vite / Vanilla CSS (Dark Mode)
-- **AI**: Google Gemini API (Text + Image generation)
-- **API Management**: Zenith Protocol (Auto-failover)
+- **AI**: Google Gemini API & OpenAI API (Text + Image generation)
+- **API Management**: Dual API Architecture / Zenith Protocol (Auto-failover)
 - **Security**: Session-only API key (no localStorage)
 
-### 🧠 Zenith Protocol（AIモデル自動切替 / Auto AI Model Fallback）
-Nano Banana 2 and ChatGPT Images 2.0 Powered Super AI 4-koma System 最新版の思想を踏襲し、APIエラー時や制限到達時に自動的に最適な次世代モデルへフォールバックする仕組み（Zenith Protocol）を搭載しています。
+### 🧠 Dual API Architecture & Zenith Protocol（AIモデル自動切替 / Auto AI Model Fallback）
+Nano Banana 2 等に導入されている「Dual API Architecture」を統合。用途に応じて Gemini と OpenAI を自由に切り替え可能です。
+また、APIエラー時や制限到達時に自動的に最適な次世代モデルへフォールバックする仕組み（Zenith Protocol）を搭載しています。
 Automatically falls back to alternative models upon API error:
 
+**【Gemini エンジン (Google)】**
 **テキスト生成 / Text Generation Fallback Pipeline**:
 1. gemini-3-flash-preview (Primary: Next-Gen)
 2. gemini-2.5-pro (Backup 1: 高品質・安定)
@@ -164,6 +167,10 @@ Automatically falls back to alternative models upon API error:
 3. imagen-4.0-fast-generate-001 (Backup 2: Fast generation)
 4. imagen-3.0-generate-001 (Fallback 1: Legacy insurance)
 5. imagen-3.0-fast-generate-001 (Fallback 2: Legacy insurance)
+
+**【OpenAI エンジン (ChatGPT)】**
+**テキスト生成**: gpt-4o -> gpt-4o-mini -> gpt-4-turbo
+**画像生成**: dall-e-3 (1024x1792 高画質化メタプロンプト自動付与)
 
 ---
 
@@ -195,6 +202,11 @@ character_sheet/
 ---
 
 ## 📋 バージョン履歴 / Changelog
+
+### v1.2.0-alpha (2026-05-18)
+- **[Major]** Dual API Architecture (Gemini & OpenAI) 統合。ChatGPTエンジンによるテキスト生成(GPT-4o)および画像生成(DALL-E 3)に対応。 / Integrated Dual API Architecture (Gemini & OpenAI). Added support for GPT-4o text generation and DALL-E 3 image generation.
+- **[Feature]** 思考エンジンのワンクリック切り替え機能を実装 / Added one-click engine switching feature.
+- **[Remove]** OpenAI APIのネイティブ対応に伴い、ChatGPT用プロンプトコピペボタンを撤去 / Removed ChatGPT prompt copy button as OpenAI API is now natively supported.
 
 ### v1.1.7-alpha (2026-05-18)
 - **[Fix]** 起動用バッチファイル(`start_character_sheet_app.bat`)の修正と起動プロセスの安定性向上 / Fixed and stabilized the startup batch script.

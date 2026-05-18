@@ -1,5 +1,5 @@
 // AIキャラクターシートメーカー — プロンプト生成ロジック V2.0
-// Gemini / Imagen 向け自然言語プロンプト（SD形式ウェイト記法を完全排除）
+// Gemini / Imagen / DALL-E 向け自然言語プロンプト（SD形式ウェイト記法を完全排除）
 
 // 画風ごとの自然言語スタイル指示
 const ART_STYLE_KEYWORDS = {
@@ -25,7 +25,7 @@ const ART_STYLE_KEYWORDS = {
 
 /**
  * フォームデータからキャラクターシート生成用プロンプトを構築
- * Gemini / Imagen 向け：自然言語のみ使用、SD形式ウェイト記法は使用しない
+ * Gemini / Imagen / DALL-E 向け：自然言語のみ使用、SD形式ウェイト記法は使用しない
  */
 export const buildPrompt = (formData) => {
   const d = formData;

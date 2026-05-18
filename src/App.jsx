@@ -4,11 +4,10 @@ import React, { useState, useMemo, useCallback, useRef } from 'react';
 import './App.css';
 import { OPTIONS, DEFAULT_FORM_DATA, BACKUP_DATA, SECTIONS, PRESETS } from './lib/options';
 import { buildPrompt } from './lib/prompt';
-import { setApiKey, getApiKey, generateFieldValue, generateGachaTexts } from './lib/gemini';
-import { generateImage } from './lib/imagen';
+import { generateFieldValueAI, generateGachaTextsAI, generateImageAI, setActiveEngine, getEngineDisplayName, setApiKeys, getActiveEngine } from './lib/ai-provider';
 import FieldInput from './components/FieldInput';
 
-const SYSTEM_VERSION = "1.1.7";
+const SYSTEM_VERSION = "1.2.0";
 const APP_NAME = "AIキャラクターシートメーカー";
 
 // === スマート連携テーブル ===
@@ -32,7 +31,9 @@ const ERA_COSTUME_MAP = {
 
 const App = () => {
   // === API認証 ===
-  const [apiKeyInput, setApiKeyInput] = useState('');
+  const [geminiKeyInput, setGeminiKeyInput] = useState('');
+  const [openAIKeyInput, setOpenAIKeyInput] = useState('');
+  const [selectedEngine, setSelectedEngine] = useState('gemini');
   const [isUnlocked, setIsUnlocked] = useState(false);
 
   // === フォームデータ ===
@@ -40,7 +41,6 @@ const App = () => {
   const [lockedFields, setLockedFields] = useState({});
   const [collapsedSections, setCollapsedSections] = useState({});
   const [copied, setCopied] = useState(false);
-  const [chatGptCopied, setChatGptCopied] = useState(false);
 
   // === 生成状態（APIは明示操作のみ） ===
   const [isGenerating, setIsGenerating] = useState(false);
@@ -67,8 +67,19 @@ const App = () => {
 
   // === API認証 ===
   const handleApiKeySubmit = () => {
-    const key = apiKeyInput.trim();
-    if (key.length > 10) { setApiKey(key); setIsUnlocked(true); }
+    const gKey = geminiKeyInput.trim();
+    const oKey = openAIKeyInput.trim();
+    if (selectedEngine === 'gemini' && gKey.length > 10) {
+      setApiKeys(gKey, oKey);
+      setActiveEngine('gemini');
+      setIsUnlocked(true);
+    } else if (selectedEngine === 'openai' && oKey.length > 10) {
+      setApiKeys(gKey, oKey);
+      setActiveEngine('openai');
+      setIsUnlocked(true);
+    } else {
+      alert(`${selectedEngine === 'gemini' ? 'Gemini' : 'OpenAI'} APIキーを正しく入力してください。`);
+    }
   };
 
   // === 現在のフォームデータ ===
@@ -176,7 +187,7 @@ const App = () => {
     setImageError('');
     showStatus('🎨 画像生成中...');
     try {
-      const result = await generateImage(generatedPrompt, (s) => showStatus(s));
+      const result = await generateImageAI(generatedPrompt, (s) => showStatus(s));
       const rawSrc = `data:image/png;base64,${result.base64Img}`;
       // ウォーターマーク焼き込み
       const imgSrc = await applyWatermark(rawSrc);
@@ -197,7 +208,7 @@ const App = () => {
     setFieldGenerating(fieldKey);
     showStatus(`🎲 ${fieldLabel} をAI生成中...`);
     try {
-      const value = await generateFieldValue(fieldKey, fieldLabel, currentFormData, (s) => showStatus(s));
+      const value = await generateFieldValueAI(fieldKey, fieldLabel, currentFormData, (s) => showStatus(s));
       updateField(fieldKey, value);
       showStatus(`✅ ${fieldLabel}: ${value}`, true);
     } catch (err) {
@@ -260,7 +271,7 @@ const App = () => {
 
     // Step 3: AIでテキスト系を生成
     showStatus('🤖 AIが名前・台詞を生成中...');
-    const aiResult = await generateGachaTexts(newData, (s) => showStatus(s));
+    const aiResult = await generateGachaTextsAI(newData, (s) => showStatus(s));
 
     const genderKey = (newData.sex === '男性')
       ? 'male'
@@ -292,24 +303,6 @@ const App = () => {
   const copyPrompt = () => {
     navigator.clipboard.writeText(generatedPrompt).then(() => {
       setCopied(true); setTimeout(() => setCopied(false), 2000);
-    });
-  };
-
-  const copyForChatGPT = () => {
-    const gptPrompt = `Please generate an illustration of a character perfectly reflecting the settings below.
-Make it a masterpiece, highest quality, and highly detailed anime style.
-
-# Image Generation Instructions:
-- Aspect ratio: Vertical/Portrait.
-- Composition: Full body or upper body (from thighs up).
-- Strictly include all elements mentioned in the "Character Settings" (hairstyle, clothing, accessories, colors, etc.) without missing any details.
-- Automatically generate a background that fits the character's attributes and world setting.
-
-# Character Settings:
-${generatedPrompt}`;
-
-    navigator.clipboard.writeText(gptPrompt).then(() => {
-      setChatGptCopied(true); setTimeout(() => setChatGptCopied(false), 2000);
     });
   };
 
@@ -365,11 +358,36 @@ ${generatedPrompt}`;
             <div className="api-gate-icon">⚒️</div>
             <h1 className="api-gate-title">{APP_NAME}</h1>
             <p className="api-gate-sub">V{SYSTEM_VERSION} — AI Character Sheet Maker</p>
-            <input type="password" className="api-gate-input" placeholder="Gemini API キーを入力..."
-              value={apiKeyInput} onChange={(e) => setApiKeyInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleApiKeySubmit()} />
+            
+            <div className="engine-tabs" style={{ display: 'flex', gap: '8px', marginBottom: '16px', justifyContent: 'center' }}>
+              <button 
+                className={`compare-tab ${selectedEngine === 'gemini' ? 'active-a' : ''}`}
+                onClick={() => setSelectedEngine('gemini')}
+                style={{ flex: 1 }}
+              >
+                Gemini Engine
+              </button>
+              <button 
+                className={`compare-tab ${selectedEngine === 'openai' ? 'active-b' : ''}`}
+                onClick={() => setSelectedEngine('openai')}
+                style={{ flex: 1, background: selectedEngine === 'openai' ? 'var(--rose)' : '' }}
+              >
+                OpenAI Engine
+              </button>
+            </div>
+
+            {selectedEngine === 'gemini' ? (
+              <input type="password" className="api-gate-input" placeholder="Gemini API キーを入力..."
+                value={geminiKeyInput} onChange={(e) => setGeminiKeyInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleApiKeySubmit()} />
+            ) : (
+              <input type="password" className="api-gate-input" placeholder="OpenAI API キーを入力..."
+                value={openAIKeyInput} onChange={(e) => setOpenAIKeyInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleApiKeySubmit()} />
+            )}
+            
             <button className="api-gate-btn" onClick={handleApiKeySubmit}>🔓 起動する</button>
-            <p className="api-gate-note">※ APIキーはセッション限定（ブラウザに保存されません）<br/>Google AI Studio: ai.google.dev から取得</p>
+            <p className="api-gate-note">※ APIキーはセッション限定（ブラウザに保存されません）<br/>※Gemini: ai.google.dev / OpenAI: platform.openai.com</p>
           </div>
         </div>
       )}
@@ -413,7 +431,27 @@ ${generatedPrompt}`;
                 </button>
               ))}
             </div>
-            <div className="toolbar-right"></div>
+            <div className="toolbar-right" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 'bold' }}>⚙️ 思考エンジン:</span>
+              <select 
+                className="form-select" 
+                value={getActiveEngine()} 
+                onChange={(e) => {
+                  const newEngine = e.target.value;
+                  if (newEngine === 'gemini' && !geminiKeyInput) alert("Gemini APIキーが未入力です（リロードして入力してください）");
+                  else if (newEngine === 'openai' && !openAIKeyInput) alert("OpenAI APIキーが未入力です（リロードして入力してください）");
+                  else {
+                    setActiveEngine(newEngine);
+                    showStatus(`⚙️ エンジンを ${getEngineDisplayName()} に切り替えました`, true);
+                    setSelectedEngine(newEngine); // this triggers re-render
+                  }
+                }}
+                style={{ padding: '4px 8px', width: 'auto', background: 'var(--bg-card)', fontSize: '0.85rem' }}
+              >
+                <option value="gemini">Gemini (Google)</option>
+                <option value="openai">ChatGPT (OpenAI)</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -461,15 +499,8 @@ ${generatedPrompt}`;
                     <p className="prompt-subtitle">パラメータ変更で即時更新（API呼び出しなし）</p>
                   </div>
                 </div>
-                <div className="prompt-actions" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <button className="btn-copy" onClick={copyPrompt}>{copied ? '✓ コピー済' : '📋 標準コピー'}</button>
-                    <button className="btn-copy-chatgpt" onClick={copyForChatGPT}>{chatGptCopied ? '✓ コピー済' : '🤖 ChatGPT image 2.0用'}</button>
-                  </div>
-                  <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textAlign: 'right', lineHeight: '1.4' }}>
-                    <div>※<strong style={{color:'var(--text-secondary)'}}>標準コピー</strong>: 設定テキストのみ（Geminiや他画像生成AI向け）</div>
-                    <div>※<strong style={{color:'var(--emerald)'}}>ChatGPT image 2.0用</strong>: 高画質化・縦長指定のメタ指示を自動付与してコピーします</div>
-                  </div>
+                <div className="prompt-actions">
+                  <button className="btn-copy" onClick={copyPrompt}>{copied ? '✓ コピー済' : '📋 設定テキストをコピー'}</button>
                 </div>
               </div>
               <div className="prompt-content"><pre className="prompt-text">{generatedPrompt}</pre></div>
