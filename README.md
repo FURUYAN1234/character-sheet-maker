@@ -1,6 +1,6 @@
 # AIキャラクターシートメーカー / AI Character Sheet Maker
 
-**v1.2.5-alpha** — Gemini & OpenAI (ChatGPT) 両対応のAIキャラクターシート自動生成ツール
+**v1.2.6-alpha** — Gemini & OpenAI (ChatGPT) 両対応のAIキャラクターシート自動生成ツール
 
 > **[[Nano Banana 2 and ChatGPT Images 2.0 Powered Super AI 4-koma System](https://github.com/FURUYAN1234/nano-banana-pro/blob/main/README.md)](https://github.com/FURUYAN1234/nano-banana-pro) 連携対応**
 > 生成されたキャラクターシートを[[Nano Banana 2 and ChatGPT Images 2.0 Powered Super AI 4-koma System](https://github.com/FURUYAN1234/nano-banana-pro/blob/main/README.md)](https://github.com/FURUYAN1234/nano-banana-pro) の OCR で読み取り、マンガ制作の幅を広げることができます。
@@ -100,6 +100,8 @@ Compare two independent character configurations side by side.
 
 * **Real-time Autonomous Prompt Assembly**:
   ユーザーがUI上のパラメータを変更するたびに、APIを消費することなく、ブラウザ内で即座に最適化されたプロンプトが組み上げられます。
+* **Visual Noise Reduction (設定画に特化したノイズ排除)**:
+  ChatGPT（DALL-E 3）やGemini等の高機能モデルが意図せず付与してしまう「過剰な光の粒子（キラキラ）」「泥濘んだテクスチャ」「過度な立体感・ハイライト」をプロンプトレベルで強力に抑制し、後段のAI（Image-to-Imageやキャラクターリファレンス等）の参照画像として扱いやすい、クリーンでソリッドな塗りと線画を強制出力します。
 * **Smart Linkage Engine (スマート連携機能)**:
   「全項目ランダム生成（ガチャ）」を実行した際、完全に無作為な設定にするのではなく、「女性キャラなのに立派な髭が生える」「幼児キャラなのに筋骨隆々になる」といった論理的破綻を未然に防ぐ最小限の相関ルール（連携マップ）を搭載しています。
 * **Context-Aware Text Generation (文脈依存AIテキスト生成)**:
@@ -202,6 +204,9 @@ character_sheet/
 ---
 
 ## 📋 バージョン履歴 / Changelog
+
+### v1.2.6-alpha (2026-05-19)
+- **[Documentation]** README.mdの「固有アーキテクチャの要点」セクションに、画像生成時のノイズ軽減機能（Visual Noise Reduction）の詳細説明を追記 / Added detailed explanation of the Visual Noise Reduction feature to the Architecture Highlights section in README.md.
 
 ### v1.2.5-alpha (2026-05-19)
 - **[Fix]** ChatGPT等での画像生成時において、不要な光の粒子（キラキラ）、泥濘んだテクスチャ、過剰なハイライト（テカテカ）を排除し、設定画として最適なクリーンな塗りと線画を強制するノイズ軽減の指示を実装 / Implemented strict noise reduction constraints to eliminate unwanted sparkling, muddy textures, and over-rendered glossy lighting, ensuring clean and optimal character reference sheets.
