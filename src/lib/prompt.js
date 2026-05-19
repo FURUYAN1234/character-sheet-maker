@@ -118,5 +118,6 @@ ${d.details ? `\n## 8. ADDITIONAL DETAILS\n${d.details}.` : ''}
 - Character consistency: All views must depict the exact same character with identical features.
 - No extra borders, grid lines, or stray marks.
 - Do NOT write any English tags, parameter values, or weight numbers anywhere in the image.
+- VISUAL NOISE REDUCTION: Absolutely NO sparkling effects, NO floating glitter, NO muddy textures, NO film grain, and NO over-rendered glossy lighting. Keep shading clean and solid.
 `.trim();
 };

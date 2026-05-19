@@ -33,10 +33,10 @@ export const generateImage = async (prompt, onStatusUpdate) => {
     try {
       console.log(`[ImageGen] Attempting: ${modelId}`);
       attemptedModels.push(modelId);
-      if (onStatusUpdate) onStatusUpdate(`> [画像] ${modelId} で鋳造開始...`);
+      if (onStatusUpdate) onStatusUpdate(`> [画像] ${modelId} で鋳造開始... (2〜5分)`);
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 120000); // 120秒タイムアウト
+      const timeoutId = setTimeout(() => controller.abort(), 300000); // 300秒タイムアウト
 
       let response, data;
 
@@ -103,7 +103,7 @@ export const generateImage = async (prompt, onStatusUpdate) => {
       }
     } catch (e) {
       let msg = e.message;
-      if (e.name === 'AbortError') msg = "Timeout (120s)";
+      if (e.name === 'AbortError') msg = "Timeout (300s)";
       console.warn(`[ImageGen] ${modelId} failed:`, msg);
       lastError = new Error(msg);
       if (onStatusUpdate) onStatusUpdate(`> [画像] ${modelId} 失敗: ${msg.substring(0, 60)}`);

@@ -1,6 +1,6 @@
 # AIキャラクターシートメーカー / AI Character Sheet Maker
 
-**v1.2.4-alpha** — Gemini & OpenAI (ChatGPT) 両対応のAIキャラクターシート自動生成ツール
+**v1.2.5-alpha** — Gemini & OpenAI (ChatGPT) 両対応のAIキャラクターシート自動生成ツール
 
 > **[[Nano Banana 2 and ChatGPT Images 2.0 Powered Super AI 4-koma System](https://github.com/FURUYAN1234/nano-banana-pro/blob/main/README.md)](https://github.com/FURUYAN1234/nano-banana-pro) 連携対応**
 > 生成されたキャラクターシートを[[Nano Banana 2 and ChatGPT Images 2.0 Powered Super AI 4-koma System](https://github.com/FURUYAN1234/nano-banana-pro/blob/main/README.md)](https://github.com/FURUYAN1234/nano-banana-pro) の OCR で読み取り、マンガ制作の幅を広げることができます。
@@ -202,6 +202,10 @@ character_sheet/
 ---
 
 ## 📋 バージョン履歴 / Changelog
+
+### v1.2.5-alpha (2026-05-19)
+- **[Fix]** ChatGPT等での画像生成時において、不要な光の粒子（キラキラ）、泥濘んだテクスチャ、過剰なハイライト（テカテカ）を排除し、設定画として最適なクリーンな塗りと線画を強制するノイズ軽減の指示を実装 / Implemented strict noise reduction constraints to eliminate unwanted sparkling, muddy textures, and over-rendered glossy lighting, ensuring clean and optimal character reference sheets.
+- **[Feature]** 高画質生成時の待機時間増加に伴い、GeminiおよびOpenAI両エンジンの画像生成タイムアウト上限を300秒（5分）に延長し、UI表示も対応 / Extended the image generation timeout limit to 300 seconds (5 minutes) for both Gemini and OpenAI engines to accommodate high-quality rendering wait times.
 
 ### v1.2.4-alpha (2026-05-19)
 - **[Feature]** API切替モーダルを廃止し、起動画面にAPI切替およびキー取得リンクを統合。UI/UXの改善と統一化を実施 / Unified API switching UI and added API key acquisition links to the initial launch screen.

@@ -162,10 +162,10 @@ Automatically generate a background that fits the character's attributes and wor
 ${prompt}`;
 
   try {
-    if (onStatusUpdate) onStatusUpdate(`> [画像] ${IMAGE_MODEL_ID} で鋳造開始... (2〜4分)`);
+    if (onStatusUpdate) onStatusUpdate(`> [画像] ${IMAGE_MODEL_ID} で鋳造開始... (2〜5分)`);
     
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 240000); // 240秒
+    const timeoutId = setTimeout(() => controller.abort(), 300000); // 300秒
 
     const response = await fetch("https://api.openai.com/v1/images/generations", {
       method: "POST",
@@ -198,7 +198,7 @@ ${prompt}`;
     throw new Error("APIレスポンスに画像データが含まれていませんでした。");
   } catch (err) {
     let msg = err.message;
-    if (err.name === 'AbortError') msg = "Timeout (240s)";
+    if (err.name === 'AbortError') msg = "Timeout (300s)";
     console.warn(`[ImageGen] ${IMAGE_MODEL_ID} failed:`, msg);
     
     if (msg.includes("safety") || msg.includes("SAFETY") || msg.includes("content_policy")) {
