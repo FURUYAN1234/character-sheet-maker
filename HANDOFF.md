@@ -1,24 +1,20 @@
 # HANDOFF (Character Sheet Maker → Codex)
 
 ## Snapshot Date
-2026-04-24T10:27:00+09:00
+2026-05-23T20:39:00+09:00
 
 ## Current Status
-- ✅ **v1.1.3** — 安定稼働中（GitHub Pages デプロイ済み）
+- ✅ **v1.2.7** — OpenAIモデル最適化の適用完了（ローカルビルド検証済み）
 - ブランチ: `main`
-- 未コミット変更: なし（Working tree clean）
-- 直近5コミット:
-  - `0fb0959` Update README.md
-  - `5d79bf3` Update README to reflect AI tool enhancements
-  - `0829b4b` Update README.md
-  - `965f517` Update README to reflect new system version
-  - `ee86204` Update README for Nano Banana 2 integration
+- 未コミット変更: あり（`openai.js`, `App.jsx`, `package.json`, `index.html`, `README.md` の変更）
 
 ## Architecture & Key Files
 | 用途 | ファイル |
 |------|----------|
 | メインUI | `src/App.jsx` |
-| Gemini APIクライアント | `src/` 配下の該当ファイル |
+| Gemini APIクライアント | `src/lib/gemini.js` |
+| OpenAI APIクライアント | `src/lib/openai.js` |
+| 画像生成クライアント | `src/lib/imagen.js` |
 | ビルド設定 | `vite.config.js` (base: GH Pages用設定 — 変更禁止) |
 
 ## Rule Enforcement (重要)
@@ -26,15 +22,16 @@
 - デプロイ先: GitHub Pages のみ（HF Spaces は対象外）
 - `vite.config.js` の `base` を推測で変更しない
 
-## Done (前回作業)
-- `AGENTS.md`, `docs/project_standards.md`, `docs/deploy.md` の整備完了
-- README の AI ツール強化反映
+## Done (今回作業)
+- **OpenAI テキスト生成モデルの最新化 (提案A)**: `gpt-4.1`系列の新モデルおよびフォールバック順序（`gpt-4.1` -> `gpt-4.1-mini` -> `gpt-4.1-nano` -> `gpt-4o`）を `src/lib/openai.js` に実装。
+- **バージョン同期**: 各ファイルのバージョンを `1.2.7` に同期（`package.json`, `src/App.jsx`, `index.html`, `README.md`）。
+- **ローカルビルド検証**: `npm run build` にてビルドエラーがないことを確認。
 
 ## Remaining Tasks
-- 特になし（ユーザーからの新たな指示を待機中）
+- コミットとプッシュ（またはユーザー指示によるデプロイの実行）。
 
 ## Verification State
-- GitHub Pages デプロイ済み (v1.1.3)
+- ローカルビルド確認済み。
 
 ## Risks
 なし
@@ -84,3 +81,4 @@ This workspace root app is an active product app and must not be treated as a sc
 ### Multi-Agent / Multi-PC Guardrail
 - These protection rules apply equally in Codex and Antigravity.
 - Opening the correct folder is required but not sufficient; agents must still respect the protected-file and separate-subfolder rules above.
+

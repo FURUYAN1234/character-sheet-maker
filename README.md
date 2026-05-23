@@ -1,6 +1,6 @@
 # AIキャラクターシートメーカー / AI Character Sheet Maker
 
-**v1.2.6-alpha** — Gemini & OpenAI (ChatGPT) 両対応のAIキャラクターシート自動生成ツール
+**v1.2.7** — Gemini & OpenAI (ChatGPT) 両対応のAIキャラクターシート自動生成ツール
 
 > **[[Nano Banana 2 and ChatGPT Images 2.0 Powered Super AI 4-koma System](https://github.com/FURUYAN1234/nano-banana-pro/blob/main/README.md)](https://github.com/FURUYAN1234/nano-banana-pro) 連携対応**
 > 生成されたキャラクターシートを[[Nano Banana 2 and ChatGPT Images 2.0 Powered Super AI 4-koma System](https://github.com/FURUYAN1234/nano-banana-pro/blob/main/README.md)](https://github.com/FURUYAN1234/nano-banana-pro) の OCR で読み取り、マンガ制作の幅を広げることができます。
@@ -171,7 +171,7 @@ Automatically falls back to alternative models upon API error:
 5. imagen-3.0-fast-generate-001 (Fallback 2: Legacy insurance)
 
 **【OpenAI エンジン (ChatGPT)】**
-**テキスト生成**: gpt-4o -> gpt-4o-mini -> gpt-4-turbo
+**テキスト生成**: gpt-4.1 -> gpt-4.1-mini -> gpt-4.1-nano -> gpt-4o
 **画像生成**: dall-e-3 (1024x1792 高画質化メタプロンプト自動付与)
 
 ---
@@ -205,50 +205,53 @@ character_sheet/
 
 ## 📋 バージョン履歴 / Changelog
 
-### v1.2.6-alpha (2026-05-19)
+### v1.2.7 (2026-05-23)
+- **[Feature]** OpenAIのテキスト生成モデルを最新化し、フォールバック順序にgpt-4.1系列を導入 / Upgraded OpenAI text generation models and integrated gpt-4.1 series into the fallback pipeline.
+
+### v1.2.6 (2026-05-19)
 - **[Documentation]** README.mdの「固有アーキテクチャの要点」セクションに、画像生成時のノイズ軽減機能（Visual Noise Reduction）の詳細説明を追記 / Added detailed explanation of the Visual Noise Reduction feature to the Architecture Highlights section in README.md.
 
-### v1.2.5-alpha (2026-05-19)
+### v1.2.5 (2026-05-19)
 - **[Fix]** ChatGPT等での画像生成時において、不要な光の粒子（キラキラ）、泥濘んだテクスチャ、過剰なハイライト（テカテカ）を排除し、設定画として最適なクリーンな塗りと線画を強制するノイズ軽減の指示を実装 / Implemented strict noise reduction constraints to eliminate unwanted sparkling, muddy textures, and over-rendered glossy lighting, ensuring clean and optimal character reference sheets.
 - **[Feature]** 高画質生成時の待機時間増加に伴い、GeminiおよびOpenAI両エンジンの画像生成タイムアウト上限を300秒（5分）に延長し、UI表示も対応 / Extended the image generation timeout limit to 300 seconds (5 minutes) for both Gemini and OpenAI engines to accommodate high-quality rendering wait times.
 
-### v1.2.4-alpha (2026-05-19)
+### v1.2.4 (2026-05-19)
 - **[Feature]** API切替モーダルを廃止し、起動画面にAPI切替およびキー取得リンクを統合。UI/UXの改善と統一化を実施 / Unified API switching UI and added API key acquisition links to the initial launch screen.
 
-### v1.2.3-alpha (2026-05-18)
+### v1.2.3 (2026-05-18)
 - **[Deploy]** System maintenance and deployment pipeline execution. / システムメンテナンスおよびデプロイパイプラインの実行。
 
-### v1.2.2-alpha (2026-05-18)
+### v1.2.2 (2026-05-18)
 - **[Feature]** API稼働中（特に時間のかかる画像生成中）に、ステータスバーと画像パネルで「経過秒数」を1秒単位でリアルタイム表示する機能を追加 / Added a real-time elapsed seconds counter to the API status bar to improve wait-time UX during image generation.
 
-### v1.2.1-alpha (2026-05-18)
+### v1.2.1 (2026-05-18)
 - **[Fix]** OpenAI(gpt-image-2)の画像生成仕様に合わせてAPIパラメータ(response_format)の最適化を実施 / Fixed OpenAI (gpt-image-2) image generation parameters to prevent 400 response_format error.
 - **[Feature]** APIキー入力時の自動判別機能（sk- / AIza）を追加実装し、UI/UXを向上 / Added automatic API key detection to streamline engine selection.
 - **[Fix]** OpenAI選択時のUIタブの視認性を改善（背景色と同化する不具合を修正）/ Fixed poor visibility on the OpenAI tab selection.
 
-### v1.2.0-alpha (2026-05-18)
+### v1.2.0 (2026-05-18)
 - **[Major]** Dual API Architecture (Gemini & OpenAI) 統合。ChatGPTエンジンによるテキスト生成(GPT-4o)および画像生成(DALL-E 3)に対応。 / Integrated Dual API Architecture (Gemini & OpenAI). Added support for GPT-4o text generation and DALL-E 3 image generation.
 - **[Feature]** 思考エンジンのワンクリック切り替え機能を実装 / Added one-click engine switching feature.
 - **[Remove]** OpenAI APIのネイティブ対応に伴い、ChatGPT用プロンプトコピペボタンを撤去 / Removed ChatGPT prompt copy button as OpenAI API is now natively supported.
 
-### v1.1.7-alpha (2026-05-18)
+### v1.1.7 (2026-05-18)
 - **[Fix]** 起動用バッチファイル(`start_character_sheet_app.bat`)の修正と起動プロセスの安定性向上 / Fixed and stabilized the startup batch script.
 
-### v1.1.6-alpha (2026-05-02)
+### v1.1.6 (2026-05-02)
 - **[Feature]** 「性別・属性」項目を純粋な「性別」とファンタジー用の「種族・属性」の2つに完全分離し、設定の自由度とAIの認識精度を向上 / Split "Gender/Attribute" into separate "Sex" and "Species" fields for better combination freedom and AI accuracy.
 - **[Feature]** ランダム生成時に、選択された性別に基づいて口調や体型・声質などが自動で相関する「スマート連携（Story Maker準拠）」を追加実装 / Implemented "Smart Linkage" (Story Maker style) during random generation, statistically correlating speech style, body build, and voice type based on the selected sex.
 
-### v1.1.4-alpha (2026-04-27)
+### v1.1.4 (2026-04-27)
 - **[Feature]** ChatGPT Images 2.0 向けの高画質化・最適化指示文付きプロンプトのコピペボタンを追加 / Added a copy button for ChatGPT Images 2.0 that includes high-quality and optimization instructions.
 
-### v1.1.3-alpha (2026-04-23)
+### v1.1.3 (2026-04-23)
 - **[Docs]** Nano Banana 2 and ChatGPT Images 2.0 Powered Super AI 4-koma Systemのドキュメントに準拠し、最新のアーキテクチャやシステム仕様に合わせてREADMEを大幅刷新 / Comprehensively updated README to reflect modern architecture and align with Nano Banana 2 and ChatGPT Images 2.0 Powered Super AI 4-koma System documentation standards.
 
-### v1.1.0-alpha
+### v1.1.0
 - **[Major]** Gemini 3.x世代モデル及びImagen 4.0モデルをプライマリとするZenith Protocolへ移行 / Upgraded Zenith Protocol to prioritize Gemini 3.x and Imagen 4.0 models.
 - **[Feature]** 1024x1536（アスペクト比2:3）へのキャンバス自動正規化および来歴証明用ウォーターマークの自動焼き込み機能を追加 / Added 1024x1536 (2:3) canvas normalization and automated provenance watermarking.
 
-### v1.0.0-alpha
+### v1.0.0
 - 🆕 初回リリース / Initial release
 
 ---
