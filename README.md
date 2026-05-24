@@ -9,6 +9,8 @@
 
 ## 🚀 Overview / 概要
 
+[!['AI_Creative_Studio'](https://github.com/user-attachments/assets/d9b97ee9-5051-4f99-8bd3-fb82967d5c12)](https://youtu.be/Ik59dL_zG1s?si=VduXBkmCTGfz51aJ)
+
 AIが「キャラクター設計→パラメータ決定→ビジュアル生成」を一貫して行う、実験的キャラクターシート製造ツールです。
 An experimental character sheet generator where AI handles everything from character design to parameter selection to visual generation.
 
