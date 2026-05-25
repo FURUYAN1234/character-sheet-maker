@@ -85,9 +85,13 @@ Display the following information as styled Japanese typography at the top of th
   ■氏名：${finalName}${d.nickname ? ` 【${d.nickname}】` : ''}
   ■属性：${d.sex} / ${d.species} / ${d.ageGroup} / ${d.ethnicity}
   ■身体：${d.height} / ${d.weight} / ${d.bodyBuild}(${d.muscleType})
-  ■精神：${d.personality} / 好き：${d.likes} / 嫌い：${d.dislikes}
-  ■言動：口癖：${d.catchphrase} / 台詞：${d.dialogue}
-  ${d.archetype ? `■役割：${d.archetype}` : ''}${d.organization ? ` / 所属：${d.organization}` : ''}${ocrBlock}
+  ■精神：${d.personality}
+  ■好き：${d.likes}
+  ■嫌い：${d.dislikes}
+  ■口癖：${d.catchphrase}
+  ■台詞：${d.dialogue}
+  ${d.archetype ? `■役割：${d.archetype}` : ''}
+  ${d.organization ? `■所属：${d.organization}` : ''}${ocrBlock}
 
 ## 4. CHARACTER BODY & FEATURES (Critical details)
 ${genderDesc} Age group: ${d.ageGroup}.

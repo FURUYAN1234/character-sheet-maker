@@ -1,6 +1,6 @@
 # AIキャラクターシートメーカー / AI Character Sheet Maker
 
-**v1.2.8** — Gemini & OpenAI (ChatGPT) 両対応のAIキャラクターシート自動生成ツール
+**v1.2.9** — Gemini & OpenAI (ChatGPT) 両対応のAIキャラクターシート自動生成ツール
 
 > **[[Nano Banana 2 and ChatGPT Images 2.0 Powered Super AI 4-koma System](https://github.com/FURUYAN1234/nano-banana-pro/blob/main/README.md)](https://github.com/FURUYAN1234/nano-banana-pro) 連携対応**
 > 生成されたキャラクターシートを[[Nano Banana 2 and ChatGPT Images 2.0 Powered Super AI 4-koma System](https://github.com/FURUYAN1234/nano-banana-pro/blob/main/README.md)](https://github.com/FURUYAN1234/nano-banana-pro) の OCR で読み取り、マンガ制作の幅を広げることができます。
@@ -207,6 +207,10 @@ character_sheet/
 ---
 
 ## 📋 バージョン履歴 / Changelog
+
+### v1.2.9 (2026-05-25)
+- **[Fix]** OpenAI画像生成において `b64_json` が欠落した際に画像URLから自動でbase64へ変換するフォールバック処理を実装。また、余白を修正するための `Math.max` 拡大による画像・文字の上下見切れ問題を解決するため、アスペクト比維持の `Math.min` 表示に復帰し、さらに文字切れ防止のためプロンプトのテキスト構造を改行化。
+- **[Feature]** OpenAI画像生成にマルチモデル・フォールバックチェーン（`gpt-image-2` ➔ `dall-e-3`）を実装し、動作の堅牢性を大幅に向上。
 
 ### v1.2.8 (2026-05-25)
 - **[Feature]** Gemini APIの非推奨化対応として、優先テキスト解析モデルを `gemini-3.5-flash` / `gemini-flash-latest` に更新し、例外発生時に `gemini-1.5-pro` 等のプロ仕様モデルへ安全にフォールバックする機構を実装。また、APIの応答ハングアップを防止するため25秒のタイムアウト制限を導入。

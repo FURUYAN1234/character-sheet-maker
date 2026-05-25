@@ -17,7 +17,10 @@ const TEXT_MODEL_IDS = [
 ];
 
 // ── 画像生成用モデル ──
-const IMAGE_MODEL_ID = "gpt-image-2";
+const IMAGE_MODEL_IDS = [
+  "gpt-image-2",
+  "dall-e-3"
+];
 
 /**
  * OpenAI Chat Completions API 共通呼び出し
@@ -180,49 +183,79 @@ Automatically generate a background that fits the character's attributes and wor
 # Character Settings:
 ${prompt}`;
 
-  try {
-    if (onStatusUpdate) onStatusUpdate(`> [画像] ${IMAGE_MODEL_ID} で鋳造開始... (2〜5分)`);
-    
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 300000); // 300秒
+  let lastError = null;
 
-    const response = await fetch("https://api.openai.com/v1/images/generations", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${currentOpenAIApiKey}`
-      },
-      body: JSON.stringify({
-        model: IMAGE_MODEL_ID,
-        prompt: dallePrompt,
-        n: 1,
-        size: "1024x1792", // 縦長
-        quality: "high"
-      }),
-      signal: controller.signal
-    });
-    clearTimeout(timeoutId);
+  for (const modelId of IMAGE_MODEL_IDS) {
+    let timeoutId = null;
+    try {
+      if (onStatusUpdate) onStatusUpdate(`> [画像] ${modelId} で鋳造開始... (2〜5分)`);
+      
+      const controller = new AbortController();
+      timeoutId = setTimeout(() => controller.abort(), 300000); // 300秒
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(`OpenAI API Error: ${response.status} ${errorData.error?.message || response.statusText}`);
-    }
+      const response = await fetch("https://api.openai.com/v1/images/generations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${currentOpenAIApiKey}`
+        },
+        body: JSON.stringify({
+          model: modelId,
+          prompt: dallePrompt,
+          n: 1,
+          size: "1024x1792", // 縦長
+          quality: "high"
+        }),
+        signal: controller.signal
+      });
 
-    const data = await response.json();
-    if (data.data && data.data.length > 0 && data.data[0].b64_json) {
-      if (onStatusUpdate) onStatusUpdate(`> [画像] 鋳造完了 ✓ (${IMAGE_MODEL_ID})`);
-      return { base64Img: data.data[0].b64_json, usedModel: IMAGE_MODEL_ID };
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`API Error: ${response.status} ${errorData.error?.message || response.statusText}`);
+      }
+
+      const data = await response.json();
+      const imgData = data.data?.[0];
+      if (!imgData) {
+        throw new Error("APIレスポンスに画像データが含まれていませんでした。");
+      }
+
+      let base64Img = imgData.b64_json;
+      if (!base64Img && imgData.url) {
+        if (onStatusUpdate) onStatusUpdate(`> [画像] URLから画像をダウンロード中...`);
+        const imgRes = await fetch(imgData.url);
+        if (!imgRes.ok) {
+          throw new Error(`画像URLの取得に失敗しました: ${imgRes.statusText}`);
+        }
+        const arrayBuffer = await imgRes.arrayBuffer();
+        const uint8Array = new Uint8Array(arrayBuffer);
+        let binary = "";
+        for (let i = 0; i < uint8Array.length; i++) {
+          binary += String.fromCharCode(uint8Array[i]);
+        }
+        base64Img = btoa(binary);
+      }
+
+      if (base64Img) {
+        if (onStatusUpdate) onStatusUpdate(`> [画像] 鋳造完了 ✓ (${modelId})`);
+        return { base64Img, usedModel: modelId };
+      }
+      
+      throw new Error("APIレスポンスに有効な画像データ（base64またはURL）が含まれていませんでした。");
+    } catch (err) {
+      let msg = err.message;
+      if (err.name === 'AbortError') msg = "Timeout (300s)";
+      console.warn(`[ImageGen] ${modelId} failed:`, msg);
+      lastError = err;
+      
+      if (msg.includes("safety") || msg.includes("SAFETY") || msg.includes("content_policy")) {
+        throw new Error("【コンテンツ制限】安全フィルターにより画像生成がブロックされました。");
+      }
+      if (onStatusUpdate) onStatusUpdate(`> [画像] ${modelId} 失敗。次のモデルへ...`);
+    } finally {
+      if (timeoutId) clearTimeout(timeoutId);
     }
-    
-    throw new Error("APIレスポンスに画像データが含まれていませんでした。");
-  } catch (err) {
-    let msg = err.message;
-    if (err.name === 'AbortError') msg = "Timeout (300s)";
-    console.warn(`[ImageGen] ${IMAGE_MODEL_ID} failed:`, msg);
-    
-    if (msg.includes("safety") || msg.includes("SAFETY") || msg.includes("content_policy")) {
-      throw new Error("【コンテンツ制限】安全フィルターにより画像生成がブロックされました。");
-    }
-    throw new Error(`画像生成エラー: ${msg}`);
   }
+
+  throw new Error(`画像生成エラー: ${lastError?.message || "全モデル失敗"}`);
 };

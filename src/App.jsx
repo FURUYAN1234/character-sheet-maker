@@ -7,7 +7,7 @@ import { buildPrompt } from './lib/prompt';
 import { generateFieldValueAI, generateGachaTextsAI, generateImageAI, setActiveEngine, getEngineDisplayName, setApiKeys, getActiveEngine } from './lib/ai-provider';
 import FieldInput from './components/FieldInput';
 
-const SYSTEM_VERSION = "1.2.8";
+const SYSTEM_VERSION = "1.2.9";
 const APP_NAME = "AIキャラクターシートメーカー";
 
 // === スマート連携テーブル ===
@@ -161,7 +161,7 @@ const App = () => {
         ctx.fillStyle = '#FFFFFF';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // 元画像をアスペクト比を維持して中央にフィット
+        // 元画像をアスペクト比を維持して中央にフィット（全体表示・余白あり）
         const scale = Math.min(
           canvas.width / img.naturalWidth,
           canvas.height / img.naturalHeight
