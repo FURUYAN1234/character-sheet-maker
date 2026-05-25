@@ -30,13 +30,14 @@ export const generateImage = async (prompt, onStatusUpdate) => {
   const attemptedModels = [];
 
   for (const modelId of MODELS_TO_TRY) {
+    let timeoutId = null;
     try {
       console.log(`[ImageGen] Attempting: ${modelId}`);
       attemptedModels.push(modelId);
       if (onStatusUpdate) onStatusUpdate(`> [画像] ${modelId} で鋳造開始... (2〜5分)`);
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 300000); // 300秒タイムアウト
+      timeoutId = setTimeout(() => controller.abort(), 300000); // 300秒タイムアウト
 
       let response, data;
 
@@ -54,7 +55,12 @@ export const generateImage = async (prompt, onStatusUpdate) => {
             signal: controller.signal,
           }
         );
-        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(`API Error: ${response.status} ${errorData.error?.message || response.statusText}`);
+        }
+
         data = await response.json();
 
         if (data.error) throw new Error(`${data.error.message} (Code: ${data.error.code})`);
@@ -86,7 +92,12 @@ export const generateImage = async (prompt, onStatusUpdate) => {
             signal: controller.signal,
           }
         );
-        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(`API Error: ${response.status} ${errorData.error?.message || response.statusText}`);
+        }
+
         data = await response.json();
 
         if (data.error) throw new Error(`${data.error.message} (Code: ${data.error.code})`);
@@ -107,6 +118,8 @@ export const generateImage = async (prompt, onStatusUpdate) => {
       console.warn(`[ImageGen] ${modelId} failed:`, msg);
       lastError = new Error(msg);
       if (onStatusUpdate) onStatusUpdate(`> [画像] ${modelId} 失敗: ${msg.substring(0, 60)}`);
+    } finally {
+      if (timeoutId) clearTimeout(timeoutId);
     }
   }
 

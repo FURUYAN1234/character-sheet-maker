@@ -4,13 +4,14 @@
  * ※ このアプリ専用。Nano Banana Proとは完全独立。
  */
 
-// テキストのみリクエスト用: Next-Gen優先（Nano Banana Pro最新版準拠）
+// テキストのみリクエスト用: Next-Gen優先（安定化・非推奨モデル排除）
 const TEXT_MODEL_IDS = [
-  "gemini-3-flash-preview",           // Primary: Next-Gen
-  "gemini-2.5-pro",                   // Backup 1: 高品質・安定
-  "gemini-2.5-flash",                 // Backup 2: 高速
-  "gemini-2.5-flash-lite",            // Fallback 1: 軽量安定
-  "gemini-3.1-flash-lite-preview"     // Fallback 2: Next-Gen Lite Preview
+  "gemini-3.5-flash",                 // Primary: Next-Gen 優先
+  "gemini-flash-latest",              // Backup 1: 最新・安定
+  "gemini-1.5-pro",                   // Backup 2: プロ仕様フォールバック
+  "gemini-2.5-pro",                   // Backup 3: プロ仕様高品質
+  "gemini-2.5-flash",                 // Fallback 1: 高速安定
+  "gemini-2.5-flash-lite"             // Fallback 2: 軽量安定
 ];
 
 // メモリ限定APIキー管理（セキュリティ要件: localStorage永続化なし）
@@ -49,11 +50,12 @@ export const callGeminiText = async (prompt, onStatusUpdate, options = {}) => {
   if (!currentApiKey) throw new Error("API Key が設定されていません。");
 
   for (const modelId of TEXT_MODEL_IDS) {
+    let timeoutId = null;
     try {
       if (onStatusUpdate) onStatusUpdate(`> [API] ${modelId} と交信開始...`);
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 60000);
+      timeoutId = setTimeout(() => controller.abort(), 25000); // 25秒タイムアウト制限
 
       const requestBody = {
         contents: [{ parts: [{ text: prompt }] }],
@@ -80,7 +82,11 @@ export const callGeminiText = async (prompt, onStatusUpdate, options = {}) => {
           signal: controller.signal,
         }
       );
-      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`API Error: ${response.status} ${errorData.error?.message || response.statusText}`);
+      }
 
       const data = await response.json();
 
@@ -105,7 +111,7 @@ export const callGeminiText = async (prompt, onStatusUpdate, options = {}) => {
 
     } catch (err) {
       let msg = err.message;
-      if (err.name === 'AbortError') msg = "Timeout (60s)";
+      if (err.name === 'AbortError') msg = "Timeout (25s)";
       console.warn(`[Gemini] ${modelId} failed:`, msg);
       if (onStatusUpdate) {
         if (msg.includes("429") || msg.includes("Quota")) {
@@ -114,6 +120,8 @@ export const callGeminiText = async (prompt, onStatusUpdate, options = {}) => {
           onStatusUpdate(`> [API] ${modelId} 失敗。バイパス中...`);
         }
       }
+    } finally {
+      if (timeoutId) clearTimeout(timeoutId);
     }
   }
 

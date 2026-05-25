@@ -1,6 +1,6 @@
 # AIキャラクターシートメーカー / AI Character Sheet Maker
 
-**v1.2.7** — Gemini & OpenAI (ChatGPT) 両対応のAIキャラクターシート自動生成ツール
+**v1.2.8** — Gemini & OpenAI (ChatGPT) 両対応のAIキャラクターシート自動生成ツール
 
 > **[[Nano Banana 2 and ChatGPT Images 2.0 Powered Super AI 4-koma System](https://github.com/FURUYAN1234/nano-banana-pro/blob/main/README.md)](https://github.com/FURUYAN1234/nano-banana-pro) 連携対応**
 > 生成されたキャラクターシートを[[Nano Banana 2 and ChatGPT Images 2.0 Powered Super AI 4-koma System](https://github.com/FURUYAN1234/nano-banana-pro/blob/main/README.md)](https://github.com/FURUYAN1234/nano-banana-pro) の OCR で読み取り、マンガ制作の幅を広げることができます。
@@ -159,11 +159,12 @@ Automatically falls back to alternative models upon API error:
 
 **【Gemini エンジン (Google)】**
 **テキスト生成 / Text Generation Fallback Pipeline**:
-1. gemini-3-flash-preview (Primary: Next-Gen)
-2. gemini-2.5-pro (Backup 1: 高品質・安定)
-3. gemini-2.5-flash (Backup 2: 高速)
-4. gemini-2.5-flash-lite (Fallback 1: 軽量安定)
-5. gemini-3.1-flash-lite-preview (Fallback 2: Next-Gen Lite)
+1. gemini-3.5-flash (Primary: Next-Gen 優先)
+2. gemini-flash-latest (Backup 1: 最新・安定)
+3. gemini-1.5-pro (Backup 2: プロ仕様フォールバック)
+4. gemini-2.5-pro (Backup 3: プロ仕様高品質)
+5. gemini-2.5-flash (Fallback 1: 高速安定)
+6. gemini-2.5-flash-lite (Fallback 2: 軽量安定)
 
 **画像生成 / Image Generation Fallback Pipeline**:
 1. gemini-3.1-flash-image-preview (Primary: Nano Banana 2 NEXT GEN)
@@ -206,6 +207,9 @@ character_sheet/
 ---
 
 ## 📋 バージョン履歴 / Changelog
+
+### v1.2.8 (2026-05-25)
+- **[Feature]** Gemini APIの非推奨化対応として、優先テキスト解析モデルを `gemini-3.5-flash` / `gemini-flash-latest` に更新し、例外発生時に `gemini-1.5-pro` 等のプロ仕様モデルへ安全にフォールバックする機構を実装。また、APIの応答ハングアップを防止するため25秒のタイムアウト制限を導入。
 
 ### v1.2.7 (2026-05-23)
 - **[Feature]** OpenAIのテキスト生成モデルを最新化し、フォールバック順序にgpt-4.1系列を導入 / Upgraded OpenAI text generation models and integrated gpt-4.1 series into the fallback pipeline.

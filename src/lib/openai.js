@@ -119,8 +119,13 @@ export const generateGachaTextsOAI = async (context, onStatusUpdate) => {
   const messages = [{ role: "user", content: prompt }];
 
   for (const modelId of TEXT_MODEL_IDS) {
+    let timeoutId = null;
     try {
       if (onStatusUpdate) onStatusUpdate(`> [API] ${modelId} と交信開始...`);
+      
+      const controller = new AbortController();
+      timeoutId = setTimeout(() => controller.abort(), 25000); // 25秒タイムアウト
+
       const response = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -132,16 +137,29 @@ export const generateGachaTextsOAI = async (context, onStatusUpdate) => {
           messages: messages,
           temperature: 0.8,
           response_format: { type: "json_object" }
-        })
+        }),
+        signal: controller.signal
       });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`API Error: ${response.status} ${errorData.error?.message || response.statusText}`);
+      }
+
       const data = await response.json();
       if (data.error) throw new Error(data.error.message);
-      const text = data.choices[0].message.content;
+      const text = data.choices?.[0]?.message?.content || "";
+      if (!text) throw new Error("Empty response content");
+
       if (onStatusUpdate) onStatusUpdate(`> [API] 生成完了 ✓ (${modelId})`);
       return JSON.parse(text);
     } catch (e) {
-      console.warn(`[OpenAI GachaGen] ${modelId} failed:`, e.message);
+      let msg = e.message;
+      if (e.name === 'AbortError') msg = "Timeout (25s)";
+      console.warn(`[OpenAI GachaGen] ${modelId} failed:`, msg);
       if (onStatusUpdate) onStatusUpdate(`> [API] ${modelId} 失敗。バイパス中...`);
+    } finally {
+      if (timeoutId) clearTimeout(timeoutId);
     }
   }
   return null;

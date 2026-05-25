@@ -1,12 +1,13 @@
-# HANDOFF (Character Sheet Maker → Codex)
+# HANDOFF (Character Sheet Maker → Antigravity)
 
 ## Snapshot Date
-2026-05-23T20:39:00+09:00
+2026-05-24T16:50:00+09:00
 
 ## Current Status
-- ✅ **v1.2.7** — OpenAIモデル最適化の適用完了（ローカルビルド検証済み）
+- ✅ **v1.2.7** — OpenAIモデル最適化の適用およびリモートREADMEの同期完了
 - ブランチ: `main`
-- 未コミット変更: あり（`openai.js`, `App.jsx`, `package.json`, `index.html`, `README.md` の変更）
+- 未コミット変更: なし（Working tree clean）
+- 最新コミット: `f0c3d3cf0483dd498ee9581b9e36bc20ad6b457f` (Update README.md)
 
 ## Architecture & Key Files
 | 用途 | ファイル |
@@ -23,15 +24,15 @@
 - `vite.config.js` の `base` を推測で変更しない
 
 ## Done (今回作業)
-- **OpenAI テキスト生成モデルの最新化 (提案A)**: `gpt-4.1`系列の新モデルおよびフォールバック順序（`gpt-4.1` -> `gpt-4.1-mini` -> `gpt-4.1-nano` -> `gpt-4o`）を `src/lib/openai.js` に実装。
-- **バージョン同期**: 各ファイルのバージョンを `1.2.7` に同期（`package.json`, `src/App.jsx`, `index.html`, `README.md`）。
-- **ローカルビルド検証**: `npm run build` にてビルドエラーがないことを確認。
+- **リモートREADMEの同期**: リモートで追加された `README.md` の変更（YouTube紹介動画リンク付き画像）を `git pull` でローカルに同期。
+- **リポジトリ状態確認**: ローカルのワーキングツリーがクリーンであり、ビルド等も問題ないことを確認。
 
 ## Remaining Tasks
-- コミットとプッシュ（またはユーザー指示によるデプロイの実行）。
+- 特になし（ユーザーからの次の指示待ち）。
 
 ## Verification State
-- ローカルビルド確認済み。
+- `git pull` 成功、競合なし。
+- `git status` が `working tree clean` であることを確認。
 
 ## Risks
 なし
