@@ -10,10 +10,13 @@ export const getOpenAIApiKey = () => currentOpenAIApiKey;
 
 // ── テキスト生成用モデル ──
 const TEXT_MODEL_IDS = [
-  "gpt-4.1",           // Primary: Next-Gen
-  "gpt-4.1-mini",      // Backup 1: 高速・効率的
-  "gpt-4.1-nano",      // Backup 2: 軽量
-  "gpt-4o",            // Fallback: 安定
+  "gpt-5.5",
+  "gpt-5.5-instant",
+  "gpt-5.4",
+  "gpt-5.4-mini",
+  "gpt-5.4-nano",
+  "gpt-4o",
+  "gpt-4o-mini"
 ];
 
 // ── 画像生成用モデル ──

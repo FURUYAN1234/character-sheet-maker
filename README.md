@@ -208,6 +208,9 @@ character_sheet/
 
 ## 📋 バージョン履歴 / Changelog
 
+### v1.3.1
+- chore: Sync Gemini & OpenAI API models to latest stable version.
+
 ### v1.3.0
 - chore: Sync Gemini API models to latest stable version.
 
