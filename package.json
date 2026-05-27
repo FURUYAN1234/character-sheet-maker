@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "predeploy": "npm run build",
+    "version:up": "node scripts/update_version.js",
+    "predeploy": "node scripts/pre_deploy_check.js && npm run build",
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {

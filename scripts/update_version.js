@@ -11,8 +11,16 @@ const root = join(__dirname, '..');
 // package.json
 const pkgPath = join(root, 'package.json');
 const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'));
-const parts = pkg.version.split('.');
-parts[2] = String(Number(parts[2]) + 1);
+const parts = pkg.version.split('.').map(Number);
+
+const oldVersion = pkg.version;
+
+if (parts[2] === 9) {
+  parts[1] += 1;
+  parts[2] = 0;
+} else {
+  parts[2] += 1;
+}
 const newVersion = parts.join('.');
 pkg.version = newVersion;
 writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n', 'utf8');
@@ -29,4 +37,4 @@ let htmlContent = readFileSync(htmlPath, 'utf8');
 htmlContent = htmlContent.replace(/<title>[^<]+<\/title>/, `<title>AIキャラクターシートメーカー V${newVersion}</title>`);
 writeFileSync(htmlPath, htmlContent, 'utf8');
 
-console.log(`Version updated: ${pkg.version.replace(new RegExp(parts[2] + '$'), String(Number(parts[2]) - 1))} -> ${newVersion}`);
+console.log(`Version updated: ${oldVersion} -> ${newVersion}`);
