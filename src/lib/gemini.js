@@ -6,12 +6,12 @@
 
 // テキストのみリクエスト用: Next-Gen優先（安定化・非推奨モデル排除）
 const TEXT_MODEL_IDS = [
-  "gemini-3.5-flash",                 // Primary: Next-Gen 優先
-  "gemini-flash-latest",              // Backup 1: 最新・安定
-  "gemini-1.5-pro",                   // Backup 2: プロ仕様フォールバック
-  "gemini-2.5-pro",                   // Backup 3: プロ仕様高品質
-  "gemini-2.5-flash",                 // Fallback 1: 高速安定
-  "gemini-2.5-flash-lite"             // Fallback 2: 軽量安定
+    "gemini-3.5-flash",
+    "gemini-flash-latest",
+    "gemini-2.5-flash",
+    "gemini-2.5-pro",
+    "gemini-1.5-pro",
+    "gemini-1.5-flash"
 ];
 
 // メモリ限定APIキー管理（セキュリティ要件: localStorage永続化なし）

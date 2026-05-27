@@ -7,11 +7,8 @@ import { getApiKey, diagnoseConnection } from "./gemini";
 
 // 画像生成モデル順序（Nano Banana Pro最新版準拠）
 const MODELS_TO_TRY = [
-  "gemini-3.1-flash-image-preview",  // Nano Banana 2 NEXT GEN (Native Visual/Text Rendering)
-  "imagen-4.0-generate-001",         // Nano Banana 2 Primary
-  "imagen-4.0-fast-generate-001",    // Nano Banana 2 Fast
-  "imagen-3.0-generate-001",         // Fallback (legacy insurance)
-  "imagen-3.0-fast-generate-001"     // Fallback (legacy insurance)
+    "gemini-3.1-flash-image-preview",
+    "gemini-2.5-flash-image"
 ];
 
 /**
