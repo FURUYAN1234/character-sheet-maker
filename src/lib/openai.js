@@ -10,13 +10,13 @@ export const getOpenAIApiKey = () => currentOpenAIApiKey;
 
 // ── テキスト生成用モデル ──
 const TEXT_MODEL_IDS = [
+  "gpt-4o",
+  "gpt-4o-mini",
   "gpt-5.5",
   "gpt-5.5-instant",
   "gpt-5.4",
   "gpt-5.4-mini",
-  "gpt-5.4-nano",
-  "gpt-4o",
-  "gpt-4o-mini"
+  "gpt-5.4-nano"
 ];
 
 // ── 画像生成用モデル ──
@@ -24,6 +24,26 @@ const IMAGE_MODEL_IDS = [
   "gpt-image-2",
   "dall-e-3"
 ];
+
+// ── 動的モデル検知 & キャッシュ ──
+let availableOpenAIModels = null;
+export const fetchAvailableOpenAIModels = async (apiKey) => {
+  if (availableOpenAIModels) return availableOpenAIModels;
+  try {
+    const response = await fetch("https://api.openai.com/v1/models", {
+      headers: { "Authorization": `Bearer ${apiKey}` }
+    });
+    if (response.ok) {
+      const data = await response.json();
+      availableOpenAIModels = data.data.map(m => m.id);
+      console.log("[OpenAI] Dynamically fetched available models:", availableOpenAIModels);
+      return availableOpenAIModels;
+    }
+  } catch (e) {
+    console.error("[OpenAI] Failed to fetch available models:", e);
+  }
+  return null;
+};
 
 /**
  * OpenAI Chat Completions API 共通呼び出し
@@ -84,7 +104,13 @@ export const generateFieldValueOAI = async (fieldKey, fieldLabel, context, onSta
 
   const messages = [{ role: "user", content: prompt }];
 
-  for (const modelId of TEXT_MODEL_IDS) {
+  const available = await fetchAvailableOpenAIModels(currentOpenAIApiKey);
+  const activeModels = available 
+    ? TEXT_MODEL_IDS.filter(id => available.includes(id))
+    : TEXT_MODEL_IDS;
+  const filteredTextModels = activeModels.length > 0 ? activeModels : ["gpt-4o-mini"];
+
+  for (const modelId of filteredTextModels) {
     try {
       if (onStatusUpdate) onStatusUpdate(`> [API] ${modelId} と交信開始...`);
       const result = await callChatCompletion(modelId, messages, currentOpenAIApiKey);
@@ -124,7 +150,13 @@ export const generateGachaTextsOAI = async (context, onStatusUpdate) => {
 
   const messages = [{ role: "user", content: prompt }];
 
-  for (const modelId of TEXT_MODEL_IDS) {
+  const available = await fetchAvailableOpenAIModels(currentOpenAIApiKey);
+  const activeModels = available 
+    ? TEXT_MODEL_IDS.filter(id => available.includes(id))
+    : TEXT_MODEL_IDS;
+  const filteredTextModels = activeModels.length > 0 ? activeModels : ["gpt-4o-mini"];
+
+  for (const modelId of filteredTextModels) {
     let timeoutId = null;
     try {
       if (onStatusUpdate) onStatusUpdate(`> [API] ${modelId} と交信開始...`);
@@ -188,7 +220,13 @@ ${prompt}`;
 
   let lastError = null;
 
-  for (const modelId of IMAGE_MODEL_IDS) {
+  const available = await fetchAvailableOpenAIModels(currentOpenAIApiKey);
+  const activeModels = available 
+    ? IMAGE_MODEL_IDS.filter(id => available.includes(id))
+    : IMAGE_MODEL_IDS;
+  const filteredImageModels = activeModels.length > 0 ? activeModels : ["dall-e-3"];
+
+  for (const modelId of filteredImageModels) {
     let timeoutId = null;
     try {
       if (onStatusUpdate) onStatusUpdate(`> [画像] ${modelId} で鋳造開始... (2〜5分)`);
