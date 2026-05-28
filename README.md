@@ -159,22 +159,18 @@ Automatically falls back to alternative models upon API error:
 
 **【Gemini エンジン (Google)】**
 **テキスト生成 / Text Generation Fallback Pipeline**:
-1. gemini-3.5-flash (Primary: Next-Gen 優先)
+1. gemini-2.0-flash (Primary: 最新高速・推奨)
 2. gemini-flash-latest (Backup 1: 最新・安定)
 3. gemini-1.5-pro (Backup 2: プロ仕様フォールバック)
-4. gemini-2.5-pro (Backup 3: プロ仕様高品質)
-5. gemini-2.5-flash (Fallback 1: 高速安定)
-6. gemini-2.5-flash-lite (Fallback 2: 軽量安定)
+4. gemini-1.5-flash (Fallback: 高速安定)
 
 **画像生成 / Image Generation Fallback Pipeline**:
-1. gemini-3.1-flash-image-preview (Primary: Nano Banana 2 NEXT GEN)
-2. imagen-4.0-generate-001 (Backup 1: Nano Banana 2 Primary)
-3. imagen-4.0-fast-generate-001 (Backup 2: Fast generation)
-4. imagen-3.0-generate-001 (Fallback 1: Legacy insurance)
-5. imagen-3.0-fast-generate-001 (Fallback 2: Legacy insurance)
+1. imagen-3.0-generate-002 (Primary: 高品質)
+2. gemini-2.0-flash (Backup 1: 高速)
+3. gemini-1.5-flash (Fallback 1: 安定)
 
 **【OpenAI エンジン (ChatGPT)】**
-**テキスト生成**: gpt-4.1 -> gpt-4.1-mini -> gpt-4.1-nano -> gpt-4o
+**テキスト生成**: gpt-4o -> gpt-4o-mini
 **画像生成**: dall-e-3 (1024x1792 高画質化メタプロンプト自動付与)
 
 ---
