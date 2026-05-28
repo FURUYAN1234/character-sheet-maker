@@ -203,6 +203,9 @@ character_sheet/
 
 ## 📋 バージョン履歴 / Changelog
 
+### v1.3.4 (2026-05-28)
+- **[Feature]** 画風指定の厳格化と、「スマート連携」の徹底的な強化（BMIに基づく適正な身長・体重の算出、種族と体格の一致、武器とアクションの一致等）を実施し、画像生成AIが矛盾した設定に混乱する問題を完全に解消。
+
 ### v1.3.3 (2026-05-28)
 - **[Feature]** ドキュメント内に残存していた架空のプレビューモデル名を完全に排除し、実在するモデル名への正常化と正式版デプロイを実施。 / Completely removed remaining legacy/hallucinated model names from documentation and executed official deployment.
 

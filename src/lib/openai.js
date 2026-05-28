@@ -8,16 +8,23 @@ let currentOpenAIApiKey = "";
 export const setOpenAIApiKey = (key) => { currentOpenAIApiKey = key; };
 export const getOpenAIApiKey = () => currentOpenAIApiKey;
 
-// ── テキスト生成用モデル ──
+// テキストのみリクエスト用モデルリスト（Zenith Protocol相当のフォールバック）
 const TEXT_MODEL_IDS = [
-  "gpt-4o",            // Primary: 安定
-  "gpt-4o-mini",       // Backup: 高速・効率的
+    "gpt-4.1",          // Primary: 高品質・1Mコンテキスト
+    "gpt-4.1-mini",     // Backup 1: コスト効率・高速
+    "gpt-4.1-nano",     // Backup 2: 最軽量・最速
+    "gpt-4o",           // Fallback: 安定実績
 ];
 
-// ── 画像生成用モデル ──
+// 画像付きリクエスト用モデルリスト（Vision対応モデル優先）
 const IMAGE_MODEL_IDS = [
-  "dall-e-3"
+    "gpt-4.1",          // Primary: Vision対応・高品質
+    "gpt-4o",           // Backup 1: Vision安定実績
+    "gpt-4.1-mini",     // Backup 2: コスト効率
 ];
+
+// ※ OpenAIの画像生成はフォールバック配列を持たず、最高品質の単一モデルを直接指定します。
+const OPENAI_IMAGE_MODEL = "gpt-image-2";
 
 /**
  * OpenAI Chat Completions API 共通呼び出し
@@ -100,10 +107,10 @@ export const generateGachaTextsOAI = async (context, onStatusUpdate) => {
 
   const prompt = `プロのキャラクターデザイナーとして、以下の設定に基づいて魅力的なキャラクター情報を日本語で生成してください。
 
-設定: 性別=${context.gender}, 年齢=${context.ageGroup}, 性格=${context.personality}, 話し方=${context.speechStyle}, 世界観=${context.eraStyle}, 役割=${context.archetype || '主人公'}
+設定: 性別=${context.sex}, 年齢=${context.ageGroup}, 性格=${context.personality}, 話し方=${context.speechStyle}, 世界観=${context.eraStyle}, 役割=${context.archetype || '主人公'}
 
 【厳守事項】
-- 「性別（${context.gender}）」と「話し方（${context.speechStyle}）」に極めて忠実な一人称（俺、僕、私、あたし等）および語尾（〜だ、〜よ、〜のじゃ等）を採用すること。
+- 「性別（${context.sex}）」と「話し方（${context.speechStyle}）」に極めて忠実な一人称（俺、僕、私、あたし等）および語尾（〜だ、〜よ、〜のじゃ等）を採用すること。
 - 男性キャラに女性言葉を使わせたり、その逆の不自然な言葉遣いは絶対に避けること。
 
 以下をJSON形式で生成:
@@ -173,16 +180,16 @@ export const generateImageOAI = async (prompt, onStatusUpdate) => {
 
   // DALL-E 3 向けの高画質化・フォーマットメタ指示を追加
   const dallePrompt = `Please generate an illustration of a character perfectly reflecting the settings below.
-Make it a masterpiece, highest quality, and highly detailed anime style.
+Make it a masterpiece and highest quality.
 Strictly include all elements mentioned in the "Character Settings" (hairstyle, clothing, accessories, colors, etc.) without missing any details.
-Automatically generate a background that fits the character's attributes and world setting.
+Strictly adhere to the user's requested Art Style, Layout, and Background rules without automatically overriding them.
 
 # Character Settings:
 ${prompt}`;
 
   let lastError = null;
 
-  for (const modelId of IMAGE_MODEL_IDS) {
+  for (const modelId of [OPENAI_IMAGE_MODEL]) {
     let timeoutId = null;
     try {
       if (onStatusUpdate) onStatusUpdate(`> [画像] ${modelId} で鋳造開始... (2〜5分)`);

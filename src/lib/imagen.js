@@ -5,10 +5,11 @@
  */
 import { getApiKey, diagnoseConnection } from "./gemini";
 
-// 画像生成モデル順序（Nano Banana Pro最新版準拠）
+// 画像生成モデル優先順位 (Geminiネイティブ優先)
+// ※ Imagen全系列は完全廃止予定のため、Geminiネイティブのみを指定。
 const MODELS_TO_TRY = [
-  "gemini-2.0-flash",                // Primary: 最新・高速・画像生成対応
-  "imagen-3.0-generate-002",         // Backup (legacy insurance)
+    "gemini-3.1-flash-image-preview", // Primary: Geminiネイティブ (現在利用可能な最高品質)
+    "gemini-2.5-flash-image"          // Backup: 安定版
 ];
 
 /**

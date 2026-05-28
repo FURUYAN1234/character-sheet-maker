@@ -7,7 +7,7 @@ import { buildPrompt } from './lib/prompt';
 import { generateFieldValueAI, generateGachaTextsAI, generateImageAI, setActiveEngine, getEngineDisplayName, setApiKeys, getActiveEngine } from './lib/ai-provider';
 import FieldInput from './components/FieldInput';
 
-const SYSTEM_VERSION = "1.3.3";
+const SYSTEM_VERSION = "1.3.4";
 const APP_NAME = "AIキャラクターシートメーカー";
 
 // === スマート連携テーブル ===
@@ -251,7 +251,7 @@ const App = () => {
     // Step 2: スマート連携（ランダム性を尊重しつつ矛盾だけ防ぐ）
     const currentSex = newData.sex;
     
-    // 【新連携】性別ベースの口調・外見・性格の相関（Story Maker風）
+    // 連携1: 性別ベースの口調・外見・性格の相関
     if (currentSex === '男性') {
       if (!lockedFields.speechStyle && Math.random() < 0.7) newData.speechStyle = getRandom(['標準的（男性寄り）', '乱暴・荒い', '古風・武家言葉', '寡黙（最小限）', '敬語と暴言の混在']);
       if (!lockedFields.bodyBuild && Math.random() < 0.7) newData.bodyBuild = getRandom(['鍛え上げられたアスリート型', '圧倒的な筋肉質', '標準的・バランス重視', '細身（ガリガリ）']);
@@ -273,11 +273,106 @@ const App = () => {
       newData.bodyBuild = getRandom(CHILD_BUILDS);
       newData.muscleType = '筋肉強調なし';
     }
-    // 連携3: 世界観 ↔ 衣装（同系統から選出）
+
+    // 連携3: 世界観 ↔ 衣装・武器・エフェクト
+    if (newData.eraStyle === '現代・日常・学園') {
+      if (!lockedFields.weapon && Math.random() < 0.8) newData.weapon = '武器なし';
+      if (!lockedFields.magicEffect) newData.magicEffect = '魔法効果なし';
+      if (!lockedFields.auraColor) newData.auraColor = 'オーラなし';
+    } else if (newData.eraStyle === '近未来・サイバーパンク') {
+      if (!lockedFields.weapon && Math.random() < 0.6) newData.weapon = getRandom(['自動小銃', 'タクティカルナイフ']);
+      if (!lockedFields.glassesStyle && Math.random() < 0.5) newData.glassesStyle = 'サイバーゴーグル';
+    }
     if (!lockedFields.costume) {
       const compatibleCostumes = ERA_COSTUME_MAP[newData.eraStyle];
-      if (compatibleCostumes) {
-        newData.costume = getRandom(compatibleCostumes);
+      if (compatibleCostumes) newData.costume = getRandom(compatibleCostumes);
+    }
+
+    // 連携4: 種族 ↔ 出身・部位・体格
+    if (newData.species === 'エルフ') {
+      if (!lockedFields.ethnicity) newData.ethnicity = 'エルフ・幻想種';
+      if (!lockedFields.bodyBuild && Math.random() < 0.7) newData.bodyBuild = getRandom(['しなやかなモデル体格', '細身（ガリガリ）']);
+    } else if (newData.species === 'ドワーフ') {
+      if (!lockedFields.ethnicity) newData.ethnicity = 'ドワーフ・剛健種';
+      if (!lockedFields.bodyBuild && Math.random() < 0.7) newData.bodyBuild = getRandom(['鍛え上げられたアスリート型', '圧倒的な筋肉質', '小太り・肉感的']);
+    } else if (newData.species === '獣人' || newData.species === 'ケモノ') {
+      if (!lockedFields.ethnicity) newData.ethnicity = '獣人・ケモノ種';
+      if (!lockedFields.subhumanPart) newData.subhumanPart = '獣の耳と尻尾';
+    } else if (newData.species === 'サイボーグ' || newData.species === 'アンドロイド') {
+      if (!lockedFields.ethnicity) newData.ethnicity = 'サイバーパンク改造種';
+      if (!lockedFields.muscleType && Math.random() < 0.5) newData.muscleType = '硬質な人工筋肉';
+      // アンドロイド/サイボーグに有機的な特殊部位（悪魔の翼等）が付かないよう制限
+      if (!lockedFields.subhumanPart) newData.subhumanPart = getRandom(['特殊部位なし', '背中の機械アーム', '特殊部位なし']);
+    } else if (newData.species === '悪魔・魔族') {
+      if (!lockedFields.subhumanPart && Math.random() < 0.7) newData.subhumanPart = getRandom(['悪魔の翼', '側頭部の角', '龍の鱗と尾']);
+      if (!lockedFields.auraColor && Math.random() < 0.7) newData.auraColor = getRandom(['不気味な紫煙', '深淵の暗黒']);
+    } else {
+      // 人間などの汎用種族の場合、エルフやドワーフ等の専用出身を弾く
+      if (!lockedFields.ethnicity && ['エルフ・幻想種', 'ドワーフ・剛健種', '獣人・ケモノ種', 'サイバーパンク改造種'].includes(newData.ethnicity)) {
+        newData.ethnicity = getRandom(['日本・東アジア系', '欧米・コーカソイド系', 'ラテン・ヒスパニック系', 'アフリカ・黒人系統', '中東・アラブ系', '南アジア・インド系', '北欧・バイキング系', '多国籍・混血']);
+      }
+    }
+
+    // 連携5: 武器 ↔ アクション傾向
+    if (!lockedFields.actionTendency) {
+      if (newData.weapon === '日本刀') newData.actionTendency = '剣術・刀技';
+      else if (['巨大な大剣', '巨大な斧', 'ナックル'].includes(newData.weapon)) newData.actionTendency = '巨大武器・力任せ';
+      else if (newData.weapon === '自動小銃') newData.actionTendency = '銃撃戦・射撃';
+      else if (newData.weapon === '魔導杖') newData.actionTendency = '魔法詠唱・術式';
+      else if (newData.weapon === '武器なし' && Math.random() < 0.5) newData.actionTendency = '近接格闘・体術';
+    }
+
+    // 連携6: 性格 ↔ 表情・目つき
+    if (!lockedFields.expressionSet) {
+      if (newData.personality === '冷静沈着・冷酷') newData.expressionSet = getRandom(['デフォルト（無表情）', '冷徹な目つき']);
+      else if (newData.personality === '熱血・直情的') newData.expressionSet = getRandom(['激怒', '不敵な笑み']);
+      else if (newData.personality === '臆病・ヘタレ') newData.expressionSet = getRandom(['恐怖', '悲しみ・涙']);
+      else if (newData.personality === '快楽主義・狂気') newData.expressionSet = getRandom(['狂気の笑顔', '不敵な笑み']);
+    }
+    if (!lockedFields.eyeShape) {
+      if (newData.personality === '冷静沈着・冷酷') newData.eyeShape = getRandom(['鋭い三白眼', '冷徹な細目']);
+      else if (newData.personality === '慈愛・平和主義') newData.eyeShape = '優しいタレ目';
+    }
+
+    // 連携7: 身長と体重の算出（BMIベース・年齢種族連動）
+    if (!lockedFields.height || !lockedFields.weight) {
+      let minH = 160, maxH = 180;
+      if (CHILD_AGES.includes(newData.ageGroup)) {
+        if (newData.ageGroup.includes('乳幼児')) { minH = 80; maxH = 100; }
+        else if (newData.ageGroup.includes('幼児')) { minH = 100; maxH = 120; }
+        else if (newData.ageGroup.includes('児童')) { minH = 120; maxH = 145; }
+      } else if (newData.ageGroup.includes('少年') || newData.ageGroup.includes('少女')) {
+        minH = 145; maxH = 165;
+      } else {
+        if (newData.sex === '男性') { minH = 165; maxH = 195; }
+        else if (newData.sex === '女性') { minH = 150; maxH = 175; }
+        else { minH = 155; maxH = 185; }
+      }
+      if (newData.species === 'ドワーフ') { minH = 110; maxH = 140; }
+      if (newData.species === 'エルフ' || newData.species === '吸血鬼') { minH += 5; maxH += 5; }
+
+      let finalH = 170; // 計算用フォールバック
+      if (!lockedFields.height) {
+        finalH = Math.floor(Math.random() * (maxH - minH + 1) + minH);
+        const snappedH = Math.round(finalH / 5) * 5;
+        newData.height = `${snappedH}cm`;
+      } else {
+        finalH = parseInt(newData.height) || 170;
+      }
+
+      if (!lockedFields.weight) {
+        const hM = finalH / 100;
+        let targetBmi = 22;
+        if (newData.bodyBuild.includes('細身') || newData.bodyBuild.includes('華奢')) targetBmi = 18;
+        else if (newData.bodyBuild.includes('アスリート')) targetBmi = 24;
+        else if (newData.bodyBuild.includes('圧倒的な筋肉質')) targetBmi = 28;
+        else if (newData.bodyBuild.includes('小太り')) targetBmi = 26;
+        else if (newData.bodyBuild.includes('大柄') || newData.bodyBuild.includes('超巨漢') || newData.bodyBuild.includes('重厚な機械化')) targetBmi = 35;
+
+        const variance = 0.9 + (Math.random() * 0.2); // ±10%のブレ
+        const w = Math.round(targetBmi * hM * hM * variance);
+        const snappedW = Math.round(w / 5) * 5;
+        newData.weight = `${snappedW}kg`;
       }
     }
 

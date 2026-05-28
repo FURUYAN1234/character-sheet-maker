@@ -4,13 +4,22 @@
  * ※ このアプリ専用。Nano Banana Proとは完全独立。
  */
 
-// テキストのみリクエスト用: Next-Gen優先（安定化・非推奨モデル排除）
+// テキストのみリクエスト用 (シナリオ生成等): Next-Gen優先・無料枠優先
 const TEXT_MODEL_IDS = [
-  "gemini-2.0-flash",                 // Primary: 最新・高速・安定
-  "gemini-flash-latest",              // Backup 1: 最新・安定
-  "gemini-1.5-flash",                 // Backup 2: 1.5 Flash
-  "gemini-1.5-pro",                   // Backup 3: プロ仕様フォールバック
-  "gemini-pro-latest"                 // Fallback: 安定
+    "gemini-3.5-flash",
+    "gemini-2.5-flash",
+    "gemini-2.5-pro",
+    "gemini-flash-latest",
+    "gemini-pro-latest"
+];
+
+// 画像付きリクエスト用 (キャラクターシート認識等): フィルター寛容モデル優先
+const IMAGE_MODEL_IDS = [
+    "gemini-3.5-flash",
+    "gemini-2.5-flash",
+    "gemini-2.5-pro",
+    "gemini-flash-latest",
+    "gemini-pro-latest"
 ];
 
 // メモリ限定APIキー管理（セキュリティ要件: localStorage永続化なし）
@@ -168,10 +177,10 @@ export const generateFieldValue = async (fieldKey, fieldLabel, context, onStatus
 export const generateGachaTexts = async (context, onStatusUpdate) => {
   const prompt = `プロのキャラクターデザイナーとして、以下の設定に基づいて魅力的なキャラクター情報を日本語で生成してください。
 
-設定: 性別=${context.gender}, 年齢=${context.ageGroup}, 性格=${context.personality}, 話し方=${context.speechStyle}, 世界観=${context.eraStyle}, 役割=${context.archetype || '主人公'}
+設定: 性別=${context.sex}, 年齢=${context.ageGroup}, 性格=${context.personality}, 話し方=${context.speechStyle}, 世界観=${context.eraStyle}, 役割=${context.archetype || '主人公'}
 
 【厳守事項】
-- 「性別（${context.gender}）」と「話し方（${context.speechStyle}）」に極めて忠実な一人称（俺、僕、私、あたし等）および語尾（〜だ、〜よ、〜のじゃ等）を採用すること。
+- 「性別（${context.sex}）」と「話し方（${context.speechStyle}）」に極めて忠実な一人称（俺、僕、私、あたし等）および語尾（〜だ、〜よ、〜のじゃ等）を採用すること。
 - 男性キャラに女性言葉を使わせたり、その逆の不自然な言葉遣いは絶対に避けること。
 
 以下をJSON形式で生成:

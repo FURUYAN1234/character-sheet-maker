@@ -41,6 +41,30 @@ export const buildPrompt = (formData) => {
       ? 'Depict as clearly feminine with soft graceful anatomy and delicate features.'
       : 'Depict with androgynous gender-neutral features.';
 
+  // 年齢ベースの視覚的補強（AIが年齢を無視しないよう具体的な外見描写を追加）
+  let ageVisualDesc = '';
+  if (d.ageGroup.includes('乳幼児') || d.ageGroup.includes('幼児')) {
+    ageVisualDesc = 'Draw as a very young toddler/infant with a round baby face, chubby cheeks, stubby limbs, and large head-to-body ratio.';
+  } else if (d.ageGroup.includes('児童')) {
+    ageVisualDesc = 'Draw as a child with youthful round face, small body frame, and innocent features.';
+  } else if (d.ageGroup.includes('老人')) {
+    ageVisualDesc = 'CRITICAL: Draw as a clearly elderly person aged 71+. Must have deep wrinkles on face and hands, sagging skin, age spots, visibly aged and weathered appearance. Do NOT draw as young.';
+  } else if (d.ageGroup.includes('熟年')) {
+    ageVisualDesc = 'Draw as a mature middle-aged to older person (56-70) with visible age lines, crow\'s feet, slightly sagging features.';
+  } else if (d.ageGroup.includes('壮年')) {
+    ageVisualDesc = 'Draw as a mature adult (40-55) with slight age lines and mature features.';
+  }
+
+  // 体型ベースの視覚的補強
+  let bodyVisualDesc = '';
+  if (d.bodyBuild.includes('小太り') || d.bodyBuild.includes('肉感的')) {
+    bodyVisualDesc = 'IMPORTANT: Body must appear visibly plump and round with soft belly, thick arms, and full rounded figure. Do NOT draw as slim or slender.';
+  } else if (d.bodyBuild.includes('超巨漢') || d.bodyBuild.includes('大柄')) {
+    bodyVisualDesc = 'IMPORTANT: Body must be extremely large, massive, and heavy-set with broad frame and thick limbs.';
+  } else if (d.bodyBuild.includes('華奢') || d.bodyBuild.includes('細身')) {
+    bodyVisualDesc = 'Body should appear delicately thin with narrow shoulders and slender limbs.';
+  }
+
   // 背景制御 — キャラクターシートはOCR連携のため常に白背景を強制
   const bgControl = 'Background MUST be plain pure white (#FFFFFF). No scenery, no gradients, no textures, no borders, no frames. The character is isolated on a completely seamless white background. This is non-negotiable.';
 
@@ -54,13 +78,24 @@ export const buildPrompt = (formData) => {
     layoutInstruction = `[Layout: Custom] ${d.layoutType}`;
   }
 
-  // OCR連携フィールド
-  const ocrExtras = [];
-  if (d.actionTendency && d.actionTendency !== 'なし') ocrExtras.push(`■アクション：${d.actionTendency}`);
-  if (d.emotionRange) ocrExtras.push(`■感情幅：${d.emotionRange}`);
-  if (d.directionStyle) ocrExtras.push(`■演出：${d.directionStyle}`);
-  if (d.awakening && d.awakening !== 'なし') ocrExtras.push(`■覚醒：${d.awakening}`);
-  const ocrBlock = ocrExtras.length > 0 ? '\n  ' + ocrExtras.join('\n  ') : '';
+  const infoLines = [
+    `■氏名：${finalName}${d.nickname ? ` 【${d.nickname}】` : ''}`,
+    `■属性：${d.sex} / ${d.species} / ${d.ageGroup} / ${d.ethnicity}`,
+    `■身体：${d.height} / ${d.weight} / ${d.bodyBuild}(${d.muscleType})`,
+    `■精神：${d.personality}`,
+    `■好き：${d.likes}`,
+    `■嫌い：${d.dislikes}`,
+    `■口癖：${d.catchphrase}`,
+    `■台詞：${d.dialogue}`,
+  ];
+  if (d.archetype) infoLines.push(`■役割：${d.archetype}`);
+  if (d.organization) infoLines.push(`■所属：${d.organization}`);
+  if (d.actionTendency && d.actionTendency !== 'なし') infoLines.push(`■アクション：${d.actionTendency}`);
+  if (d.emotionRange) infoLines.push(`■感情幅：${d.emotionRange}`);
+  if (d.directionStyle) infoLines.push(`■演出：${d.directionStyle}`);
+  if (d.awakening && d.awakening !== 'なし') infoLines.push(`■覚醒：${d.awakening}`);
+
+  const characterInfoBlock = infoLines.map(line => `  ${line}`).join('\n');
 
   return `
 # Character Design Sheet V2.0
@@ -82,21 +117,12 @@ ${bgControl}
 
 ## 3. CHARACTER INFO (Render as bold black Japanese text at the top of the image)
 Display the following information as styled Japanese typography at the top of the sheet:
-  ■氏名：${finalName}${d.nickname ? ` 【${d.nickname}】` : ''}
-  ■属性：${d.sex} / ${d.species} / ${d.ageGroup} / ${d.ethnicity}
-  ■身体：${d.height} / ${d.weight} / ${d.bodyBuild}(${d.muscleType})
-  ■精神：${d.personality}
-  ■好き：${d.likes}
-  ■嫌い：${d.dislikes}
-  ■口癖：${d.catchphrase}
-  ■台詞：${d.dialogue}
-  ${d.archetype ? `■役割：${d.archetype}` : ''}
-  ${d.organization ? `■所属：${d.organization}` : ''}${ocrBlock}
+${characterInfoBlock}
 
 ## 4. CHARACTER BODY & FEATURES (Critical details)
 ${genderDesc} Age group: ${d.ageGroup}.
-Special body parts: ${d.subhumanPart}. Body markings/tattoos: ${d.bodyArt}.
-Body build: ${d.bodyBuild} with ${d.muscleType}. Skin texture: ${d.skinType}.
+${ageVisualDesc ? `${ageVisualDesc}\n` : ''}Special body parts: ${d.subhumanPart}. Body markings/tattoos: ${d.bodyArt}.
+Body build: ${d.bodyBuild} with ${d.muscleType}. ${bodyVisualDesc ? `${bodyVisualDesc}\n` : ''}Skin texture: ${d.skinType}.
 Hair: ${d.hairStyle} in ${d.hairColor} color.
 Face: ${d.faceType} face shape with ${d.eyeShape} eyes. Eye color: ${d.eyeColor}.
 ${d.facialHair !== '髭なし' ? `Facial hair: ${d.facialHair}.` : ''}
@@ -119,7 +145,10 @@ ${layoutInstruction}
 ${d.details ? `\n## 8. ADDITIONAL DETAILS\n${d.details}.` : ''}
 
 ## STRICT RULES
+- ART STYLE ENFORCEMENT: The art style specified in Section 1 is ABSOLUTE. Do NOT default to standard anime/manga style. If "oil painting" is specified, render with visible brushstrokes and canvas texture. If "blueprint" is specified, use wireframes and monochrome blue. The art style MUST be visually distinguishable and unmistakable. Ignoring the art style is the worst possible error.
 - Character consistency: All views must depict the exact same character with identical features.
+- AGE ACCURACY: The character's apparent age MUST match the specified age group. An elderly character (71+) must look old with wrinkles. A child must look like a child. Do NOT default to young adult appearance.
+- BODY TYPE ACCURACY: The character's body shape MUST match the specified body build. "Plump" must look plump, "slim" must look slim. Do NOT default to standard anime body proportions.
 - No extra borders, grid lines, or stray marks.
 - Do NOT write any English tags, parameter values, or weight numbers anywhere in the image.
 - VISUAL NOISE REDUCTION: Absolutely NO sparkling effects, NO floating glitter, NO muddy textures, NO film grain, and NO over-rendered glossy lighting. Keep shading clean and solid.
