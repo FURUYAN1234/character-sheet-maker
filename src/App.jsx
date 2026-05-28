@@ -7,7 +7,7 @@ import { buildPrompt } from './lib/prompt';
 import { generateFieldValueAI, generateGachaTextsAI, generateImageAI, setActiveEngine, getEngineDisplayName, setApiKeys, getActiveEngine } from './lib/ai-provider';
 import FieldInput from './components/FieldInput';
 
-const SYSTEM_VERSION = "1.2.9";
+const SYSTEM_VERSION = "1.3.3";
 const APP_NAME = "AIキャラクターシートメーカー";
 
 // === スマート連携テーブル ===

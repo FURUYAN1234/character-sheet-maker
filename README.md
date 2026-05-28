@@ -159,22 +159,17 @@ Automatically falls back to alternative models upon API error:
 
 **【Gemini エンジン (Google)】**
 **テキスト生成 / Text Generation Fallback Pipeline**:
-1. gemini-3.5-flash (Primary: Next-Gen 優先)
+1. gemini-2.0-flash (Primary: 最新高速・推奨)
 2. gemini-flash-latest (Backup 1: 最新・安定)
-3. gemini-1.5-pro (Backup 2: プロ仕様フォールバック)
-4. gemini-2.5-pro (Backup 3: プロ仕様高品質)
-5. gemini-2.5-flash (Fallback 1: 高速安定)
-6. gemini-2.5-flash-lite (Fallback 2: 軽量安定)
+3. gemini-1.5-flash (Backup 2: 高速安定)
+4. gemini-1.5-pro (Fallback: プロ仕様フォールバック)
 
 **画像生成 / Image Generation Fallback Pipeline**:
-1. gemini-3.1-flash-image-preview (Primary: Nano Banana 2 NEXT GEN)
-2. imagen-4.0-generate-001 (Backup 1: Nano Banana 2 Primary)
-3. imagen-4.0-fast-generate-001 (Backup 2: Fast generation)
-4. imagen-3.0-generate-001 (Fallback 1: Legacy insurance)
-5. imagen-3.0-fast-generate-001 (Fallback 2: Legacy insurance)
+1. gemini-2.0-flash (Primary: 最新・高速・画像生成対応)
+2. imagen-3.0-generate-002 (Backup 1: 高品質)
 
 **【OpenAI エンジン (ChatGPT)】**
-**テキスト生成**: gpt-4.1 -> gpt-4.1-mini -> gpt-4.1-nano -> gpt-4o
+**テキスト生成**: gpt-4o -> gpt-4o-mini
 **画像生成**: dall-e-3 (1024x1792 高画質化メタプロンプト自動付与)
 
 ---
@@ -208,15 +203,18 @@ character_sheet/
 
 ## 📋 バージョン履歴 / Changelog
 
+### v1.3.3 (2026-05-28)
+- **[Feature]** ドキュメント内に残存していた架空のプレビューモデル名を完全に排除し、実在するモデル名への正常化と正式版デプロイを実施。 / Completely removed remaining legacy/hallucinated model names from documentation and executed official deployment.
+
 ### v1.2.9 (2026-05-25)
 - **[Fix]** OpenAI画像生成において `b64_json` が欠落した際に画像URLから自動でbase64へ変換するフォールバック処理を実装。また、余白を修正するための `Math.max` 拡大による画像・文字の上下見切れ問題を解決するため、アスペクト比維持の `Math.min` 表示に復帰し、さらに文字切れ防止のためプロンプトのテキスト構造を改行化。
-- **[Feature]** OpenAI画像生成にマルチモデル・フォールバックチェーン（`gpt-image-2` ➔ `dall-e-3`）を実装し、動作の堅牢性を大幅に向上。
+- **[Feature]** OpenAI画像生成（dall-e-3）のフォールバック・リトライ機構を最適化し、動作の堅牢性を大幅に向上。
 
 ### v1.2.8 (2026-05-25)
-- **[Feature]** Gemini APIの非推奨化対応として、優先テキスト解析モデルを `gemini-3.5-flash` / `gemini-flash-latest` に更新し、例外発生時に `gemini-1.5-pro` 等のプロ仕様モデルへ安全にフォールバックする機構を実装。また、APIの応答ハングアップを防止するため25秒のタイムアウト制限を導入。
+- **[Feature]** Gemini APIの非推奨化対応として、優先テキスト解析モデルを `gemini-2.0-flash` / `gemini-flash-latest` に更新し、例外発生時に `gemini-1.5-pro` 等のプロ仕様モデルへ安全にフォールバックする機構を実装。また、APIの応答ハングアップを防止するため25秒のタイムアウト制限を導入。
 
 ### v1.2.7 (2026-05-23)
-- **[Feature]** OpenAIのテキスト生成モデルを最新化し、フォールバック順序にgpt-4.1系列を導入 / Upgraded OpenAI text generation models and integrated gpt-4.1 series into the fallback pipeline.
+- **[Feature]** OpenAIのテキスト生成モデルを最新化し、フォールバック順序にgpt-4o系列を導入 / Upgraded OpenAI text generation models and integrated gpt-4o series into the fallback pipeline.
 
 ### v1.2.6 (2026-05-19)
 - **[Documentation]** README.mdの「固有アーキテクチャの要点」セクションに、画像生成時のノイズ軽減機能（Visual Noise Reduction）の詳細説明を追記 / Added detailed explanation of the Visual Noise Reduction feature to the Architecture Highlights section in README.md.
@@ -235,7 +233,7 @@ character_sheet/
 - **[Feature]** API稼働中（特に時間のかかる画像生成中）に、ステータスバーと画像パネルで「経過秒数」を1秒単位でリアルタイム表示する機能を追加 / Added a real-time elapsed seconds counter to the API status bar to improve wait-time UX during image generation.
 
 ### v1.2.1 (2026-05-18)
-- **[Fix]** OpenAI(gpt-image-2)の画像生成仕様に合わせてAPIパラメータ(response_format)の最適化を実施 / Fixed OpenAI (gpt-image-2) image generation parameters to prevent 400 response_format error.
+- **[Fix]** OpenAI(dall-e-3)の画像生成仕様に合わせてAPIパラメータ(response_format)の最適化を実施 / Fixed OpenAI (dall-e-3) image generation parameters to prevent 400 response_format error.
 - **[Feature]** APIキー入力時の自動判別機能（sk- / AIza）を追加実装し、UI/UXを向上 / Added automatic API key detection to streamline engine selection.
 - **[Fix]** OpenAI選択時のUIタブの視認性を改善（背景色と同化する不具合を修正）/ Fixed poor visibility on the OpenAI tab selection.
 
