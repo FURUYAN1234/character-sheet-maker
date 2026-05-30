@@ -1,79 +1,66 @@
 # HANDOFF
 
 ## Last Updated
-2026-05-31 08:36
+2026-05-31 08:41
 
 ## Last Agent
-Codex
+Antigravity
 
 ## App Root
 C:\Users\sx717\Antigravity\character_sheet
 
 ## Current Goal
-Codexによる動作テストとバグフィックス・デバッグの実施（テストセッション）。
+Codexによるバージョンアップおよびフルデプロイプロトコルの実行テスト。
 
 ## Completed
-- Antigravity側でのアプリ開発および初期の安定動作確認。
-- `HANDOFF.md` を含む引き継ぎ用ドキュメント群の整備。
-- Codex側で `AGENTS.md`, `HANDOFF.md`, `docs/project_standards.md`, `docs/deploy.md` を確認。
-- `src/App.jsx` の実行時ハング防止を中心に小さなバグ修正を実施。
-- `npm run build` 成功。
-- Vite dev server を `http://127.0.0.1:5173/` で起動し、HTTP 200 とヘッドレスEdgeの初期画面レンダリングを確認。
+- Codexによるバグ修正（画像読み込み、エラーハンドリング、API切替）の実施。
+- Antigravity側での修正差分レビューと `git commit` の実行（コミット完了）。
 
 ## In Progress
-- Codex側のデバッグテストは一通り完了。API実キーを使う画像生成・AI生成の実通信テストは未実行。
+- バージョンアップ（v1.3.5 → v1.3.6）とデプロイ作業。
 
 ## Next Steps
-1. 必要なら Antigravity 側で `git diff` を確認する。
-2. API実キーが使える環境で、単一フィールドAI生成・全項目ランダム・画像生成を手動確認する。
-3. 問題なければ `src/App.jsx` と `HANDOFF.md` をコミットする。
+1. 関連ファイル（`package.json`, `src/App.jsx`, `index.html`, `README.md` 等）のバージョンをインクリメント（v1.3.6 等へ更新）する。
+2. `docs/deploy.md` およびプロジェクトのデプロイルールに従い、ビルドおよび GitHub Pages へのデプロイ（`npm run deploy`等）を実行する。
+3. デプロイ成功後、変更をコミットしてリモートへプッシュする。
+4. 可能であれば GitHub Release 作成などの関連タスクも実施する。
+5. 作業完了後、HANDOFF.md を更新して Antigravity に差し戻す。
 
 ## Files Changed
-- `src/App.jsx`: 画像ウォーターマーク読み込み失敗時に Promise が永遠に解決しない問題を修正。
-- `src/App.jsx`: 全項目ランダム中に想定外エラーが出た場合、生成中状態が解除されない問題を修正。
-- `src/App.jsx`: API切替時にメモリ上のAPIキーも消すよう修正。
-- `HANDOFF.md`: Codex側の作業結果を追記。
+- 差分なし（直前のコミットでクリーンな状態）
 
 ## Commands Run
 ```powershell
-git status --short --branch
-npm run build
-npm run dev -- --host 127.0.0.1 --port 5173
-Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:5173/' -TimeoutSec 10
+git add HANDOFF.md src/App.jsx ; git commit -m "Fix: Codex debug session fixes for image loading, error handling, and API switch"
 ```
 Result:
 ```
-npm run build: success
-local dev server: http://127.0.0.1:5173/
-HTTP status: 200
+[main 398bf60] Fix: Codex debug session fixes ...
+ 2 files changed, 92 insertions(+), 85 deletions(-)
 ```
 
 ## Test Status
 - Build smoke: 成功
 - Local HTTP smoke: 成功
-- Headless Edge render smoke: 成功 (`C:\tmp\character_sheet_smoke.png`)
-- API実通信テスト: 未実行
+- Headless Edge render smoke: 成功
 
 ## Build Status
-成功 (`npm run build`)
+- デプロイに向けた本番ビルド待ち
 
 ## Deploy Status
-未実行
+- デプロイ待ち
 
 ## Git Status
 ```
-## main...origin/main
- M HANDOFF.md
- M src/App.jsx
+## main...origin/main [ahead 1]
 ```
+Working tree is clean.
 
 ## Warnings
-- `vite.config.js` の `base` 指定はデプロイに直結するため変更しないでください。
-- ユーザーに確認せず、勝手にルートフォルダ内の一時ファイル等を削除しないでください。
-- Codex in-app Browser は `node_repl` のサンドボックスエラーで使用できなかったため、代替として HTTP 200 とヘッドレスEdgeスクリーンショットで確認しました。
-- 初回の `npm run build` はCodexのサンドボックス権限で失敗しましたが、承認後に同じコマンドが成功しました。アプリのビルドエラーではありません。
+- バージョンアップの際は、指定された全ての同期対象ファイルでバージョン番号が一致していることを必ず確認してください。
+- デプロイ後は 404 エラーやキャッシュ汚染を防ぐため、オンラインでの反映確認を忘れずに行ってください。
 
 ## Resume Prompt
 対象アプリ: `C:\Users\sx717\Antigravity\character_sheet`
 
-AGENTS.md と HANDOFF.md を読んで、Codexからの引き継ぎ内容を確認して。`src/App.jsx` の差分をレビューし、API実キーが使える場合は単一フィールドAI生成・全項目ランダム・画像生成を手動確認して。既存の未コミット変更を壊さず、必要なら追加修正し、最後にHANDOFF.mdを更新して。
+AGENTS.md と HANDOFF.md を読んで、Antigravityからの引き継ぎ内容を確認して。直前のコミットは完了しているので、指示通りバージョンをインクリメントし、プロジェクトのルールに従ってデプロイまで進めて。終わったらHANDOFF.mdを更新して。
