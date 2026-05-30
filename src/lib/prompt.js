@@ -68,14 +68,18 @@ export const buildPrompt = (formData) => {
   // 背景制御 — キャラクターシートはOCR連携のため常に白背景を強制
   const bgControl = 'Background MUST be plain pure white (#FFFFFF). No scenery, no gradients, no textures, no borders, no frames. The character is isolated on a completely seamless white background. This is non-negotiable.';
 
-  // レイアウト
+  // レイアウトの強力な指示
   let layoutInstruction;
+  let layoutMainConcept = "";
   if (d.layoutType.includes('三面図')) {
-    layoutInstruction = '[Layout: Three-View Sheet] Show the character in three full-body standing poses arranged horizontally: Front view, Side profile view, and Back view. Label each view clearly as "Front", "Profile", "Back".';
+    layoutMainConcept = "Three-view character design sheet (Front, Side, Back).";
+    layoutInstruction = 'CRITICAL LAYOUT: You MUST draw exactly THREE full-body standing poses of the same character side-by-side (Front view, Side profile view, and Back view). Do NOT use a grid format. Do NOT add floating heads or extra facial expressions. ONLY the three full-body views.';
   } else if (d.layoutType.includes('12分割') || d.layoutType.includes('グリッド')) {
-    layoutInstruction = '[Layout: 12-Panel Grid] Arrange in a 3x4 grid. Row 1: character specs/stats. Rows 2-3: facial expression collection. Row 4: full-body three-view (front, side, back).';
+    layoutMainConcept = "12-Panel Grid character design sheet with facial expressions.";
+    layoutInstruction = 'CRITICAL LAYOUT: You MUST arrange the sheet as a dense multi-panel grid (e.g., 3x4 grid). Include multiple close-up panels showing various facial expressions, and smaller panels for full-body poses. The image must look like a collection of many panels.';
   } else {
-    layoutInstruction = `[Layout: Custom] ${d.layoutType}`;
+    layoutMainConcept = `${d.layoutType} character design sheet.`;
+    layoutInstruction = `CRITICAL LAYOUT: ${d.layoutType}`;
   }
 
   const infoLines = [
@@ -98,59 +102,51 @@ export const buildPrompt = (formData) => {
   const characterInfoBlock = infoLines.map(line => `  ${line}`).join('\n');
 
   return `
-# Character Design Sheet V2.0
+An elaborate and professional character design sheet.
+OVERALL LAYOUT: ${layoutMainConcept}
+ART STYLE TO ENFORCE: ${styleKw}
+Line Art: ${d.penStyle}. Rendering: ${d.renderingMode}. ${d.toneStyle !== 'トーンなし' ? `Screentone: ${d.toneStyle}.` : ''} Lighting: ${d.lighting}. Color theme: ${d.colorTheme}.
 
-## CRITICAL OUTPUT REQUIREMENTS
-- Image aspect ratio: Portrait A4 (3:4 or 9:16 vertical). Landscape or square is strictly forbidden.
-- Coloring: Follow the specified art style (color or monochrome as appropriate).
-- DO NOT render any technical parameters, tags, weight numbers, or metadata as visible text in the image.
-- Only render the character info block (name, attributes etc.) as visible Japanese text in the upper area.
+## 1. LAYOUT INSTRUCTIONS (ABSOLUTE PRIORITY)
+${layoutInstruction}
 
-## 1. ART STYLE (Highest Priority — This defines the entire visual look)
-Art style: ${styleKw}.
-Line art: ${d.penStyle} style lines.
-Rendering: ${d.renderingMode}.${d.toneStyle !== 'トーンなし' ? ` Screentone: ${d.toneStyle}.` : ''}
-Lighting: ${d.lighting}. Shadow intensity: ${d.shadowIntensity}. Color theme: ${d.colorTheme}.
+## 2. ART STYLE INSTRUCTIONS (CRITICAL)
+You MUST strictly follow the requested art style: [ ${styleKw} ].
+Do not use a generic anime style unless requested. The visual aesthetics, shading, and linework must perfectly match the requested style.
 
-## 2. BACKGROUND
-${bgControl}
-
-## 3. CHARACTER INFO (Render as bold black Japanese text at the top of the image)
-Display the following information as styled Japanese typography at the top of the sheet:
+## 3. CHARACTER INFORMATION
+Name and text to render at the top in Japanese:
 ${characterInfoBlock}
 
-## 4. CHARACTER BODY & FEATURES (Critical details)
-${genderDesc} Age group: ${d.ageGroup}.
-${ageVisualDesc ? `${ageVisualDesc}\n` : ''}Special body parts: ${d.subhumanPart}. Body markings/tattoos: ${d.bodyArt}.
-Body build: ${d.bodyBuild} with ${d.muscleType}. ${bodyVisualDesc ? `${bodyVisualDesc}\n` : ''}Skin texture: ${d.skinType}.
-Hair: ${d.hairStyle} in ${d.hairColor} color.
-Face: ${d.faceType} face shape with ${d.eyeShape} eyes. Eye color: ${d.eyeColor}.
+## 4. CHARACTER APPEARANCE
+Gender: ${genderDesc}
+Age group: ${d.ageGroup}. ${ageVisualDesc}
+Body build: ${d.bodyBuild} with ${d.muscleType}. ${bodyVisualDesc}
+Face: ${d.faceType} face shape, ${d.eyeShape} eyes, ${d.eyeColor} color.
+Hair: ${d.hairStyle}, ${d.hairColor} color.
+Skin: ${d.skinType}.
+Additional body features: ${d.subhumanPart}, ${d.bodyArt}.
 ${d.facialHair !== '髭なし' ? `Facial hair: ${d.facialHair}.` : ''}
 
-## 5. OUTFIT, EQUIPMENT & ACCESSORIES
-Primary weapon: ${d.weapon}. Base costume: ${d.costume}. Setting/era: ${d.eraStyle}.
-Visual effects: ${d.magicEffect}, aura color: ${d.auraColor}. Outfit condition: ${d.outfitCondition}.
-Accessories: glasses: ${d.glassesStyle}, headwear: ${d.headAccessory}, sub-weapon: ${d.subWeapon}.
-Minor details: ear accessory: ${d.earAccessory}, necklace: ${d.neckAccessory}, piercing: ${d.facePiercing}, other: ${d.accessory}.
-Makeup: ${d.makeup}. Outfit fit: ${d.outfitFit}. Material: ${d.material}.
+## 5. OUTFIT & EQUIPMENT
+Base costume: ${d.costume} (${d.eraStyle} era setting).
+Outfit fit: ${d.outfitFit}, Material: ${d.material}, Condition: ${d.outfitCondition}.
+Weapon: ${d.weapon}. Sub-weapon: ${d.subWeapon}.
+Accessories: Head: ${d.headAccessory}, Face/Glasses: ${d.glassesStyle}, Neck: ${d.neckAccessory}, Ear: ${d.earAccessory}, Piercing: ${d.facePiercing}, Other: ${d.accessory}.
+Visual effects: ${d.magicEffect}, Aura: ${d.auraColor}. Makeup: ${d.makeup}.
 
-## 6. POSE & EXPRESSION
+## 6. POSE, EXPRESSION & MANNERISM
 Base pose: ${d.basePose}.
 Facial expression: ${d.expressionSet}.
 Gaze direction: ${d.gazeDirection}. Hand expression: ${d.handExpression}.
 ${d.voiceType ? `Voice image: ${d.voiceType}. Speech mannerism: ${d.speechStyle}.` : ''}
 
-## 7. LAYOUT
-${layoutInstruction}
-${d.details ? `\n## 8. ADDITIONAL DETAILS\n${d.details}.` : ''}
-
-## STRICT RULES
-- ART STYLE ENFORCEMENT: The art style specified in Section 1 is ABSOLUTE. Do NOT default to standard anime/manga style. If "oil painting" is specified, render with visible brushstrokes and canvas texture. If "blueprint" is specified, use wireframes and monochrome blue. The art style MUST be visually distinguishable and unmistakable. Ignoring the art style is the worst possible error.
-- Character consistency: All views must depict the exact same character with identical features.
-- AGE ACCURACY: The character's apparent age MUST match the specified age group. An elderly character (71+) must look old with wrinkles. A child must look like a child. Do NOT default to young adult appearance.
-- BODY TYPE ACCURACY: The character's body shape MUST match the specified body build. "Plump" must look plump, "slim" must look slim. Do NOT default to standard anime body proportions.
-- No extra borders, grid lines, or stray marks.
-- Do NOT write any English tags, parameter values, or weight numbers anywhere in the image.
-- VISUAL NOISE REDUCTION: Absolutely NO sparkling effects, NO floating glitter, NO muddy textures, NO film grain, and NO over-rendered glossy lighting. Keep shading clean and solid.
+## 7. BACKGROUND & STRICT RULES
+- ${bgControl}
+- Image aspect ratio: Portrait A4 (3:4 or 9:16 vertical). Landscape or square is strictly forbidden.
+- DO NOT render any technical parameters, tags, weight numbers, or metadata as visible text in the image.
+- Character Consistency: If multiple views are shown, they MUST be the exact same character with identical clothing and proportions.
+- No visual noise, no plastic skin, no unwanted text or numbers. Keep shading clean.
+${d.details ? `- Additional user details: ${d.details}` : ''}
 `.trim();
 };
