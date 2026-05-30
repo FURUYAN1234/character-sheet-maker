@@ -148,7 +148,7 @@ const App = () => {
   const TARGET_HEIGHT = 1536; // 2:3 縦長（キャラクターシート標準）
 
   const applyWatermark = (base64DataUrl) => {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const img = new Image();
       img.onload = () => {
         // キャンバスを統一サイズに正規化
@@ -188,6 +188,7 @@ const App = () => {
 
         resolve(canvas.toDataURL('image/png'));
       };
+      img.onerror = () => reject(new Error('生成画像の読み込みに失敗しました。'));
       img.src = base64DataUrl;
     });
   };
@@ -233,9 +234,9 @@ const App = () => {
     if (!isUnlocked) return;
     setIsGenerating(true);
     showStatus('🎲 全項目ランダム生成中...');
-
-    const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
-    const newData = { ...currentFormData };
+    try {
+      const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
+      const newData = { ...currentFormData };
 
     // Step 1: 全選択肢フィールドをランダム化
     SECTIONS.forEach(section => {
@@ -394,9 +395,13 @@ const App = () => {
 
     if (compareMode && activeSlot === 'B') { setSlotBData(newData); }
     else { setFormData(newData); if (compareMode) setSlotAData(newData); }
-    setTextModel(aiResult ? 'AI' : 'バックアップ');
-    showStatus('✅ 全項目ランダム完了！「画像生成」ボタンで画像を生成できます。', true);
-    setIsGenerating(false);
+      setTextModel(aiResult ? 'AI' : 'バックアップ');
+      showStatus('✅ 全項目ランダム完了！「画像生成」ボタンで画像を生成できます。', true);
+    } catch (err) {
+      showStatus(`❌ 全項目ランダム生成失敗: ${err.message}`, true);
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   // === プリセット ===
@@ -447,6 +452,14 @@ const App = () => {
     setSlotAImage(null); setSlotBImage(null); setGeneratedImage(null);
     setImageModel(''); setTextModel(''); setImageError('');
     showStatus('🔄 全リセット完了', true);
+  };
+
+  const handleApiSwitch = () => {
+    setApiKeyInput('');
+    setSelectedEngine(null);
+    setApiKeys('', '');
+    setActiveEngine('gemini');
+    setIsUnlocked(false);
   };
 
   const displayImage = compareMode
@@ -529,7 +542,7 @@ const App = () => {
                 {isImageGenerating ? '⏳ 画像生成中...' : '🎨 画像生成'}
               </button>
               <button className="btn-icon-only" onClick={handleReset} title="全リセット">↺</button>
-              <button className="btn-api-switch" onClick={() => { setApiKeyInput(''); setSelectedEngine(null); setIsUnlocked(false); }} title="API切替">
+              <button className="btn-api-switch" onClick={handleApiSwitch} title="API切替">
                 🔄 API切替
               </button>
             </div>
