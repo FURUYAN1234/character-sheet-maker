@@ -1,144 +1,99 @@
-/**
- * 画像生成 API Client for キャラクターシート鋳造所
- * Nano Banana Pro最新版のIMGEN Zenith Protocolを踏襲（順序・名称完全一致）
- * ※ このアプリ専用。Nano Banana Proとは完全独立。
- */
 import { getApiKey, diagnoseConnection } from "./gemini";
 
-// 画像生成モデル優先順位 (Geminiネイティブ優先)
-// ※ Imagen全系列は完全廃止予定のため、Geminiネイティブのみを指定。
+const IMAGE_TIMEOUT_MS = 300000;
 const MODELS_TO_TRY = [
-    "gemini-3.1-flash-image-preview", // Primary: Geminiネイティブ (現在利用可能な最高品質)
-    "gemini-2.5-flash-image"          // Backup: 安定版
+  "gemini-3.1-flash-image"
 ];
 
-/**
- * 画像生成（Zenith Protocol フォールバック付き）
- * Geminiモデルは generateContent + responseModalities: ["IMAGE"]
- * Imagenモデルは predict エンドポイント
- * @param {string} prompt 画像生成用プロンプト
- * @param {function} onStatusUpdate ステータス更新コールバック
- * @returns {{ base64Img: string, usedModel: string }}
- */
+const buildGeminiImageBody = (prompt) => ({
+  contents: [{ role: "user", parts: [{ text: prompt }] }],
+  generationConfig: {
+    responseModalities: ["TEXT", "IMAGE"]
+  }
+});
+
+const extractGeminiImage = (data, modelId) => {
+  const parts = data.candidates?.flatMap(candidate => candidate.content?.parts || []) || [];
+  const imagePart = parts
+    .filter(part => part.inlineData?.data)
+    .sort((a, b) => (b.inlineData.data?.length || 0) - (a.inlineData.data?.length || 0))[0];
+
+  if (!imagePart) {
+    const textResponse = parts
+      .map(part => part.text)
+      .filter(Boolean)
+      .join(" ")
+      .slice(0, 500);
+    const suffix = textResponse ? ` Text response: ${textResponse}` : "";
+    throw new Error(`Unexpected format from ${modelId}: missing inlineData.${suffix}`);
+  }
+
+  return {
+    base64Img: imagePart.inlineData.data,
+    mimeType: imagePart.inlineData.mimeType || "image/png",
+    usedModel: modelId
+  };
+};
+
 export const generateImage = async (prompt, onStatusUpdate) => {
   const currentApiKey = getApiKey();
-  if (!currentApiKey) throw new Error("API Key が設定されていません。");
+  if (!currentApiKey) throw new Error("Gemini API key is not set.");
 
   let lastError = null;
   const attemptedModels = [];
 
   for (const modelId of MODELS_TO_TRY) {
-    let timeoutId = null;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), IMAGE_TIMEOUT_MS);
+
     try {
       console.log(`[ImageGen] Attempting: ${modelId}`);
       attemptedModels.push(modelId);
-      if (onStatusUpdate) onStatusUpdate(`> [画像] ${modelId} で鋳造開始... (2〜5分)`);
+      if (onStatusUpdate) onStatusUpdate(`> [image] ${modelId} generation started... (2-5 min)`);
 
-      const controller = new AbortController();
-      timeoutId = setTimeout(() => controller.abort(), 300000); // 300秒タイムアウト
-
-      let response, data;
-
-      if (modelId.startsWith("gemini")) {
-        // Geminiマルチモーダル画像生成
-        response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${currentApiKey}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              contents: [{ role: "user", parts: [{ text: prompt }] }],
-              generationConfig: { responseModalities: ["IMAGE"] }
-            }),
-            signal: controller.signal,
-          }
-        );
-
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(`API Error: ${response.status} ${errorData.error?.message || response.statusText}`);
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${currentApiKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(buildGeminiImageBody(prompt)),
+          signal: controller.signal,
         }
+      );
 
-        data = await response.json();
-
-        if (data.error) throw new Error(`${data.error.message} (Code: ${data.error.code})`);
-
-        if (data.candidates?.[0]?.content?.parts) {
-          const imagePart = data.candidates[0].content.parts.find(p => p.inlineData);
-          if (imagePart?.inlineData?.data) {
-            if (onStatusUpdate) onStatusUpdate(`> [画像] 鋳造完了 ✓ (${modelId})`);
-            return { base64Img: imagePart.inlineData.data, usedModel: modelId };
-          }
-        }
-        throw new Error(`Unexpected format from ${modelId}: missing inlineData`);
-
-      } else {
-        // Imagen APIエンドポイント（predict）
-        response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:predict?key=${currentApiKey}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              instances: [{ prompt }],
-              parameters: {
-                sampleCount: 1,
-                aspectRatio: "2:3", // キャラクターシート用縦長比率
-                personGeneration: "allow_adult"
-              }
-            }),
-            signal: controller.signal,
-          }
-        );
-
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(`API Error: ${response.status} ${errorData.error?.message || response.statusText}`);
-        }
-
-        data = await response.json();
-
-        if (data.error) throw new Error(`${data.error.message} (Code: ${data.error.code})`);
-
-        if (data.predictions?.[0]?.bytesBase64Encoded) {
-          if (onStatusUpdate) onStatusUpdate(`> [画像] 鋳造完了 ✓ (${modelId})`);
-          return { base64Img: data.predictions[0].bytesBase64Encoded, usedModel: modelId };
-        }
-        if (data.predictions?.[0] && typeof data.predictions[0] === 'string') {
-          if (onStatusUpdate) onStatusUpdate(`> [画像] 鋳造完了 ✓ (${modelId})`);
-          return { base64Img: data.predictions[0], usedModel: modelId };
-        }
-        throw new Error(`Unexpected format from ${modelId}`);
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || data.error) {
+        throw new Error(`API Error: ${response.status} ${data.error?.message || response.statusText}`);
       }
+
+      const result = extractGeminiImage(data, modelId);
+      if (onStatusUpdate) onStatusUpdate(`> [image] generation complete (${modelId})`);
+      return result;
     } catch (e) {
-      let msg = e.message;
-      if (e.name === 'AbortError') msg = "Timeout (300s)";
+      const msg = e.name === "AbortError" ? `Timeout (${IMAGE_TIMEOUT_MS / 1000}s)` : e.message;
       console.warn(`[ImageGen] ${modelId} failed:`, msg);
       lastError = new Error(msg);
-      if (onStatusUpdate) onStatusUpdate(`> [画像] ${modelId} 失敗: ${msg.substring(0, 60)}`);
+      if (onStatusUpdate) onStatusUpdate(`> [image] ${modelId} failed: ${msg.substring(0, 80)}`);
     } finally {
-      if (timeoutId) clearTimeout(timeoutId);
+      clearTimeout(timeoutId);
     }
   }
 
-  // 全モデル失敗: 診断
-  if (onStatusUpdate) onStatusUpdate("> [画像] 全モデル失敗。アカウント診断中...");
+  if (onStatusUpdate) onStatusUpdate("> [image] all Gemini image models failed. Running account diagnostics...");
   try {
     const diagnosis = await diagnoseConnection();
     console.error("IMAGE DIAGNOSIS:", diagnosis);
-    let errorMsg = `画像生成全モデルエラー。\n${diagnosis}`;
     if (diagnosis.includes("Quota") || diagnosis.includes("429")) {
-      errorMsg = "【API制限】画像生成の使用回数上限に達しました。";
-    } else if (diagnosis.includes("SAFETY") || diagnosis.includes("PROHIBITED")) {
-      errorMsg = "【コンテンツ制限】安全フィルターにより画像生成がブロックされました。";
-    } else if (diagnosis.includes("404")) {
-      errorMsg = "【モデル未検出】画像生成可能なモデルが利用できません。";
+      throw new Error("Gemini image generation quota was exceeded. Wait and retry later.");
     }
-    throw new Error(errorMsg);
+    if (diagnosis.includes("SAFETY") || diagnosis.includes("PROHIBITED")) {
+      throw new Error("Gemini image generation was blocked by the safety filter.");
+    }
+    if (diagnosis.includes("404")) {
+      throw new Error("Gemini image generation model is unavailable for this API key.");
+    }
+    throw new Error(`All Gemini image models failed. ${diagnosis}`);
   } catch (diagErr) {
-    if (diagErr.message.includes("API制限") || diagErr.message.includes("コンテンツ制限") || diagErr.message.includes("モデル未検出")) {
-      throw diagErr;
-    }
-    throw lastError || new Error(`全画像モデル失敗 (${attemptedModels.join(", ")})`);
+    throw diagErr || lastError || new Error(`All image generation models failed (${attemptedModels.join(", ")}).`);
   }
 };

@@ -7,7 +7,7 @@ import { buildPrompt } from './lib/prompt';
 import { generateFieldValueAI, generateGachaTextsAI, generateImageAI, setActiveEngine, getEngineDisplayName, setApiKeys, getActiveEngine } from './lib/ai-provider';
 import FieldInput from './components/FieldInput';
 
-const SYSTEM_VERSION = "1.3.6";
+const SYSTEM_VERSION = "1.3.7";
 const APP_NAME = "AIキャラクターシートメーカー";
 
 // === スマート連携テーブル ===
@@ -201,7 +201,7 @@ const App = () => {
     showStatus('🎨 画像生成中...');
     try {
       const result = await generateImageAI(generatedPrompt, (s) => showStatus(s));
-      const rawSrc = `data:image/png;base64,${result.base64Img}`;
+      const rawSrc = `data:${result.mimeType || 'image/png'};base64,${result.base64Img}`;
       // ウォーターマーク焼き込み
       const imgSrc = await applyWatermark(rawSrc);
       if (compareMode && activeSlot === 'B') { setSlotBImage(imgSrc); }

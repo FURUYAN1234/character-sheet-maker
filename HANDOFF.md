@@ -1,66 +1,50 @@
 # HANDOFF
 
+This file is public-repository safe. Do not include API keys, private credentials, billing data, private tokens, personal local paths, or unreleased account details.
+
 ## Last Updated
-2026-05-31 08:41
+2026-06-19 17:55
 
 ## Last Agent
-Antigravity
+Codex
 
 ## App Root
-C:\Users\sx717\Antigravity\character_sheet
+`C:\Users\sx717\Antigravity\character_sheet`
 
 ## Current Goal
-Codexによるバージョンアップおよびフルデプロイプロトコルの実行テスト。
+Fallback Chain compatibility update and deployment for v1.3.7.
 
-## Completed
-- Codexによるバグ修正（画像読み込み、エラーハンドリング、API切替）の実施。
-- Antigravity側での修正差分レビューと `git commit` の実行（コミット完了）。
+## 2026-06-19 v1.3.7 Fallback Chain Compatibility
 
-## In Progress
-- バージョンアップ（v1.3.5 → v1.3.6）とデプロイ作業。
+- Gemini image generation now uses the current Nano Banana 2 `gemini-3.1-flash-image` REST flow with `responseModalities: ["TEXT", "IMAGE"]`.
+- Legacy Gemini image preview rollback names were removed from the runtime image chain.
+- OpenAI image generation now matches current `gpt-image-2` behavior: `1024x1792`, `high`, `output_format: "png"`, 600-second timeout, and a 32,000-character prompt guard.
+- Image MIME metadata is preserved before canvas watermarking.
+- `src/lib/openai.js` was rebuilt with the same exported API because the previous file contained syntax-breaking mojibake strings.
+- Version identity was bumped to `1.3.7` in `package.json`, `package-lock.json`, `src/App.jsx`, `index.html`, and `README.md`.
+- Release helper text files were refreshed for v1.3.7.
 
-## Next Steps
-1. 関連ファイル（`package.json`, `src/App.jsx`, `index.html`, `README.md` 等）のバージョンをインクリメント（v1.3.6 等へ更新）する。
-2. `docs/deploy.md` およびプロジェクトのデプロイルールに従い、ビルドおよび GitHub Pages へのデプロイ（`npm run deploy`等）を実行する。
-3. デプロイ成功後、変更をコミットしてリモートへプッシュする。
-4. 可能であれば GitHub Release 作成などの関連タスクも実施する。
-5. 作業完了後、HANDOFF.md を更新して Antigravity に差し戻す。
+## Verification
 
-## Files Changed
-- 差分なし（直前のコミットでクリーンな状態）
-
-## Commands Run
-```powershell
-git add HANDOFF.md src/App.jsx ; git commit -m "Fix: Codex debug session fixes for image loading, error handling, and API switch"
-```
-Result:
-```
-[main 398bf60] Fix: Codex debug session fixes ...
- 2 files changed, 92 insertions(+), 85 deletions(-)
-```
-
-## Test Status
-- Build smoke: 成功
-- Local HTTP smoke: 成功
-- Headless Edge render smoke: 成功
-
-## Build Status
-- デプロイに向けた本番ビルド待ち
+- `node --check src/lib/gemini.js`
+- `node --check src/lib/imagen.js`
+- `node --check src/lib/openai.js`
+- `node --check src/lib/ai-provider.js`
+- `node --check src/lib/prompt.js`
+- `npm run build`
+- `npm run lint --if-present`
+- Local HTTP 200 on `http://127.0.0.1:5176/`
+- In-app browser displayed `AIキャラクターシートメーカー V1.3.7`.
+- User-entered Gemini key enabled `🎲 全項目ランダム`.
+- Random generation completed with updated fields and status `TXT: AI`.
+- Gemini image generation completed through `gemini-3.1-flash-image`; the UI displayed a generated PNG character sheet, enabled the download button, showed status `IMG: gemini-3.1-flash-image`, and the image dimensions were `1024x1536`.
 
 ## Deploy Status
-- デプロイ待ち
 
-## Git Status
-```
-## main...origin/main [ahead 1]
-```
-Working tree is clean.
+Deploy/tag/release are next. No backup was requested.
 
-## Warnings
-- バージョンアップの際は、指定された全ての同期対象ファイルでバージョン番号が一致していることを必ず確認してください。
-- デプロイ後は 404 エラーやキャッシュ汚染を防ぐため、オンラインでの反映確認を忘れずに行ってください。
+## Notes For Next Agent
 
-## Resume Prompt
-対象アプリ: `C:\Users\sx717\Antigravity\character_sheet`
-
-AGENTS.md と HANDOFF.md を読んで、Antigravityからの引き継ぎ内容を確認して。直前のコミットは完了しているので、指示通りバージョンをインクリメントし、プロジェクトのルールに従ってデプロイまで進めて。終わったらHANDOFF.mdを更新して。
+- Do not ask the user to paste API keys into chat.
+- Official local port is `5176`.
+- Deploy target is GitHub Pages via `npm run deploy`; Hugging Face is not applicable.

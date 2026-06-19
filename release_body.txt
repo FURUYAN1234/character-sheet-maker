@@ -1,23 +1,17 @@
-﻿## AI Character Sheet Maker v1.2.0 Alpha
+﻿## AI Character Sheet Maker v1.3.7
 
 ### What's New / 更新内容
-- Dual API Architecture: Support for both Gemini & OpenAI (ChatGPT) engines
-- 10 configurable parameter categories (45+ fields)
-- 3-mode input: Select / Free text / AI generate
-- Smart linkages: Gender↔Beard, Age↔Build, Era↔Costume
-- Nano Banana Pro OCR integration fields
-- 18 dramatically different art styles
-- A/B comparison mode
-- Session-only API key (no persistent storage)
+- Updated Gemini image generation to the current Nano Banana 2 `gemini-3.1-flash-image` REST flow with `responseModalities: ["TEXT", "IMAGE"]`.
+- Disabled rollback to legacy Gemini image preview model names.
+- Updated OpenAI image generation for current `gpt-image-2`: `1024x1792`, `high`, `output_format: "png"`, and 600-second timeout.
+- Added a 32,000-character OpenAI image prompt guard and MIME-aware image handling before watermarking.
+- Rebuilt the OpenAI client module to remove syntax-breaking mojibake strings while keeping the same app-facing API.
 
-## AIキャラクターシートメーカー v1.2.0 Alpha
+## AIキャラクターシートメーカー v1.3.7
 
 ### 更新内容
-- Dual API Architecture: Gemini と OpenAI (ChatGPT) 両エンジンに対応
-- 10カテゴリ・45以上のパラメータ設定
-- 3モード入力：選択 / 自由入力 / AI生成
-- スマート連携：性別↔髭、年齢↔体型、世界観↔衣装
-- Nano Banana Pro OCR連携フィールド
-- 18種の劇的に異なる画風
-- A/B比較モード
-- セッション限定APIキー（永続化なし）
+- Gemini画像生成を現行Nano Banana 2の `gemini-3.1-flash-image` REST方式と `responseModalities: ["TEXT", "IMAGE"]` に更新しました。
+- 旧preview系Gemini画像モデルへのロールバックを停止しました。
+- OpenAI画像生成を現行 `gpt-image-2` 仕様に合わせ、`1024x1792`、`high`、`output_format: "png"`、600秒タイムアウトへ更新しました。
+- OpenAI画像プロンプトの32,000文字上限ガードと、ウォーターマーク前のMIME保持を追加しました。
+- 構文を壊していた文字化け文字列を除去しつつ、アプリ側のOpenAI API呼び出し口は維持しました。
