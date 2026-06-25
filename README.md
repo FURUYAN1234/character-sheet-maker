@@ -2,7 +2,8 @@
 
 **v1.3.7** - Gemini & OpenAI (ChatGPT) dual-engine AI character sheet maker
 
-> **[[Nano Banana 2 and ChatGPT Images 2.0 Powered Super AI 4-koma System](https://github.com/FURUYAN1234/nano-banana-pro/blob/main/README.md)](https://github.com/FURUYAN1234/nano-banana-pro) 騾｣謳ｺ蟇ｾ蠢・*
+[!['ChatGPT Image 2026年6月25日 22_19_30'](https://github.com/user-attachments/assets/d850ac7f-aa1c-40cc-a378-b8c6673c726c)](https://youtu.be/pqYVxUUg0Cs?si=27g1I3tO2EuZkOuxJ)
+
 > 逕滓・縺輔ｌ縺溘く繝｣繝ｩ繧ｯ繧ｿ繝ｼ繧ｷ繝ｼ繝医ｒ[[Nano Banana 2 and ChatGPT Images 2.0 Powered Super AI 4-koma System](https://github.com/FURUYAN1234/nano-banana-pro/blob/main/README.md)](https://github.com/FURUYAN1234/nano-banana-pro) 縺ｮ OCR 縺ｧ隱ｭ縺ｿ蜿悶ｊ縲√・繝ｳ繧ｬ蛻ｶ菴懊・蟷・ｒ蠎・￡繧九％縺ｨ縺後〒縺阪∪縺吶・
 
 ---
