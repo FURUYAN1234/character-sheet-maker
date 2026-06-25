@@ -1,4 +1,4 @@
-﻿# AI繧ｭ繝｣繝ｩ繧ｯ繧ｿ繝ｼ繧ｷ繝ｼ繝医Γ繝ｼ繧ｫ繝ｼ / AI Character Sheet Maker
+# AI繧ｭ繝｣繝ｩ繧ｯ繧ｿ繝ｼ繧ｷ繝ｼ繝医Γ繝ｼ繧ｫ繝ｼ / AI Character Sheet Maker
 
 **v1.3.7** - Gemini & OpenAI (ChatGPT) dual-engine AI character sheet maker
 
@@ -450,6 +450,13 @@ A tool that generates seamless 360-degree spatial backgrounds to provide backgro
 A tool to automatically convert static 4-koma manga into fully voiced animated videos. / 髱呎ｭ｢逕ｻ縺ｮ4繧ｳ繝樊ｼｫ逕ｻ繧偵ヵ繝ｫ繝懊う繧ｹ縺ｮ蜍慕判縺ｫ閾ｪ蜍募､画鋤縺吶ｋ繝・・繝ｫ縺ｧ縺吶・
 - [Explanation / 隗｣隱ｬ](https://note.com/happy_duck780/n/ndc6533c1512f)
 - [Code / 繧ｳ繝ｼ繝云(https://github.com/FURUYAN1234/ai-voice-comic-maker)
+
+#### 7. Monogatari Buzz Maker / 物語バズメーカー
+A trend-to-story planning tool that converts public Web/RSS signals into practical manga, short video, explainer video, and novel briefs. / 公開Web/RSSの話題シグナルを、漫画・ショート動画・解説動画・小説の実用企画へ変換する創作支援ツールです。
+- [Explanation / 解説](https://note.com/happy_duck780/n/ncc593101d77f)
+- [Demo / デモ](https://furuyan1234.github.io/viral-radar/)
+- [Code / コード](https://github.com/FURUYAN1234/viral-radar)
+
 ---
 
 Developed by **FURU**
