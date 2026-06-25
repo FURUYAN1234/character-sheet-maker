@@ -1,9 +1,15 @@
 import { getApiKey, diagnoseConnection } from "./gemini";
 
 const IMAGE_TIMEOUT_MS = 300000;
+const GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta";
 const MODELS_TO_TRY = [
   "gemini-3.1-flash-image"
 ];
+
+const buildGeminiHeaders = (apiKey) => ({
+  "Content-Type": "application/json",
+  "x-goog-api-key": apiKey
+});
 
 const buildGeminiImageBody = (prompt) => ({
   contents: [{ role: "user", parts: [{ text: prompt }] }],
@@ -52,10 +58,10 @@ export const generateImage = async (prompt, onStatusUpdate) => {
       if (onStatusUpdate) onStatusUpdate(`> [image] ${modelId} generation started... (2-5 min)`);
 
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${currentApiKey}`,
+        `${GEMINI_API_BASE}/models/${modelId}:generateContent`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: buildGeminiHeaders(currentApiKey),
           body: JSON.stringify(buildGeminiImageBody(prompt)),
           signal: controller.signal,
         }

@@ -13,6 +13,8 @@ const TEXT_MODEL_IDS = [
     "gemini-pro-latest"
 ];
 
+const GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta";
+
 // 画像付きリクエスト用 (キャラクターシート認識等): フィルター寛容モデル優先
 const IMAGE_MODEL_IDS = [
     "gemini-3.5-flash",
@@ -28,13 +30,20 @@ let currentApiKey = "";
 export const setApiKey = (key) => { currentApiKey = key; };
 export const getApiKey = () => currentApiKey;
 
+const buildGeminiHeaders = (extra = {}) => ({
+  ...extra,
+  "x-goog-api-key": currentApiKey
+});
+
 /**
  * 診断機能: このAPIキーで利用可能なモデル一覧を取得
  */
 export const diagnoseConnection = async () => {
   if (!currentApiKey) return "API Key not set.";
   try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${currentApiKey}`);
+    const response = await fetch(`${GEMINI_API_BASE}/models`, {
+      headers: buildGeminiHeaders()
+    });
     const data = await response.json();
     if (data.error) return `API Error: ${data.error.message}`;
     if (!data.models) return "No models returned by API.";
@@ -82,10 +91,10 @@ export const callGeminiText = async (prompt, onStatusUpdate, options = {}) => {
       };
 
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${currentApiKey}`,
+        `${GEMINI_API_BASE}/models/${modelId}:generateContent`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: buildGeminiHeaders({ "Content-Type": "application/json" }),
           body: JSON.stringify(requestBody),
           signal: controller.signal,
         }

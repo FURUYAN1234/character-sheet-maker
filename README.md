@@ -1,6 +1,6 @@
 # AIキャラクターシートメーカー / AI Character Sheet Maker
 
-**v1.3.7** — Gemini & OpenAI (ChatGPT) 両対応のAIキャラクターシート自動生成ツール
+**v1.3.8** — Gemini & OpenAI (ChatGPT) 両対応のAIキャラクターシート自動生成ツール
 
 [!['ChatGPT Image 2026年6月25日 22_19_30'](https://github.com/user-attachments/assets/d850ac7f-aa1c-40cc-a378-b8c6673c726c)](https://youtu.be/pqYVxUUg0Cs?si=27g1I3tO2EuZkOuxJ)
 
@@ -204,6 +204,10 @@ character_sheet/
 ---
 
 ## 📋 バージョン履歴 / Changelog
+
+### v1.3.8 (2026-06-25)
+- **[Security/UX Fix]** APIキー入力欄のブラウザ復元・自動補完を抑制し、アプリ起動時にメモリ上のAPIキーと入力欄を明示クリアするよう修正。Gemini APIキーをURLクエリへ埋め込まず `x-goog-api-key` ヘッダーで送信するよう変更。Git管理ファイル・Git履歴・公開 `gh-pages` に実APIキー形式の文字列が含まれないことを確認。
+- **[Security/UX Fix]** Disabled browser form restoration/autofill for the API key field and explicitly clears in-memory API keys on app mount. Gemini API keys are now sent through the `x-goog-api-key` header instead of request URLs. Added regression tests and verified tracked files, Git history, and published `gh-pages` contain no real API-key-shaped secrets.
 
 ### v1.3.7 (2026-06-19)
 - **[Fix]** Gemini画像生成チェーンを現行のNano Banana 2 `gemini-3.1-flash-image` RESTフローへ更新し、`responseModalities: ["TEXT", "IMAGE"]` を使用。架空・旧preview系画像モデル名へのロールバックを無効化。
