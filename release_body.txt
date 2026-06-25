@@ -1,17 +1,17 @@
-## AI Character Sheet Maker v1.3.8
+﻿## AI Character Sheet Maker v1.3.7
 
 ### What's New / 更新内容
-- Hardened API key reload behavior: the app now clears in-memory API keys and the API input field on mount.
-- Suppressed browser form restoration and password-manager autofill for the API key field with `autocomplete="new-password"` and password-manager ignore attributes.
-- Gemini API calls now send the API key through the `x-goog-api-key` header instead of embedding it in request URLs.
-- Added regression tests proving API keys are not persisted through browser storage APIs, not embedded in Gemini URLs, and not described with misleading "never external" copy.
-- Verified current tracked files, all Git refs/history, and the published `gh-pages` branch contain no Gemini/OpenAI/HF API-key-shaped secrets.
+- Updated Gemini image generation to the current Nano Banana 2 `gemini-3.1-flash-image` REST flow with `responseModalities: ["TEXT", "IMAGE"]`.
+- Disabled rollback to legacy Gemini image preview model names.
+- Updated OpenAI image generation for current `gpt-image-2`: `1024x1792`, `high`, `output_format: "png"`, and 600-second timeout.
+- Added a 32,000-character OpenAI image prompt guard and MIME-aware image handling before watermarking.
+- Rebuilt the OpenAI client module to remove syntax-breaking mojibake strings while keeping the same app-facing API.
 
-## AIキャラクターシートメーカー v1.3.8
+## AIキャラクターシートメーカー v1.3.7
 
 ### 更新内容
-- APIキー再読込対策として、アプリ起動時にメモリ上のAPIキーとAPI入力欄を明示的にクリアします。
-- APIキー入力欄に `autocomplete="new-password"` とパスワードマネージャ抑制属性を追加し、ブラウザのフォーム復元・自動補完を抑制します。
-- Gemini API呼び出しでは、APIキーをURLクエリへ埋め込まず `x-goog-api-key` ヘッダーで送信するよう変更しました。
-- ブラウザ保存APIを使っていないこと、Gemini URLへキーを埋め込まないこと、不正確な「外部送信なし」文言を残さないことを回帰テストで固定しました。
-- 現在のGit管理ファイル、全Git ref/履歴、公開 `gh-pages` ブランチに、Gemini/OpenAI/HFの実APIキー形式の文字列が含まれないことを確認しました。
+- Gemini画像生成を現行Nano Banana 2の `gemini-3.1-flash-image` REST方式と `responseModalities: ["TEXT", "IMAGE"]` に更新しました。
+- 旧preview系Gemini画像モデルへのロールバックを停止しました。
+- OpenAI画像生成を現行 `gpt-image-2` 仕様に合わせ、`1024x1792`、`high`、`output_format: "png"`、600秒タイムアウトへ更新しました。
+- OpenAI画像プロンプトの32,000文字上限ガードと、ウォーターマーク前のMIME保持を追加しました。
+- 構文を壊していた文字化け文字列を除去しつつ、アプリ側のOpenAI API呼び出し口は維持しました。

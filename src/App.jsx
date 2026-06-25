@@ -7,7 +7,7 @@ import { buildPrompt } from './lib/prompt';
 import { generateFieldValueAI, generateGachaTextsAI, generateImageAI, setActiveEngine, getEngineDisplayName, setApiKeys, getActiveEngine } from './lib/ai-provider';
 import FieldInput from './components/FieldInput';
 
-const SYSTEM_VERSION = "1.3.8";
+const SYSTEM_VERSION = "1.3.7";
 const APP_NAME = "AIキャラクターシートメーカー";
 
 // === スマート連携テーブル ===
@@ -34,7 +34,6 @@ const App = () => {
   const [apiKeyInput, setApiKeyInput] = useState('');
   const [selectedEngine, setSelectedEngine] = useState(null);
   const [isUnlocked, setIsUnlocked] = useState(false);
-  const apiInputRef = useRef(null);
 
 
 
@@ -92,29 +91,6 @@ const App = () => {
     else if (trimmed.startsWith('AIza')) setSelectedEngine('gemini');
     else setSelectedEngine(null);
   };
-
-  useEffect(() => {
-    setApiKeys('', '');
-    setActiveEngine('gemini');
-    setApiKeyInput('');
-    setSelectedEngine(null);
-    setIsUnlocked(false);
-
-    const clearRestoredInput = () => {
-      if (apiInputRef.current) {
-        apiInputRef.current.value = '';
-      }
-    };
-
-    clearRestoredInput();
-    const immediateTimer = window.setTimeout(clearRestoredInput, 0);
-    const autofillTimer = window.setTimeout(clearRestoredInput, 300);
-
-    return () => {
-      window.clearTimeout(immediateTimer);
-      window.clearTimeout(autofillTimer);
-    };
-  }, []);
 
 
 
@@ -530,10 +506,7 @@ const App = () => {
               </button>
             </div>
 
-            <input ref={apiInputRef} type="password" name="character-sheet-runtime-api-key"
-              autoComplete="new-password" autoCorrect="off" autoCapitalize="off" spellCheck={false}
-              data-lpignore="true" data-1p-ignore="true" data-bwignore="true"
-              className="api-gate-input" placeholder="APIキーを入力すると自動判別します"
+            <input type="password" className="api-gate-input" placeholder="APIキーを入力すると自動判別します"
               value={apiKeyInput} onChange={handleApiKeyChange}
               onKeyDown={(e) => e.key === 'Enter' && handleApiKeySubmit()} />
             
@@ -545,7 +518,7 @@ const App = () => {
               <span className="api-gate-links-sep">|</span>
               <a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer">🔑 OpenAI APIキー取得</a>
             </div>
-            <p className="api-gate-note">※ APIキーはセッション限定（ブラウザに保存されません）<br/>※ キーはメモリ内のみ保持・ページを閉じると消去・Gemini/OpenAI API呼び出し以外には送信しません</p>
+            <p className="api-gate-note">※ APIキーはセッション限定（ブラウザに保存されません）<br/>※ キーはメモリ内のみ保持・ページを閉じると消去・外部送信一切なし</p>
           </div>
         </div>
       )}
