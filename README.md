@@ -7,6 +7,8 @@
 
 > **A visible-parameter character design tool for manga, story, and AI image workflows.**
 > **漫画・物語・AI画像生成のために、キャラクター設計を見えるパラメータへ分解する制作支援ツールです。**
+> 
+ [!['ChatGPT Image 2026年6月25日 22_19_30'](https://github.com/user-attachments/assets/d850ac7f-aa1c-40cc-a378-b8c6673c726c)](https://youtu.be/pqYVxUUg0Cs?si=27g1I3tO2EuZkOuxJ)
 
 AI Character Sheet Maker creates structured character reference sheets from dozens of editable design axes instead of relying on a single free-form prompt. It is designed to feed downstream systems such as **Super FURU AI 4-koma System**, Story Maker, and manual ChatGPT / Gemini image workflows.
 
