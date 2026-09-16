@@ -14,6 +14,13 @@ Codex
 ## Current Goal
 Change the default OpenAI image route to GPT-Image-2.5 Sunburst at xhigh quality; preserve the explicitly selected Gemini / Nano Banana route.
 
+## 2026-09-16 v1.3.8 GPT-Image-2.5 Sunburst
+
+- OpenAI image generation uses `gpt-image-2.5-sunburst` at `xhigh` first.
+- Non-policy errors retry once with `gpt-image-2` at `high`; content-policy blocks do not retry.
+- The API gate starts with OpenAI selected, while Gemini-key input retains the existing Nano Banana route.
+- Pending release steps: build, GitHub Pages deployment, public-page verification, note update, and full backup.
+
 ## 2026-09-16 GPT-Image-2.5 Sunburst Default
 
 - The API gate now starts with OpenAI selected, while entering a Gemini key still explicitly selects the existing Gemini / Nano Banana route.

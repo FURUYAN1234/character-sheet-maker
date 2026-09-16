@@ -1,17 +1,7 @@
-﻿## AI Character Sheet Maker v1.3.7
+## AI Character Sheet Maker v1.3.8 / AIキャラクターシートメーカー v1.3.8
 
 ### What's New / 更新内容
-- Updated Gemini image generation to the current Nano Banana 2 `gemini-3.1-flash-image` REST flow with `responseModalities: ["TEXT", "IMAGE"]`.
-- Disabled rollback to legacy Gemini image preview model names.
-- Updated OpenAI image generation for current `gpt-image-2`: `1024x1792`, `high`, `output_format: "png"`, and 600-second timeout.
-- Added a 32,000-character OpenAI image prompt guard and MIME-aware image handling before watermarking.
-- Rebuilt the OpenAI client module to remove syntax-breaking mojibake strings while keeping the same app-facing API.
-
-## AIキャラクターシートメーカー v1.3.7
-
-### 更新内容
-- Gemini画像生成を現行Nano Banana 2の `gemini-3.1-flash-image` REST方式と `responseModalities: ["TEXT", "IMAGE"]` に更新しました。
-- 旧preview系Gemini画像モデルへのロールバックを停止しました。
-- OpenAI画像生成を現行 `gpt-image-2` 仕様に合わせ、`1024x1792`、`high`、`output_format: "png"`、600秒タイムアウトへ更新しました。
-- OpenAI画像プロンプトの32,000文字上限ガードと、ウォーターマーク前のMIME保持を追加しました。
-- 構文を壊していた文字化け文字列を除去しつつ、アプリ側のOpenAI API呼び出し口は維持しました。
+- OpenAI image generation now starts with `gpt-image-2.5-sunburst` at `xhigh`. / OpenAI画像生成は `gpt-image-2.5-sunburst` の `xhigh` から開始します。
+- A non-policy error falls back once to `gpt-image-2` at `high`. / ポリシー以外のエラー時は `gpt-image-2` の `high` へ一度だけフォールバックします。
+- Content-policy blocks do not make a second image request. / コンテンツポリシーによる拒否では二度目の画像リクエストを行いません。
+- The API gate starts with OpenAI selected; entering a Gemini key preserves the Nano Banana route. / APIゲートはOpenAIを初期選択し、Geminiキー入力時はNano Banana経路を維持します。
