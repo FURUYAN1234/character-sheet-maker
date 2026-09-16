@@ -23,13 +23,36 @@ const ART_STYLE_KEYWORDS = {
   '精密な工業設計図風': 'technical blueprint style with wireframe overlays, mechanical precision, grid lines, and monochrome blue palette',
 };
 
+export const buildCharacterInfoEntries = (d) => {
+  const entries = [
+    { label: '氏名', value: `${d.name || '名無しの被験体'}${d.nickname ? ` 【${d.nickname}】` : ''}` },
+    { label: '属性', value: `${d.sex} / ${d.species} / ${d.ageGroup} / ${d.ethnicity}` },
+    { label: '身体', value: `${d.height} / ${d.weight} / ${d.bodyBuild}(${d.muscleType})` },
+    { label: '精神', value: d.personality },
+    { label: '好き', value: d.likes },
+    { label: '嫌い', value: d.dislikes },
+    { label: '口癖', value: d.catchphrase },
+    { label: '台詞', value: d.dialogue },
+  ];
+  if (d.archetype) entries.push({ label: '役割', value: d.archetype });
+  if (d.organization) entries.push({ label: '所属', value: d.organization });
+  if (d.actionTendency && d.actionTendency !== 'なし') {
+    entries.push({ label: 'アクション', value: d.actionTendency });
+  }
+  if (d.emotionRange) entries.push({ label: '感情幅', value: d.emotionRange });
+  if (d.directionStyle) entries.push({ label: '演出', value: d.directionStyle });
+  if (d.awakening && d.awakening !== 'なし') {
+    entries.push({ label: '覚醒', value: d.awakening });
+  }
+  return entries;
+};
+
 /**
  * フォームデータからキャラクターシート生成用プロンプトを構築
  * Gemini / Imagen / DALL-E 向け：自然言語のみ使用、SD形式ウェイト記法は使用しない
  */
 export const buildPrompt = (formData) => {
   const d = formData;
-  const finalName = d.name || '名無しの被験体';
 
   // === 画風キーワード（自然言語） ===
   const styleKw = ART_STYLE_KEYWORDS[d.artStyle] || d.artStyle;
@@ -82,24 +105,9 @@ export const buildPrompt = (formData) => {
     layoutInstruction = `CRITICAL LAYOUT: ${d.layoutType}`;
   }
 
-  const infoLines = [
-    `■氏名：${finalName}${d.nickname ? ` 【${d.nickname}】` : ''}`,
-    `■属性：${d.sex} / ${d.species} / ${d.ageGroup} / ${d.ethnicity}`,
-    `■身体：${d.height} / ${d.weight} / ${d.bodyBuild}(${d.muscleType})`,
-    `■精神：${d.personality}`,
-    `■好き：${d.likes}`,
-    `■嫌い：${d.dislikes}`,
-    `■口癖：${d.catchphrase}`,
-    `■台詞：${d.dialogue}`,
-  ];
-  if (d.archetype) infoLines.push(`■役割：${d.archetype}`);
-  if (d.organization) infoLines.push(`■所属：${d.organization}`);
-  if (d.actionTendency && d.actionTendency !== 'なし') infoLines.push(`■アクション：${d.actionTendency}`);
-  if (d.emotionRange) infoLines.push(`■感情幅：${d.emotionRange}`);
-  if (d.directionStyle) infoLines.push(`■演出：${d.directionStyle}`);
-  if (d.awakening && d.awakening !== 'なし') infoLines.push(`■覚醒：${d.awakening}`);
-
-  const characterInfoBlock = infoLines.map(line => `  ${line}`).join('\n');
+  const characterInfoBlock = buildCharacterInfoEntries(d)
+    .map(({ label, value }) => `  ■${label}：${value}`)
+    .join('\n');
 
   return `
 An elaborate and professional character design sheet.
@@ -114,8 +122,8 @@ ${layoutInstruction}
 You MUST strictly follow the requested art style: [ ${styleKw} ].
 Do not use a generic anime style unless requested. The visual aesthetics, shading, and linework must perfectly match the requested style.
 
-## 3. CHARACTER INFORMATION
-Name and text to render at the top in Japanese:
+## 3. CHARACTER INFORMATION (APPLICATION TYPESET)
+The application will typeset the exact profile data after image generation. The profile below is reference data for the character. Do not draw any text in the illustration.
 ${characterInfoBlock}
 
 ## 4. CHARACTER APPEARANCE
@@ -144,7 +152,7 @@ ${d.voiceType ? `Voice image: ${d.voiceType}. Speech mannerism: ${d.speechStyle}
 ## 7. BACKGROUND & STRICT RULES
 - ${bgControl}
 - Image aspect ratio: Portrait A4 (3:4 or 9:16 vertical). Landscape or square is strictly forbidden.
-- DO NOT render any technical parameters, tags, weight numbers, or metadata as visible text in the image.
+- The generated illustration must contain no typography or text; the application adds the profile separately after generation.
 - Character Consistency: If multiple views are shown, they MUST be the exact same character with identical clothing and proportions.
 - No visual noise, no plastic skin, no unwanted text or numbers. Keep shading clean.
 ${d.details ? `- Additional user details: ${d.details}` : ''}

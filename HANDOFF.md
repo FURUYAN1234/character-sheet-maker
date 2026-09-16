@@ -12,7 +12,16 @@ Codex
 `C:\Users\sx717\Antigravity\character_sheet`
 
 ## Current Goal
-v1.3.8 is deployed: GPT-Image-2.5 Sunburst xhigh is the default OpenAI image route, GPT-Image-2 high is the single non-policy fallback, and Gemini keys retain the Nano Banana route.
+v1.3.9 candidate adds a deterministic Japanese profile header after image generation while preserving the complete normalized illustration. OpenAI and Gemini each completed one live image generation with the header visible; official release/deploy and the requested note update are in progress.
+
+## 2026-09-16 v1.3.9 Character Profile Typesetting
+
+- Moved character information out of model-rendered copy and into a deterministic app-rendered Japanese header above the illustration.
+- Preserved the complete 1024x1536 artwork; final PNG width is 1024px and height grows to fit the header.
+- OpenAI `gpt-image-2.5-sunburst` and Gemini `gemini-3.1-flash-image` each completed one live generation and displayed the header. The initial OpenAI request reported a generic `Failed to fetch`; a subsequent OpenAI run succeeded.
+- Visual review confirmed the profile information appeared. The Gemini illustration still included unintended English dialogue and the face read more androgynous than requested; provider artwork compliance is not guaranteed by the typesetting change.
+- Focused renderer tests: 3/3 passed. Production build: passed.
+- Release and note publication are pending official transaction and final note publish confirmation.
 
 ## 2026-09-16 v1.3.8 GPT-Image-2.5 Sunburst
 
