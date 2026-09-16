@@ -12,7 +12,7 @@ Codex
 `C:\Users\sx717\Antigravity\character_sheet`
 
 ## Current Goal
-v1.3.9 candidate adds a deterministic Japanese profile header after image generation while preserving the complete normalized illustration. OpenAI and Gemini each completed one live image generation with the header visible; official release/deploy and the requested note update are in progress.
+v1.3.9 adds a deterministic Japanese profile header after image generation while preserving the complete normalized illustration. OpenAI and Gemini each completed one live image generation with the header visible; the official release/deploy and requested public note update are complete.
 
 ## 2026-09-16 v1.3.9 Character Profile Typesetting
 
@@ -21,7 +21,8 @@ v1.3.9 candidate adds a deterministic Japanese profile header after image genera
 - OpenAI `gpt-image-2.5-sunburst` and Gemini `gemini-3.1-flash-image` each completed one live generation and displayed the header. The initial OpenAI request reported a generic `Failed to fetch`; a subsequent OpenAI run succeeded.
 - Visual review confirmed the profile information appeared. The Gemini illustration still included unintended English dialogue and the face read more androgynous than requested; provider artwork compliance is not guaranteed by the typesetting change.
 - Focused renderer tests: 3/3 passed. Production build: passed.
-- Release and note publication are pending official transaction and final note publish confirmation.
+- Official v1.3.9 release/deploy completed. Public release: https://github.com/FURUYAN1234/character-sheet-maker/releases/tag/v1.3.9; live app: https://furuyan1234.github.io/character-sheet-maker/.
+- The requested note article was published at https://note.com/happy_duck780/n/neccbebd7d957. Public readback confirmed the v1.3.9 title and update entry, its description of deterministic Japanese profile compositing, and the v1.3.9 GitHub Release link. Existing audio, YouTube, image, and note-card embeds remain visible in the public article.
 
 ## 2026-09-16 v1.3.8 GPT-Image-2.5 Sunburst
 
@@ -63,10 +64,11 @@ v1.3.9 candidate adds a deterministic Japanese profile header after image genera
 
 ## Deploy Status
 
-v1.3.8 is published on GitHub Pages and as a public GitHub Release. The note article is updated and a full local/Google Drive backup was created.
+v1.3.9 is published on GitHub Pages and as a public GitHub Release. The note article is updated and publicly verified. No full backup was requested for v1.3.9.
 
 ## Notes For Next Agent
 
 - Do not ask the user to paste API keys into chat.
 - Official local port is `5176`.
-- Deploy target is GitHub Pages via `npm run deploy`; latest live release: https://furuyan1234.github.io/character-sheet-maker/\n- GitHub release: https://github.com/FURUYAN1234/character-sheet-maker/releases/tag/v1.3.8
+- Deploy target is GitHub Pages via `npm run deploy`; latest live release: https://furuyan1234.github.io/character-sheet-maker/.
+- GitHub release: https://github.com/FURUYAN1234/character-sheet-maker/releases/tag/v1.3.9

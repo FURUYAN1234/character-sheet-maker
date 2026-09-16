@@ -6,9 +6,11 @@ import { OPTIONS, DEFAULT_FORM_DATA, BACKUP_DATA, SECTIONS, PRESETS } from './li
 import { buildPrompt } from './lib/prompt';
 import { composeCharacterSheet } from './lib/character-sheet-renderer';
 import { generateFieldValueAI, generateGachaTextsAI, generateImageAI, setActiveEngine, getEngineDisplayName, setApiKeys, getActiveEngine } from './lib/ai-provider';
+import { applyRandomProfileText } from './lib/profile-randomizer';
+import { createPromptDownloadUrl, createPromptFileName } from './lib/prompt-download';
 import FieldInput from './components/FieldInput';
 
-const SYSTEM_VERSION = "1.3.9";
+const SYSTEM_VERSION = "1.3.10";
 const APP_NAME = "AIキャラクターシートメーカー";
 
 // === スマート連携テーブル ===
@@ -43,6 +45,7 @@ const App = () => {
   const [lockedFields, setLockedFields] = useState({});
   const [collapsedSections, setCollapsedSections] = useState({});
   const [copied, setCopied] = useState(false);
+  const [savedPromptName, setSavedPromptName] = useState('');
 
   // === 生成状態（APIは明示操作のみ） ===
   const [isGenerating, setIsGenerating] = useState(false);
@@ -132,6 +135,10 @@ const App = () => {
 
   // === プロンプト（APIは叩かない） ===
   const generatedPrompt = useMemo(() => buildPrompt(currentFormData), [currentFormData]);
+  const promptFileName = useMemo(
+    () => createPromptFileName(savedPromptName || currentFormData.name),
+    [savedPromptName, currentFormData.name],
+  );
 
   // === ステータス表示 ===
   const statusTimerRef = useRef(null);
@@ -331,17 +338,13 @@ const App = () => {
     showStatus('🤖 AIが名前・台詞を生成中...');
     const aiResult = await generateGachaTextsAI(newData, (s) => showStatus(s));
 
-    const genderKey = (newData.sex === '男性')
-      ? 'male'
-      : (newData.sex === '女性')
-        ? 'female' : 'neutral';
-
-    if (!lockedFields.name) newData.name = aiResult?.name || getRandom(BACKUP_DATA[`${genderKey}Names`]);
-    if (!lockedFields.catchphrase) newData.catchphrase = aiResult?.catchphrase || getRandom(BACKUP_DATA[`${genderKey}Phrases`]);
-    if (!lockedFields.dialogue) newData.dialogue = aiResult?.dialogue || getRandom(BACKUP_DATA[`${genderKey}Dialogues`]);
-    if (!lockedFields.likes) newData.likes = aiResult?.likes || getRandom(BACKUP_DATA.likes);
-    if (!lockedFields.dislikes) newData.dislikes = aiResult?.dislikes || getRandom(BACKUP_DATA.dislikes);
-    if (!lockedFields.nickname) newData.nickname = aiResult?.nickname || getRandom(BACKUP_DATA.nicknames);
+    Object.assign(newData, applyRandomProfileText({
+      current: newData,
+      generated: aiResult,
+      lockedFields,
+      backupData: BACKUP_DATA,
+      random: Math.random,
+    }));
 
     if (compareMode && activeSlot === 'B') { setSlotBData(newData); }
     else { setFormData(newData); if (compareMode) setSlotAData(newData); }
@@ -366,6 +369,10 @@ const App = () => {
     navigator.clipboard.writeText(generatedPrompt).then(() => {
       setCopied(true); setTimeout(() => setCopied(false), 2000);
     });
+  };
+
+  const savePrompt = () => {
+    showStatus(`💾 ${promptFileName} のダウンロードを開始しました`, true);
   };
 
   const downloadImage = () => {
@@ -568,7 +575,20 @@ const App = () => {
                   </div>
                 </div>
                 <div className="prompt-actions">
-                  <button className="btn-copy" onClick={copyPrompt}>{copied ? '✓ コピー済' : '📋 設定テキストをコピー'}</button>
+                  <input
+                    className="prompt-save-name"
+                    aria-label="保存するプロンプト名"
+                    value={savedPromptName}
+                    onChange={(event) => setSavedPromptName(event.target.value)}
+                    placeholder="保存名（任意）"
+                  />
+                  <a
+                    className="btn-save-prompt"
+                    href={createPromptDownloadUrl(generatedPrompt)}
+                    download={promptFileName}
+                    onClick={savePrompt}
+                  >💾 保存</a>
+                  <button className="btn-copy" onClick={copyPrompt}>{copied ? '✓ Copy済' : '📋 テキストCopy'}</button>
                 </div>
               </div>
               <div className="prompt-content"><pre className="prompt-text">{generatedPrompt}</pre></div>
