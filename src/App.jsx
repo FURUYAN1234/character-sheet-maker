@@ -10,7 +10,7 @@ import { applyRandomProfileText } from './lib/profile-randomizer';
 import { createPromptDownloadUrl, createPromptFileName } from './lib/prompt-download';
 import FieldInput from './components/FieldInput';
 
-const SYSTEM_VERSION = "1.3.10";
+const SYSTEM_VERSION = "1.4.0";
 const APP_NAME = "AIキャラクターシートメーカー";
 
 // === スマート連携テーブル ===
