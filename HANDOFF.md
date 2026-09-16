@@ -12,14 +12,14 @@ Codex
 `C:\Users\sx717\Antigravity\character_sheet`
 
 ## Current Goal
-Change the default OpenAI image route to GPT-Image-2.5 Sunburst at xhigh quality; preserve the explicitly selected Gemini / Nano Banana route.
+v1.3.8 is deployed: GPT-Image-2.5 Sunburst xhigh is the default OpenAI image route, GPT-Image-2 high is the single non-policy fallback, and Gemini keys retain the Nano Banana route.
 
 ## 2026-09-16 v1.3.8 GPT-Image-2.5 Sunburst
 
 - OpenAI image generation uses `gpt-image-2.5-sunburst` at `xhigh` first.
 - Non-policy errors retry once with `gpt-image-2` at `high`; content-policy blocks do not retry.
 - The API gate starts with OpenAI selected, while Gemini-key input retains the existing Nano Banana route.
-- Pending release steps: build, GitHub Pages deployment, public-page verification, note update, and full backup.
+- Completed: production build, GitHub Pages deployment, public-page verification, GitHub Release v1.3.8, note update, and full backup.
 
 ## 2026-09-16 GPT-Image-2.5 Sunburst Default
 
@@ -54,10 +54,10 @@ Change the default OpenAI image route to GPT-Image-2.5 Sunburst at xhigh quality
 
 ## Deploy Status
 
-Deploy/tag/release are next. No backup was requested.
+v1.3.8 is published on GitHub Pages and as a public GitHub Release. The note article is updated and a full local/Google Drive backup was created.
 
 ## Notes For Next Agent
 
 - Do not ask the user to paste API keys into chat.
 - Official local port is `5176`.
-- Deploy target is GitHub Pages via `npm run deploy`; Hugging Face is not applicable.
+- Deploy target is GitHub Pages via `npm run deploy`; latest live release: https://furuyan1234.github.io/character-sheet-maker/\n- GitHub release: https://github.com/FURUYAN1234/character-sheet-maker/releases/tag/v1.3.8
