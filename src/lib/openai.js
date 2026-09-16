@@ -13,7 +13,10 @@ const TEXT_MODEL_IDS = [
   "gpt-4o"
 ];
 
-const OPENAI_IMAGE_MODEL = "gpt-image-2";
+const OPENAI_IMAGE_MODELS = [
+  { id: "gpt-image-2.5-sunburst", quality: "xhigh" },
+  { id: "gpt-image-2", quality: "high" }
+];
 const OPENAI_IMAGE_TIMEOUT_MS = 600000;
 const OPENAI_IMAGE_TIMEOUT_SECONDS = OPENAI_IMAGE_TIMEOUT_MS / 1000;
 const OPENAI_IMAGE_PROMPT_MAX_CHARS = 32000;
@@ -141,54 +144,62 @@ ${prompt}`;
     onStatusUpdate(`> [image] OpenAI prompt is near the limit (${promptLength.toLocaleString()} / ${OPENAI_IMAGE_PROMPT_MAX_CHARS.toLocaleString()} chars)`);
   }
 
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), OPENAI_IMAGE_TIMEOUT_MS);
+  let lastError = null;
+  for (let index = 0; index < OPENAI_IMAGE_MODELS.length; index += 1) {
+    const { id: model, quality } = OPENAI_IMAGE_MODELS[index];
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), OPENAI_IMAGE_TIMEOUT_MS);
 
-  try {
-    if (onStatusUpdate) onStatusUpdate(`> [image] ${OPENAI_IMAGE_MODEL} generation started... (2-10 min)`);
+    try {
+      if (onStatusUpdate) onStatusUpdate(`> [image] ${model} generation started... (2-10 min)`);
+      const response = await fetch("https://api.openai.com/v1/images/generations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${currentOpenAIApiKey}`
+        },
+        body: JSON.stringify({
+          model,
+          prompt: dallePrompt,
+          n: 1,
+          size: "1024x1792",
+          quality,
+          output_format: "png"
+        }),
+        signal: controller.signal
+      });
 
-    const response = await fetch("https://api.openai.com/v1/images/generations", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${currentOpenAIApiKey}`
-      },
-      body: JSON.stringify({
-        model: OPENAI_IMAGE_MODEL,
-        prompt: dallePrompt,
-        n: 1,
-        size: "1024x1792",
-        quality: "high",
-        output_format: "png"
-      }),
-      signal: controller.signal
-    });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(`OpenAI API Error: ${response.status} ${data.error?.message || response.statusText}`);
+      }
 
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok) {
-      throw new Error(`OpenAI API Error: ${response.status} ${data.error?.message || response.statusText}`);
+      const imgData = data.data?.[0];
+      if (!imgData?.b64_json) {
+        throw new Error("OpenAI response did not include base64 image data.");
+      }
+
+      if (onStatusUpdate) onStatusUpdate(`> [image] generation complete (${model})`);
+      return {
+        base64Img: imgData.b64_json,
+        mimeType: "image/png",
+        usedModel: model
+      };
+    } catch (err) {
+      if (/safety|SAFETY|content_policy/i.test(err.message)) {
+        throw new Error("OpenAI image generation was blocked by the content policy.");
+      }
+      lastError = err.name === "AbortError"
+        ? new Error(`Timeout (${OPENAI_IMAGE_TIMEOUT_SECONDS}s). The server may be congested; please retry later.`)
+        : err;
+      const fallback = OPENAI_IMAGE_MODELS[index + 1];
+      if (fallback && onStatusUpdate) {
+        onStatusUpdate(`> [image] ${model} failed. Falling back to ${fallback.id}...`);
+      }
+    } finally {
+      clearTimeout(timeoutId);
     }
-
-    const imgData = data.data?.[0];
-    if (!imgData?.b64_json) {
-      throw new Error("OpenAI response did not include base64 image data.");
-    }
-
-    if (onStatusUpdate) onStatusUpdate(`> [image] generation complete (${OPENAI_IMAGE_MODEL})`);
-    return {
-      base64Img: imgData.b64_json,
-      mimeType: "image/png",
-      usedModel: OPENAI_IMAGE_MODEL
-    };
-  } catch (err) {
-    if (err.name === "AbortError") {
-      throw new Error(`Timeout (${OPENAI_IMAGE_TIMEOUT_SECONDS}s). The server may be congested; please retry later.`);
-    }
-    if (/safety|SAFETY|content_policy/i.test(err.message)) {
-      throw new Error("OpenAI image generation was blocked by the content policy.");
-    }
-    throw err;
-  } finally {
-    clearTimeout(timeoutId);
   }
+
+  throw lastError || new Error("OpenAI image generation failed for all configured models.");
 };

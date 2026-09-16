@@ -3,7 +3,7 @@
 This file is public-repository safe. Do not include API keys, private credentials, billing data, private tokens, personal local paths, or unreleased account details.
 
 ## Last Updated
-2026-06-19 17:55
+2026-09-16
 
 ## Last Agent
 Codex
@@ -12,7 +12,13 @@ Codex
 `C:\Users\sx717\Antigravity\character_sheet`
 
 ## Current Goal
-Fallback Chain compatibility update and deployment for v1.3.7.
+Change the default OpenAI image route to GPT-Image-2.5 Sunburst at xhigh quality; preserve the explicitly selected Gemini / Nano Banana route.
+
+## 2026-09-16 GPT-Image-2.5 Sunburst Default
+
+- The API gate now starts with OpenAI selected, while entering a Gemini key still explicitly selects the existing Gemini / Nano Banana route.
+- OpenAI image generation calls `gpt-image-2.5-sunburst` with `quality: "xhigh"`, then falls back to `gpt-image-2` with `quality: "high"` for non-policy errors.
+- No deployment was performed in this change.
 
 ## 2026-06-19 v1.3.7 Fallback Chain Compatibility
 

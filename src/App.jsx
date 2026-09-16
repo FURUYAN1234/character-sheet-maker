@@ -32,7 +32,7 @@ const ERA_COSTUME_MAP = {
 const App = () => {
   // === API認証 ===
   const [apiKeyInput, setApiKeyInput] = useState('');
-  const [selectedEngine, setSelectedEngine] = useState(null);
+  const [selectedEngine, setSelectedEngine] = useState('openai');
   const [isUnlocked, setIsUnlocked] = useState(false);
 
 

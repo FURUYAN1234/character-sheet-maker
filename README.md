@@ -32,7 +32,7 @@ The current public line is **v1.3.7**. This version is a browser-based React/Vit
 | Gemini text / Geminiテキスト | `gemini-3.5-flash` -> `gemini-2.5-flash` -> `gemini-2.5-pro` -> `gemini-flash-latest` -> `gemini-pro-latest` |
 | Gemini image / Gemini画像 | `gemini-3.1-flash-image` |
 | OpenAI text / OpenAIテキスト | `gpt-4.1` -> `gpt-4.1-mini` -> `gpt-4.1-nano` -> `gpt-4o` |
-| OpenAI image / OpenAI画像 | `gpt-image-2` |
+| OpenAI image / OpenAI画像 | `gpt-image-2.5-sunburst` (`xhigh`) -> `gpt-image-2` (`high`) |
 | Output canvas / 出力キャンバス | Normalized to `1024x1536` portrait PNG after generation. |
 | Local port / ローカルポート | `http://127.0.0.1:5176/` with Vite `strictPort: true`. |
 
@@ -223,10 +223,11 @@ gpt-4.1
 -> gpt-4o
 ```
 
-Image model:
+Image fallback:
 
 ```text
-gpt-image-2
+gpt-image-2.5-sunburst (xhigh)
+-> gpt-image-2 (high)
 ```
 
 ### Provider Boundary / プロバイダー境界
