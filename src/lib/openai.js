@@ -65,6 +65,16 @@ const contextToPromptText = (context, skipKey) => Object.entries(context)
   .map(([key, value]) => `${key}: ${value}`)
   .join("\n");
 
+const GACHA_CONTEXT_FIELDS = [
+  'sex', 'species', 'ageGroup', 'personality', 'speechStyle', 'eraStyle', 'archetype',
+  'artStyle', 'costume', 'weapon', 'actionTendency', 'emotionRange', 'directionStyle',
+];
+
+export const buildGachaContextText = (context) => GACHA_CONTEXT_FIELDS
+  .filter((key) => context[key])
+  .map((key) => `${key}: ${context[key]}`)
+  .join("\n");
+
 export const generateFieldValueOAI = async (fieldKey, fieldLabel, context, onStatusUpdate) => {
   if (!currentOpenAIApiKey) throw new Error("OpenAI API key is not set.");
 
@@ -103,7 +113,7 @@ Return only valid JSON with these string keys:
 name, catchphrase, dialogue, likes, dislikes, nickname.
 
 Settings:
-${contextToPromptText(context)}`;
+${buildGachaContextText(context)}`;
 
   const messages = [{ role: "user", content: prompt }];
 

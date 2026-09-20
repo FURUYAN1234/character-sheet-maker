@@ -304,31 +304,42 @@ export const PRESETS = [
   {
     name: 'ダークファンタジー戦士',
     icon: '⚔️',
-    data: { sex: '男性', species: '人間', ageGroup: '成人（26〜39歳）', bodyBuild: '鍛え上げられたアスリート型', personality: '冷静沈着・冷酷', eraStyle: '中世ファンタジー', costume: '西洋鎧', weapon: '巨大な大剣', artStyle: '劇画（重厚・劇的）', archetype: '主人公', basePose: '武器を構える', expressionSet: '冷徹な目つき' }
+    data: { name: 'ガレス・ヴァルク', catchphrase: '「立て。戦いはまだ終わらん」', dialogue: '「闇を断つ。それが俺の役目だ」', likes: '鍛錬と焚き火', dislikes: '弱者を踏みにじる者', nickname: '黒鉄の護り手', organization: '銀鹿騎士団', sex: '男性', species: '人間', ageGroup: '成人（26〜39歳）', bodyBuild: '鍛え上げられたアスリート型', personality: '冷静沈着・冷酷', eraStyle: '中世ファンタジー', costume: '西洋鎧', weapon: '巨大な大剣', magicEffect: '暗黒の霧', auraColor: '紅蓮の闘気', artStyle: '劇画（重厚・劇的）', archetype: '主人公', basePose: '武器を構える', expressionSet: '冷徹な目つき', speechStyle: '古風・武家言葉' }
   },
   {
     name: '学園ラブコメヒロイン',
     icon: '🌸',
-    data: { sex: '女性', species: '人間', ageGroup: '高校生世代（16〜18歳）', bodyBuild: '標準的・バランス重視', personality: '勝気・負けず嫌い', eraStyle: '現代・日常・学園', costume: '学生服', weapon: '武器なし', artStyle: '少女漫画（華麗・繊細）', archetype: 'ヒロイン', basePose: 'ニュートラル立ちポーズ', expressionSet: '照れ・赤面' }
+    data: { name: '朝比奈 ひより', catchphrase: '「私が先に叶えてみせるから！」', dialogue: '「放課後、少しだけ付き合いなさいよね」', likes: '新作スイーツ', dislikes: '約束を破ること', nickname: '一番星ヒロイン', organization: '陽光学園生徒会', sex: '女性', species: '人間', ageGroup: '高校生世代（16〜18歳）', bodyBuild: '標準的・バランス重視', personality: '勝気・負けず嫌い', eraStyle: '現代・日常・学園', costume: '学生服', weapon: '武器なし', magicEffect: '魔法効果なし', auraColor: 'オーラなし', artStyle: '少女漫画（華麗・繊細）', archetype: 'ヒロイン', basePose: 'ニュートラル立ちポーズ', expressionSet: '照れ・赤面', speechStyle: '標準的（女性寄り）' }
   },
   {
     name: 'サイバーパンク傭兵',
     icon: '🤖',
-    data: { sex: '無性', species: 'サイボーグ', ageGroup: '青年（19〜25歳）', bodyBuild: '重厚な機械化ボディ', personality: '神秘的な無口', eraStyle: '近未来・サイバーパンク', costume: 'サイバーウェア', weapon: '自動小銃', artStyle: '躍動感のあるダイナミックなスタイル', archetype: '放浪者', basePose: '戦闘構え', expressionSet: 'デフォルト（無表情）', lighting: 'シネマティック（ネオン光）' }
+    data: { name: 'NOVA-9', catchphrase: '「任務条件を更新。生存を優先する」', dialogue: '「この街のノイズは、まだ消えていない」', likes: '廃棄部品の修理', dislikes: '無意味な命令', nickname: '雨の回路', organization: '電脳街の傭兵', sex: '無性', species: 'サイボーグ', ageGroup: '青年（19〜25歳）', bodyBuild: '重厚な機械化ボディ', personality: '神秘的な無口', eraStyle: '近未来・サイバーパンク', costume: 'サイバーウェア', weapon: '自動小銃', subWeapon: 'ハンドガン', magicEffect: 'デジタルノイズ', auraColor: '電子ノイズ', artStyle: '躍動感のあるダイナミックなスタイル', archetype: '放浪者', basePose: '戦闘構え', expressionSet: 'デフォルト（無表情）', lighting: 'シネマティック（ネオン光）', speechStyle: '機械的・無感情' }
   },
   {
     name: '和風伝奇の剣客',
     icon: '🗡️',
-    data: { sex: '男性', species: '人間', ageGroup: '青年（19〜25歳）', bodyBuild: 'しなやかなモデル体格', personality: '誠実・生真面目', eraStyle: '和風伝奇・戦国', costume: '伝統和装', weapon: '日本刀', artStyle: '青年漫画（写実・硬派）', archetype: '主人公', basePose: '武器を構える', hairStyle: 'ポニーテール' }
+    data: { name: '雨宮 宗真', catchphrase: '「刃は、守るために抜く」', dialogue: '「怪異ならば、ここで断ち切る」', likes: '静かな茶屋', dislikes: '理不尽な呪い', nickname: '宵桜の剣客', organization: '影の一族', sex: '男性', species: '人間', ageGroup: '青年（19〜25歳）', bodyBuild: 'しなやかなモデル体格', personality: '誠実・生真面目', eraStyle: '和風伝奇・戦国', costume: '伝統和装', weapon: '日本刀', subWeapon: 'クナイ・手裏剣', magicEffect: '舞い散る花びら', auraColor: '白銀のオーラ', artStyle: '青年漫画（写実・硬派）', archetype: '主人公', basePose: '武器を構える', hairStyle: 'ポニーテール', speechStyle: '古風・武家言葉' }
   },
   {
     name: '異世界魔導師',
     icon: '✨',
-    data: { sex: '女性', species: '人間', ageGroup: '外見年齢不明', bodyBuild: '華奢・小柄', personality: '高貴・傲慢', eraStyle: '異世界', costume: '魔道士ローブ', weapon: '魔導杖', magicEffect: '幾何学魔法陣', artStyle: '透明感のある繊細なアニメ風', archetype: '救世主', expressionSet: '不敵な笑み', auraColor: '黄金の輝き' }
+    data: { name: 'セレナ・アストリア', catchphrase: '「星は私の答えを知っているわ」', dialogue: '「その扉の向こうは、私が照らす」', likes: '星図と古代遺跡', dislikes: '無知な傲慢さ', nickname: '暁の星詠み', organization: '魔導士ギルド', sex: '女性', species: '人間', ageGroup: '外見年齢不明', bodyBuild: '華奢・小柄', personality: '高貴・傲慢', eraStyle: '異世界', costume: '魔道士ローブ', weapon: '魔導杖', magicEffect: '幾何学魔法陣', artStyle: '透明感のある繊細なアニメ風', archetype: '救世主', expressionSet: '不敵な笑み', auraColor: '黄金の輝き', speechStyle: 'お嬢様言葉' }
   },
   {
     name: 'レトロ怪獣映画の怪物',
     icon: '👹',
-    data: { sex: '無性', species: '異形の怪物', ageGroup: '外見年齢不明', bodyBuild: '超巨漢', personality: '野性的・本能的', eraStyle: '昭和レトロ', costume: 'ストリート・カジュアル', subhumanPart: '龍の鱗と尾', artStyle: '90年代のレトロなセル画風', archetype: 'ラスボス', basePose: '戦闘構え', expressionSet: '激怒' }
+    data: { name: 'ガラゴン', catchphrase: '「ギャオオオオオン！」', dialogue: '「街の灯りは、腹の中まで届かない」', likes: '港の魚市場', dislikes: '怪獣退治隊', nickname: '湾岸の大怪獣', organization: '【所属なし】', sex: '無性', species: '異形の怪物', ageGroup: '外見年齢不明', bodyBuild: '超巨漢', personality: '野性的・本能的', eraStyle: '昭和レトロ', costume: 'ストリート・カジュアル', subhumanPart: '龍の鱗と尾', artStyle: '90年代のレトロなセル画風', archetype: 'ラスボス', basePose: '戦闘構え', expressionSet: '激怒', magicEffect: '炎のエフェクト', auraColor: '不気味な紫煙', speechStyle: 'カタコト' }
   },
 ];
+
+export const THEME_PRESETS = PRESETS.map(({ name, icon, data }) => ({
+  name,
+  icon,
+  data: Object.fromEntries([
+    'eraStyle', 'costume', 'outfitCondition', 'outfitFit', 'material', 'weapon', 'subWeapon',
+    'magicEffect', 'auraColor', 'accessory', 'artStyle', 'renderingMode', 'toneStyle',
+    'layoutType', 'penStyle', 'lighting', 'shadowIntensity', 'basePose', 'expressionSet',
+    'gazeDirection', 'handExpression', 'actionTendency', 'emotionRange', 'directionStyle', 'awakening',
+  ].filter((key) => data[key] !== undefined).map((key) => [key, data[key]])),
+}));

@@ -66,6 +66,9 @@ html, body { margin: 0; padding: 0; min-height: 100vh; }
   font-weight: 700; font-size: 0.7rem;
 }
 .btn-gacha:hover { border-color: var(--indigo); color: var(--indigo-light); }
+.btn-character-lock { border-color: var(--cyan); color: var(--cyan); }
+.btn-character-unlock { border-color: var(--rose); color: var(--rose); }
+.btn-character-lock:disabled, .btn-character-unlock:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .btn-generate {
   display: flex; align-items: center; gap: 0.4rem;
@@ -126,6 +129,7 @@ html, body { margin: 0; padding: 0; min-height: 100vh; }
 
 /* プリセット */
 .preset-bar { display: flex; gap: 0.5rem; overflow-x: auto; flex: 1; min-width: 0; }
+.preset-label { align-self: center; color: var(--text-muted); font-size: 0.62rem; font-weight: 700; white-space: nowrap; }
 .preset-chip {
   display: flex; align-items: center; gap: 0.3rem;
   padding: 0.35rem 0.7rem; background: var(--bg-surface); border: 1px solid var(--border);

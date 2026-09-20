@@ -2,15 +2,16 @@
 // 完全独立アプリ。他アプリとは混ぜない。
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import './App.css';
-import { OPTIONS, DEFAULT_FORM_DATA, BACKUP_DATA, SECTIONS, PRESETS } from './lib/options';
+import { OPTIONS, DEFAULT_FORM_DATA, BACKUP_DATA, SECTIONS, PRESETS, THEME_PRESETS } from './lib/options';
 import { buildPrompt } from './lib/prompt';
 import { composeCharacterSheet } from './lib/character-sheet-renderer';
 import { generateFieldValueAI, generateGachaTextsAI, generateImageAI, setActiveEngine, getEngineDisplayName, setApiKeys, getActiveEngine } from './lib/ai-provider';
 import { applyRandomProfileText } from './lib/profile-randomizer';
+import { applyThemePreset, lockCharacterIdentity, releaseCharacterIdentity } from './lib/preset-actions';
 import { createPromptDownloadUrl, createPromptFileName } from './lib/prompt-download';
 import FieldInput from './components/FieldInput';
 
-const SYSTEM_VERSION = "1.4.0";
+const SYSTEM_VERSION = "1.4.1";
 const APP_NAME = "AIキャラクターシートメーカー";
 
 // === スマート連携テーブル ===
@@ -43,6 +44,7 @@ const App = () => {
   // === フォームデータ ===
   const [formData, setFormData] = useState({ ...DEFAULT_FORM_DATA });
   const [lockedFields, setLockedFields] = useState({});
+  const [characterLockSnapshot, setCharacterLockSnapshot] = useState(null);
   const [collapsedSections, setCollapsedSections] = useState({});
   const [copied, setCopied] = useState(false);
   const [savedPromptName, setSavedPromptName] = useState('');
@@ -120,6 +122,12 @@ const App = () => {
 
   const toggleLock = useCallback((key) => {
     setLockedFields(prev => ({ ...prev, [key]: !prev[key] }));
+    setCharacterLockSnapshot((previous) => {
+      if (!previous?.[key]) return previous;
+      const next = { ...previous };
+      delete next[key];
+      return Object.keys(next).length ? next : null;
+    });
   }, []);
 
   // === セクション折りたたみ ===
@@ -359,6 +367,14 @@ const App = () => {
 
   // === プリセット ===
   const applyPreset = (preset) => {
+    if (characterLockSnapshot) {
+      const theme = THEME_PRESETS.find((candidate) => candidate.name === preset.name);
+      const newData = applyThemePreset(currentFormData, theme.data, lockedFields);
+      if (compareMode && activeSlot === 'B') { setSlotBData(newData); }
+      else { setFormData(newData); if (compareMode) setSlotAData(newData); }
+      showStatus(`🎭 見た目テーマ「${preset.name}」を適用`, true);
+      return;
+    }
     const newData = { ...DEFAULT_FORM_DATA, ...preset.data };
     if (compareMode && activeSlot === 'B') { setSlotBData(newData); }
     else { setFormData(newData); if (compareMode) setSlotAData(newData); }
@@ -369,6 +385,19 @@ const App = () => {
     navigator.clipboard.writeText(generatedPrompt).then(() => {
       setCopied(true); setTimeout(() => setCopied(false), 2000);
     });
+  };
+
+  const handleCharacterLock = () => {
+    const result = lockCharacterIdentity(lockedFields);
+    setLockedFields(result.lockedFields);
+    setCharacterLockSnapshot(result.newlyLocked);
+    showStatus('🔒 キャラクターの核となる項目を固定しました', true);
+  };
+
+  const handleCharacterUnlock = () => {
+    setLockedFields((previous) => releaseCharacterIdentity(previous, characterLockSnapshot));
+    setCharacterLockSnapshot(null);
+    showStatus('🔓 キャラクター固定を解除しました', true);
   };
 
   const savePrompt = () => {
@@ -498,6 +527,12 @@ const App = () => {
               <button className="btn-generate" onClick={handleImageGenerate} disabled={isWorking || !isUnlocked}>
                 {isImageGenerating ? '⏳ 画像生成中...' : '🎨 画像生成'}
               </button>
+              <button className="btn-gacha btn-character-lock" onClick={handleCharacterLock} disabled={!!characterLockSnapshot}>
+                🔒 キャラ固定
+              </button>
+              <button className="btn-gacha btn-character-unlock" onClick={handleCharacterUnlock} disabled={!characterLockSnapshot}>
+                🔓 固定解除
+              </button>
               <button className="btn-icon-only" onClick={handleReset} title="全リセット">↺</button>
               <button className="btn-api-switch" onClick={handleApiSwitch} title="API切替">
                 🔄 API切替
@@ -513,9 +548,10 @@ const App = () => {
             </div>
           )}
 
-          {/* ツールバー: プリセット + エンジン表示 */}
+          {/* ツールバー: 完成キャラプリセット + エンジン表示 */}
           <div className="toolbar-row">
             <div className="preset-bar">
+                  <span className="preset-label">{characterLockSnapshot ? '見た目テーマ（キャラ固定中）' : '代表キャラ'}</span>
               {PRESETS.map(p => (
                 <button key={p.name} className="preset-chip" onClick={() => applyPreset(p)}>
                   {p.icon} {p.name}
