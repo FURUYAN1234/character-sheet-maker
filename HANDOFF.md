@@ -3,7 +3,7 @@
 This file is public-repository safe. Do not include API keys, private credentials, billing data, private tokens, personal local paths, or unreleased account details.
 
 ## Last Updated
-2026-09-16
+2026-09-22
 
 ## Last Agent
 Codex
@@ -12,7 +12,15 @@ Codex
 `C:\Users\sx717\Antigravity\character_sheet`
 
 ## Current Goal
-v1.3.9 adds a deterministic Japanese profile header after image generation while preserving the complete normalized illustration. OpenAI and Gemini each completed one live image generation with the header visible; the official release/deploy and requested public note update are complete.
+v1.4.2 fixes every composed output at 1120x1584 (70:99, the same ratio as A4), then requires one live API image, the official release transaction, and a scoped update to the existing public note article. Full backup is not part of this task.
+
+## 2026-09-22 v1.4.2 A4-Ratio Output
+
+- Changed the shared post-generation compositor to emit an exact 1120x1584 PNG for both OpenAI and Gemini paths.
+- The complete provider image is contained below the deterministic Japanese profile header without cropping or aspect-ratio distortion.
+- Focused renderer test passed RED then GREEN. The full Node suite passed 18/18, and the production build passed.
+- A live OpenAI generation completed through `gpt-image-2.5-sunburst`. Browser measurement confirmed a PNG data URL at exactly 1120x1584; visual inspection confirmed readable profile text, uncropped artwork with preserved proportions, and the v1.4.2 watermark.
+- Pending: official v1.4.2 release transaction and public note update/readback.
 
 ## 2026-09-16 v1.3.9 Character Profile Typesetting
 

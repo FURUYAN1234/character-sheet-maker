@@ -11,7 +11,7 @@ import { applyThemePreset, lockCharacterIdentity, releaseCharacterIdentity } fro
 import { createPromptDownloadUrl, createPromptFileName } from './lib/prompt-download';
 import FieldInput from './components/FieldInput';
 
-const SYSTEM_VERSION = "1.4.1";
+const SYSTEM_VERSION = "1.4.2";
 const APP_NAME = "AIキャラクターシートメーカー";
 
 // === スマート連携テーブル ===

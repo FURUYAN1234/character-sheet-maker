@@ -89,7 +89,7 @@ test('image prompt leaves visible lettering to deterministic app typesetting', (
   assert.match(prompt, /■氏名：名無しの被験体/);
 });
 
-test('character sheet compositor adds a readable profile header and preserves the full artwork', async () => {
+test('character sheet compositor emits an exact 1120x1584 A4-ratio PNG and preserves the full artwork', async () => {
   assert.equal(typeof rendererModule.composeCharacterSheet, 'function');
 
   const drawnText = [];
@@ -144,26 +144,31 @@ test('character sheet compositor adds a readable profile header and preserves th
     const result = await rendererModule.composeCharacterSheet('data:image/png;base64,source', formData);
 
     assert.equal(result, 'data:image/png;base64,composited');
-    assert.equal(outputCanvas.width, 1024);
-    assert.ok(outputCanvas.height > 1536);
+    assert.equal(outputCanvas.width, 1120);
+    assert.equal(outputCanvas.height, 1584);
+    assert.equal(outputCanvas.width / outputCanvas.height, 70 / 99);
     assert.ok(drawnText.some(({ value }) => value === '名無しの被験体'));
     assert.ok(drawnText.some(({ value }) => value === '■台詞'));
     assert.ok(drawnText.some(({ value }) => value === '……退け。死にたくなければな'));
     assert.equal(drawImageCalls.length, 1);
-    assert.equal(drawImageCalls[0][1], 0);
+    assert.ok(drawImageCalls[0][1] >= 0);
     assert.ok(drawImageCalls[0][2] > 0);
-    assert.equal(drawImageCalls[0][4], 1536);
+    assert.ok(drawImageCalls[0][3] <= 1120);
+    assert.ok(drawImageCalls[0][4] <= 1584);
+    assert.equal(drawImageCalls[0][3] / drawImageCalls[0][4], 1024 / 1536);
 
-    const defaultHeight = outputCanvas.height;
+    const defaultArtworkHeight = drawImageCalls[0][4];
     const longDialogue = '機械整備の知識を活かして仲間を守り抜く。'.repeat(12);
     await rendererModule.composeCharacterSheet('data:image/png;base64,source', {
       ...formData,
       dialogue: longDialogue,
     });
-    assert.ok(outputCanvas.height > defaultHeight);
+    assert.equal(outputCanvas.width, 1120);
+    assert.equal(outputCanvas.height, 1584);
+    assert.ok(drawImageCalls[1][4] < defaultArtworkHeight);
     const valueOperations = drawnText.filter(({ font }) => font === '16px "Yu Gothic UI", Meiryo, sans-serif');
     assert.ok(valueOperations.map(({ value }) => value).join('').includes(longDialogue));
-    assert.ok(valueOperations.every(({ value }) => context.measureText(value).width <= 347));
+    assert.ok(valueOperations.every(({ value }) => context.measureText(value).width <= 420));
   } finally {
     if (originalImage === undefined) delete globalThis.Image;
     else Object.defineProperty(globalThis, 'Image', { configurable: true, writable: true, value: originalImage });

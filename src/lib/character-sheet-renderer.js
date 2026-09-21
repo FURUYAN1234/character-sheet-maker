@@ -1,7 +1,7 @@
 import { buildCharacterInfoEntries } from './prompt.js';
 
-const CANVAS_WIDTH = 1024;
-const ARTWORK_HEIGHT = 1536;
+const CANVAS_WIDTH = 1120;
+const CANVAS_HEIGHT = 1584;
 const HORIZONTAL_PADDING = 32;
 const COLUMN_GAP = 28;
 const LABEL_WIDTH = 86;
@@ -70,7 +70,7 @@ export const composeCharacterSheet = (base64DataUrl, formData, systemVersion = '
     for (const row of rows) rowTop += row.height;
     const headerHeight = Math.ceil(rowTop + 22);
 
-    canvas.height = headerHeight + ARTWORK_HEIGHT;
+    canvas.height = CANVAS_HEIGHT;
     context = canvas.getContext('2d');
     if (!context) {
       reject(new Error('画像合成用キャンバスを初期化できませんでした。'));
@@ -80,14 +80,15 @@ export const composeCharacterSheet = (base64DataUrl, formData, systemVersion = '
     context.fillStyle = '#FFFFFF';
     context.fillRect(0, 0, canvas.width, canvas.height);
 
+    const artworkHeight = CANVAS_HEIGHT - headerHeight;
     const scale = Math.min(
       CANVAS_WIDTH / image.naturalWidth,
-      ARTWORK_HEIGHT / image.naturalHeight,
+      artworkHeight / image.naturalHeight,
     );
     const drawWidth = image.naturalWidth * scale;
     const drawHeight = image.naturalHeight * scale;
     const offsetX = (CANVAS_WIDTH - drawWidth) / 2;
-    const offsetY = (ARTWORK_HEIGHT - drawHeight) / 2;
+    const offsetY = (artworkHeight - drawHeight) / 2;
     context.drawImage(image, offsetX, headerHeight + offsetY, drawWidth, drawHeight);
 
     context.textAlign = 'left';
