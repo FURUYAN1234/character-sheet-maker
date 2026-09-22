@@ -1,6 +1,6 @@
 # AI Character Sheet Maker / AIキャラクターシートメーカー
 
-![Version](https://img.shields.io/badge/version-1.4.2-4f46e5)
+![Version](https://img.shields.io/badge/version-1.4.3-4f46e5)
 ![Framework](https://img.shields.io/badge/framework-React%2019%20%2F%20Vite%206-646cff)
 ![AI](https://img.shields.io/badge/AI-Gemini%20%2F%20OpenAI-f97316)
 ![Output](https://img.shields.io/badge/output-1120x1584%20PNG-10b981)
@@ -21,19 +21,20 @@ AIキャラクターシートメーカーは、自由入力プロンプトだけ
 
 ## Current Release Line / 現行仕様
 
-The current public line is **v1.4.2**. This version is a browser-based React/Vite app with session-only API keys, dual Gemini/OpenAI routing, A/B comparison, parameter locks, deterministic Japanese profile typesetting, direct named prompt-file downloads, exact `1120x1584` output, and provenance watermarking.
+The current public line is **v1.4.3**. This version is a browser-based React/Vite app with session-only API keys, dual Gemini/OpenAI routing, A/B comparison, parameter locks, deterministic Japanese profile typesetting for form-driven sheets, automatically named prompt-file downloads, exact `1120x1584` output, and provenance watermarking. It also embeds versioned design JSON in generated PNGs so the exact prompt can be restored later.
 
-現行公開系統は **v1.4.2** です。ブラウザ上で動作する React/Vite アプリで、セッション限定APIキー、Gemini/OpenAIの切り替え、A/B比較、項目ロック、日本語プロフィールの決定的な文字合成、名前付きプロンプトファイルの直接ダウンロード、1120x1584の固定出力、来歴ウォーターマークを備えています。
+現行公開系統は **v1.4.3** です。ブラウザ上で動作する React/Vite アプリで、セッション限定APIキー、Gemini/OpenAIの切り替え、A/B比較、項目ロック、フォーム生成時の日本語プロフィール決定的文字合成、自動命名されるプロンプトファイルの直接ダウンロード、1120x1584の固定出力、来歴ウォーターマークを備えています。生成PNGにはバージョン付き設計JSONも埋め込み、後から正確なプロンプトを復元できます。
 
 | Area / 領域 | Current behavior / 現行挙動 |
 |---|---|
-| App version / バージョン | `1.4.2`, displayed in the API gate, header, footer, and watermark. |
+| App version / バージョン | `1.4.3`, displayed in the API gate, header, footer, and watermark. |
 | API key handling / APIキー | Memory-only. Keys are not written to localStorage, source files, or output images. |
 | Gemini text / Geminiテキスト | `gemini-3.5-flash` -> `gemini-2.5-flash` -> `gemini-2.5-pro` -> `gemini-flash-latest` -> `gemini-pro-latest` |
 | Gemini image / Gemini画像 | `gemini-3.1-flash-image` |
 | OpenAI text / OpenAIテキスト | `gpt-4.1` -> `gpt-4.1-mini` -> `gpt-4.1-nano` -> `gpt-4o` |
 | OpenAI image / OpenAI画像 | `gpt-image-2.5-sunburst` (`xhigh`) -> `gpt-image-2` (`high`) |
 | Output canvas / 出力キャンバス | The final PNG is exactly `1120x1584` (`70:99`, the same ratio as A4). The complete provider artwork is fitted below the Japanese profile header without cropping. |
+| Image import / 画像読み込み | Generated PNGs contain `furu.character_sheet` schema v1 JSON for exact prompt restoration. PNG and JPG/JPEG images can be dropped or selected; images without this metadata use AI prompt inference. |
 | Local port / ローカルポート | `http://127.0.0.1:5176/` with Vite `strictPort: true`. |
 
 ---
@@ -74,7 +75,7 @@ The user edits concrete axes such as body build, face type, costume, role, voice
    The app adds the exact profile fields in a Japanese header, fits the complete provider artwork below it without cropping, and applies the version watermark. The final PNG is always 1120x1584 (70:99, the same ratio as A4). A/B mode allows two slots to be compared side by side.
 
 8. **Download or reuse / 保存・再利用**
-   Download the current prompt as a named UTF-8 text file, download PNG output, or load previous image session thumbnails for comparison.
+   Download the current prompt with its automatic character-based filename, download PNG output, or load previous image session thumbnails for comparison. Generated PNGs retain the exact prompt as versioned design data; drop one onto the result region to display that image and restore its prompt without image analysis.
 
 ---
 
@@ -176,11 +177,31 @@ Typical uses:
 
 Generated images are kept as session thumbnails. Users can reload a previous image into the current slot or delete individual entries.
 
-生成された画像はセッション内のサムネイル履歴として保持されます。過去画像を現在スロットへ戻したり、個別削除したりできます。プロンプトは任意の名前を付けたUTF-8テキストファイルとして直接ダウンロードできます。
+生成された画像はセッション内のサムネイル履歴として保持されます。過去画像を現在スロットへ戻したり、個別削除したりできます。プロンプトはキャラクター名から自動命名されたUTF-8テキストファイルとして直接ダウンロードできます。
 
 This history is for short-term creative comparison. It is not a long-term database and is not a place to store API keys.
 
 この履歴は短時間の比較用です。長期保存データベースではなく、APIキーを保存する場所でもありません。
+
+### 8. Editable PNG Design Data / PNG設計データの保存・復元
+
+Every newly generated PNG contains an uncompressed PNG `iTXt` chunk under the dedicated key `furu.character_sheet`. The schema v1 JSON stores the exact prompt, character fields, app version, timestamp, and non-secret generation details such as model and canvas size. API keys are never embedded.
+
+新しく生成するPNGには、専用キー `furu.character_sheet` の非圧縮PNG `iTXt` チャンクを埋め込みます。schema v1のJSONには、完全なプロンプト、キャラクター項目、アプリバージョン、生成日時、モデル名・キャンバス寸法などの非機密な生成情報を保存します。APIキーは埋め込みません。
+
+The top toolbar advertises **PNG設計保存・復元 / PNG・JPG解析**. Drop a PNG or JPG/JPEG onto the generated-image region, or focus the region and press Enter to choose a file. The dropped image replaces the displayed result, and a persistent line below it names the loaded file. When a PNG contains app metadata, the exact prompt is restored. A JPEG or a PNG without app metadata is sent to the selected AI provider for an inferred prompt. The line identifies that prompt as an AI estimate, not the original, and shows analysis progress or failure. This API call can incur charges. **クリア** empties only the prompt preview; changing any character field resumes the live prompt.
+
+上部メニューには **PNG設計保存・復元 / PNG・JPG解析** を表示します。PNGまたはJPG/JPEGを生成結果領域へドロップするか、その領域へフォーカスして Enter を押してファイルを選ぶと、表示画像がその画像に切り替わり、結果欄の下にファイル名が残ります。PNGに専用メタデータがあればプロンプトを正確に復元します。JPG/JPEGや設計データのないPNGは選択中のAIへ送って画像を解析し、推定プロンプトを作ります。この場合はAPI使用料が発生する可能性があり、元のプロンプトを完全に再現するものではありません。結果欄には解析中・推定完了・失敗も表示します。**クリア** はプロンプト表示だけを空にし、いずれかのキャラクター項目を変更するとリアルタイム生成へ戻ります。
+
+画面上の「設計プロンプト」欄には、リアルタイム更新・PNGからの復元・AI画像解析のいずれの結果も表示します。「生成結果・画像ドロップ（PNG/JPG）」欄は画像の表示と読み込みを兼ねます。
+
+The top one-line status reports the selected file, analysis progress/model, and final result or failure; the result remains visible until dismissed or replaced. The vision instruction asks for fine visible details of face, hair, outfit layers, props, pose, framing, background, lighting, and style while omitting uncertain details. Pressing image generation uses the displayed prompt as text only: the imported image is not sent as a generation reference. When the prompt came from a restored or AI-inferred image, the result is a new image without a conflicting Japanese profile header from the current form, and the result panel explicitly says which prompt source was used. Even an exact restored PNG prompt does not guarantee a pixel-identical image; an AI-inferred prompt is an approximation.
+
+上部の1行ステータスには、対象ファイル・解析中のモデル・完了または失敗を表示し、閉じるか別の操作をするまで結果を残します。画像解析では顔・髪・衣装の重なり・小物・姿勢・構図・背景・照明・画風の見える細部を詳しく記述し、不確かな内容は推測しません。「画像生成」は表示中のプロンプトをテキストとして使う新規生成で、読み込んだ画像自体は参照画像として送られません。復元・AI推定プロンプトから再生成する場合は、現在のフォーム値と矛盾する日本語プロフィール欄を合成せず、結果欄に使用したプロンプトの出所を表示します。PNGから元プロンプトを正確に復元しても画像の完全一致は保証されず、AI推定プロンプトではさらに差が出ます。
+
+Because the prompt and character fields are stored inside the PNG, treat the image as carrying those design details when sharing it with another person or service.
+
+PNG自体にプロンプトとキャラクター項目が含まれるため、他者や外部サービスへ画像を渡す場合は、その設計情報も共有されるものとして扱ってください。
 
 ---
 
@@ -248,8 +269,9 @@ Generated images are normalized after the provider returns the image.
 * Final PNG: exactly `1120x1584`.
 * Aspect ratio: `70:99`, the same ratio as A4 (`210:297`).
 * File type: PNG
+* Embedded design data: `furu.character_sheet` schema v1 JSON in an `iTXt` chunk; exact prompt restoration without pixel analysis.
 * Profile text: exact Japanese character information is rendered by the app above the illustration.
-* Watermark: `Generated by Super FURU AI Character Sheet v1.4.2`
+* Watermark: `Generated by Super FURU AI Character Sheet v1.4.3`
 * Watermark position: bottom-right
 * Filename pattern: `character_sheet_<timestamp>.png`
 
@@ -393,6 +415,10 @@ APIキーはReact state上にのみ保持され、localStorageやファイルへ
 ---
 
 ## Changelog / 更新履歴
+
+### v1.4.3
+
+* Added editable PNG design metadata, PNG/JPG drop import, exact restoration versus AI prompt inference, and visible analysis status. Regeneration from a restored or inferred prompt is a new text-only generation and no longer stamps unrelated current-form details onto the image. / 編集可能なPNG設計メタデータ、PNG/JPGドロップ読み込み、正確な復元とAI推定の区別、解析状況表示を追加しました。復元・AI推定プロンプトでの再生成はテキストのみから新規に行い、現在フォームの無関係な情報を画像へ重ねません。
 
 ### v1.4.2
 

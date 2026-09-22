@@ -147,6 +147,46 @@ export const callGeminiText = async (prompt, onStatusUpdate, options = {}) => {
   throw new Error(errorMsg);
 };
 
+export const inferPromptFromImage = async (imageDataUrl, instruction, onStatusUpdate) => {
+  if (!currentApiKey) throw new Error('API Key が設定されていません。');
+  const modelId = 'gemini-3.5-flash';
+  const imageMatch = imageDataUrl.match(/^data:(image\/(?:png|jpeg));base64,([A-Za-z0-9+/=]+)$/i);
+  if (!imageMatch) throw new Error('PNGまたはJPEG画像を読み込んでください。');
+  const [, mimeType, base64] = imageMatch;
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 60000);
+  try {
+    onStatusUpdate?.(`> [image analysis] ${modelId} starting...`);
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': currentApiKey },
+        body: JSON.stringify({
+          contents: [{ role: 'user', parts: [
+            { text: instruction },
+            { inline_data: { mime_type: mimeType.toLowerCase(), data: base64 } },
+          ] }],
+          generationConfig: { temperature: 0.3, maxOutputTokens: 1200 },
+        }),
+        signal: controller.signal,
+      },
+    );
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(`${response.status} ${data.error?.message || response.statusText}`);
+    const prompt = (data.candidates?.[0]?.content?.parts || [])
+      .map((part) => part.text || '').join('').trim();
+    if (!prompt) throw new Error('画像解析の応答が空でした。');
+    return { prompt, model: modelId };
+  } catch (error) {
+    if (error.name === 'AbortError') throw new Error('画像解析がタイムアウトしました。');
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+};
+
 /**
  * 単一フィールドのAI生成
  * @param {string} fieldKey フィールド名

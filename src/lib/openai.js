@@ -135,6 +135,20 @@ ${buildGachaContextText(context)}`;
   return null;
 };
 
+export const inferPromptFromImageOAI = async (imageDataUrl, instruction, onStatusUpdate) => {
+  if (!currentOpenAIApiKey) throw new Error('OpenAI API key is not set.');
+  const modelId = 'gpt-4.1-mini';
+  onStatusUpdate?.(`> [image analysis] ${modelId} starting...`);
+  const result = await callChatCompletion(modelId, [{
+    role: 'user',
+    content: [
+      { type: 'text', text: instruction },
+      { type: 'image_url', image_url: { url: imageDataUrl, detail: 'high' } },
+    ],
+  }], currentOpenAIApiKey, { timeoutMs: 60000, temperature: 0.3, maxTokens: 1200 });
+  return { prompt: result.text.trim(), model: result.model };
+};
+
 export const generateImageOAI = async (prompt, onStatusUpdate) => {
   if (!currentOpenAIApiKey) throw new Error("OpenAI API key is not set.");
 

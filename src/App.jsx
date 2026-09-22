@@ -5,13 +5,18 @@ import './App.css';
 import { OPTIONS, DEFAULT_FORM_DATA, BACKUP_DATA, SECTIONS, PRESETS, THEME_PRESETS } from './lib/options';
 import { buildPrompt } from './lib/prompt';
 import { composeCharacterSheet } from './lib/character-sheet-renderer';
-import { generateFieldValueAI, generateGachaTextsAI, generateImageAI, setActiveEngine, getEngineDisplayName, setApiKeys, getActiveEngine } from './lib/ai-provider';
+import { generateFieldValueAI, generateGachaTextsAI, generateImageAI, inferPromptFromImageAI, setActiveEngine, getEngineDisplayName, setApiKeys, getActiveEngine } from './lib/ai-provider';
 import { applyRandomProfileText } from './lib/profile-randomizer';
 import { applyThemePreset, lockCharacterIdentity, releaseCharacterIdentity } from './lib/preset-actions';
 import { createPromptDownloadUrl, createPromptFileName } from './lib/prompt-download';
+import {
+  createCharacterSheetMetadata,
+  embedCharacterSheetMetadata,
+  importCharacterSheetImage,
+} from './lib/png-character-sheet-metadata';
 import FieldInput from './components/FieldInput';
 
-const SYSTEM_VERSION = "1.4.2";
+const SYSTEM_VERSION = "1.4.3";
 const APP_NAME = "AIキャラクターシートメーカー";
 
 // === スマート連携テーブル ===
@@ -47,11 +52,16 @@ const App = () => {
   const [characterLockSnapshot, setCharacterLockSnapshot] = useState(null);
   const [collapsedSections, setCollapsedSections] = useState({});
   const [copied, setCopied] = useState(false);
-  const [savedPromptName, setSavedPromptName] = useState('');
+  const [promptOverride, setPromptOverride] = useState(null);
+  const [promptOverrideSource, setPromptOverrideSource] = useState(null);
+  const [isPromptDropActive, setIsPromptDropActive] = useState(false);
+  const promptFileInputRef = useRef(null);
+  const imageImportRequestRef = useRef(0);
 
   // === 生成状態（APIは明示操作のみ） ===
   const [isGenerating, setIsGenerating] = useState(false);
   const [isImageGenerating, setIsImageGenerating] = useState(false);
+  const [isAnalyzingImage, setIsAnalyzingImage] = useState(false);
   const [fieldGenerating, setFieldGenerating] = useState(null);
   const [statusMessage, setStatusMessage] = useState('');
   const [elapsedTime, setElapsedTime] = useState(0);
@@ -61,6 +71,8 @@ const App = () => {
   const [imageModel, setImageModel] = useState('');
   const [textModel, setTextModel] = useState('');
   const [imageError, setImageError] = useState('');
+  const [importedImageNotice, setImportedImageNotice] = useState(null);
+  const [imageResultStatus, setImageResultStatus] = useState('');
 
   // === 生成履歴 ===
   const [history, setHistory] = useState([]);
@@ -96,6 +108,16 @@ const App = () => {
     if (trimmed.startsWith('sk-')) setSelectedEngine('openai');
     else if (trimmed.startsWith('AIza')) setSelectedEngine('gemini');
     else setSelectedEngine(null);
+  };
+
+  // 開発中のモジュール再読み込み後も、画面セッション内のキーからAPI接続を復元する。
+  const restoreApiSession = () => {
+    if (!isUnlocked || !selectedEngine) return false;
+    const key = apiKeyInput.trim();
+    if (key.length <= 10) return false;
+    setApiKeys(selectedEngine === 'gemini' ? key : '', selectedEngine === 'openai' ? key : '');
+    setActiveEngine(selectedEngine);
+    return true;
   };
 
 
@@ -142,11 +164,24 @@ const App = () => {
   };
 
   // === プロンプト（APIは叩かない） ===
-  const generatedPrompt = useMemo(() => buildPrompt(currentFormData), [currentFormData]);
+  const livePrompt = useMemo(() => buildPrompt(currentFormData), [currentFormData]);
+  const generatedPrompt = promptOverride ?? livePrompt;
   const promptFileName = useMemo(
-    () => createPromptFileName(savedPromptName || currentFormData.name),
-    [savedPromptName, currentFormData.name],
+    () => createPromptFileName(currentFormData.name),
+    [currentFormData.name],
   );
+
+  useEffect(() => {
+    imageImportRequestRef.current += 1;
+    setIsAnalyzingImage(false);
+    setImportedImageNotice((previous) => previous?.kind === 'analyzing'
+      ? { ...previous, kind: 'form-edited' }
+      : previous?.kind === 'restored' || previous?.kind === 'inferred'
+        ? { ...previous, kind: 'form-edited' }
+        : previous);
+    setPromptOverride(null);
+    setPromptOverrideSource(null);
+  }, [livePrompt]);
 
   // === ステータス表示 ===
   const statusTimerRef = useRef(null);
@@ -161,16 +196,40 @@ const App = () => {
   // === 画像生成（明示的ボタンのみ） ===
   const handleImageGenerate = async () => {
     if (isImageGenerating || !isUnlocked) return;
+    restoreApiSession();
     setIsImageGenerating(true);
     setImageError('');
     showStatus('🎨 画像生成中...');
     try {
       const result = await generateImageAI(generatedPrompt, (s) => showStatus(s));
       const rawSrc = `data:${result.mimeType || 'image/png'};base64,${result.base64Img}`;
-      // 画像AIの文字描画に頼らず、フォームの情報欄と透かしを後から合成
-      const imgSrc = await composeCharacterSheet(rawSrc, currentFormData, SYSTEM_VERSION);
+      // 読み込み・AI推定プロンプトはフォームとは独立。古いフォーム情報を画像へ焼き込まない。
+      const composedSrc = promptOverride !== null
+        ? rawSrc
+        : await composeCharacterSheet(rawSrc, currentFormData, SYSTEM_VERSION);
+      const imgSrc = embedCharacterSheetMetadata(
+        composedSrc,
+        createCharacterSheetMetadata({
+          appVersion: SYSTEM_VERSION,
+          prompt: generatedPrompt,
+          character: promptOverride !== null ? {} : currentFormData,
+          generation: {
+            provider: getActiveEngine(),
+            model: result.usedModel,
+            ...(promptOverride === null ? { width: 1120, height: 1584 } : {}),
+          },
+        }),
+      );
       if (compareMode && activeSlot === 'B') { setSlotBImage(imgSrc); }
       else { setGeneratedImage(imgSrc); if (compareMode) setSlotAImage(imgSrc); }
+      imageImportRequestRef.current += 1;
+      setIsAnalyzingImage(false);
+      setImportedImageNotice(null);
+      setImageResultStatus(promptOverrideSource === 'inferred'
+        ? 'この画像はAI推定プロンプトから新規生成しました。元画像は参照せず、左のフォーム情報も合成していません。'
+        : promptOverride !== null
+          ? 'この画像は読み込んだ設計プロンプトから新規生成しました。左のフォーム情報は合成していません。'
+          : 'この画像は現在のフォームから作成した設計プロンプトで新規生成しました。');
       setImageModel(result.usedModel);
       setHistory(prev => [...prev, { image: imgSrc, model: result.usedModel, timestamp: Date.now() }]);
       showStatus(`✅ 画像生成完了 (${result.usedModel})`, true);
@@ -183,6 +242,7 @@ const App = () => {
   // === 単一フィールドAI生成 ===
   const handleFieldAiGenerate = async (fieldKey, fieldLabel) => {
     if (!isUnlocked) return;
+    restoreApiSession();
     setFieldGenerating(fieldKey);
     showStatus(`🎲 ${fieldLabel} をAI生成中...`);
     try {
@@ -196,6 +256,7 @@ const App = () => {
 
   // === 全項目ランダム（スマート連携付き） ===
   const handleFullRandom = async () => {
+    restoreApiSession();
     if (!isUnlocked) return;
     setIsGenerating(true);
     showStatus('🎲 全項目ランダム生成中...');
@@ -404,6 +465,112 @@ const App = () => {
     showStatus(`💾 ${promptFileName} のダウンロードを開始しました`, true);
   };
 
+  const clearPrompt = () => {
+    imageImportRequestRef.current += 1;
+    setIsAnalyzingImage(false);
+    setPromptOverride('');
+    setPromptOverrideSource(null);
+    setImportedImageNotice((previous) => previous ? { ...previous, kind: 'prompt-cleared' } : previous);
+    showStatus('🧹 設計プロンプトをクリアしました。項目を変更すると再作成されます。', true);
+  };
+
+  const restorePromptFromFile = async (file) => {
+    const requestId = ++imageImportRequestRef.current;
+    try {
+      const { imageDataUrl, metadata } = await importCharacterSheetImage(file);
+      if (requestId !== imageImportRequestRef.current) return;
+      if (compareMode && activeSlot === 'B') setSlotBImage(imageDataUrl);
+      else {
+        setGeneratedImage(imageDataUrl);
+        if (compareMode) setSlotAImage(imageDataUrl);
+      }
+      setImageResultStatus('');
+      setImageModel(metadata?.generation?.model || '');
+      setImageError('');
+      if (metadata) {
+        setIsAnalyzingImage(false);
+        setPromptOverride(metadata.prompt);
+        setPromptOverrideSource('restored');
+        setImportedImageNotice({ name: file.name, kind: 'restored' });
+        showStatus(`✅ ${file.name} を表示し、埋め込み設計プロンプトを復元しました（schema v${metadata.schema_version}）`);
+        return;
+      }
+
+      setPromptOverride('');
+      setPromptOverrideSource(null);
+      if (!restoreApiSession()) {
+        setImportedImageNotice({ name: file.name, kind: 'missing-key' });
+        showStatus(`📂 ${file.name} を表示しました。AI解析にはAPIキーの設定が必要です。`);
+        return;
+      }
+      if (file.size > 14 * 1024 * 1024) {
+        setImportedImageNotice({ name: file.name, kind: 'too-large' });
+        showStatus(`📂 ${file.name} を表示しました。AI解析は14MB以下のPNG/JPGに対応します。`);
+        return;
+      }
+
+      setIsAnalyzingImage(true);
+      setImportedImageNotice({ name: file.name, kind: 'analyzing' });
+      showStatus(`🔍 ${file.name}: AI解析中（設計データなし・選択中のAPIへ送信）...`);
+      try {
+        const result = await inferPromptFromImageAI(imageDataUrl, (status) => {
+          if (requestId === imageImportRequestRef.current) showStatus(`🔍 ${file.name}: ${status}`);
+        });
+        if (requestId !== imageImportRequestRef.current) return;
+        setPromptOverride(result.prompt);
+        setPromptOverrideSource('inferred');
+        setImportedImageNotice({ name: file.name, kind: 'inferred' });
+        showStatus(`✅ ${file.name} をAI解析し、推定プロンプトを作成しました（${result.model}）`);
+      } catch (error) {
+        if (requestId !== imageImportRequestRef.current) return;
+        setImportedImageNotice({ name: file.name, kind: 'analysis-failed' });
+        showStatus(`❌ ${file.name} のAI解析に失敗しました: ${error.message}`);
+      } finally {
+        if (requestId === imageImportRequestRef.current) setIsAnalyzingImage(false);
+      }
+    } catch (error) {
+      if (requestId === imageImportRequestRef.current) showStatus(`❌ 画像読み込みに失敗しました: ${error.message}`);
+    }
+  };
+
+  const handlePromptImageDragOver = (event) => {
+    if (!Array.from(event.dataTransfer?.types || []).includes('Files')) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'copy';
+    setIsPromptDropActive(true);
+  };
+
+  const handlePromptImageDragLeave = (event) => {
+    if (!event.currentTarget.contains(event.relatedTarget)) setIsPromptDropActive(false);
+  };
+
+  const handlePromptImageDrop = (event) => {
+    event.preventDefault();
+    setIsPromptDropActive(false);
+    const [file] = Array.from(event.dataTransfer?.files || []);
+    if (file) restorePromptFromFile(file);
+  };
+
+  const handlePromptImagePaste = (event) => {
+    const file = Array.from(event.clipboardData?.files || [])
+      .find((item) => item.type === 'image/png' || item.type === 'image/jpeg');
+    if (!file) return;
+    event.preventDefault();
+    restorePromptFromFile(file);
+  };
+
+  const handlePromptImageKeyDown = (event) => {
+    if (event.target !== event.currentTarget || !['Enter', ' '].includes(event.key)) return;
+    event.preventDefault();
+    promptFileInputRef.current?.click();
+  };
+
+  const handlePromptImageSelect = (event) => {
+    const [file] = Array.from(event.target.files || []);
+    if (file) restorePromptFromFile(file);
+    event.target.value = '';
+  };
+
   const downloadImage = () => {
     if (!displayImage) return;
     // ウォーターマークは既に焼き込み済み、そのままダウンロード
@@ -415,10 +582,14 @@ const App = () => {
 
   // === 履歴 ===
   const loadHistory = (idx) => {
+    imageImportRequestRef.current += 1;
+    setIsAnalyzingImage(false);
     const item = history[idx];
     if (compareMode && activeSlot === 'B') { setSlotBImage(item.image); }
     else { setGeneratedImage(item.image); if (compareMode) setSlotAImage(item.image); }
     setImageModel(item.model);
+    setImportedImageNotice(null);
+    setImageResultStatus('生成履歴の画像を表示中です。現在の設計プロンプトと異なる場合があります。');
   };
   const deleteHistory = (idx) => setHistory(prev => prev.filter((_, i) => i !== idx));
   const clearHistory = () => setHistory([]);
@@ -434,13 +605,20 @@ const App = () => {
   };
 
   const handleReset = () => {
+    imageImportRequestRef.current += 1;
+    setIsAnalyzingImage(false);
     setFormData({ ...DEFAULT_FORM_DATA }); setSlotAData(null); setSlotBData(null);
     setSlotAImage(null); setSlotBImage(null); setGeneratedImage(null);
     setImageModel(''); setTextModel(''); setImageError('');
+    setImportedImageNotice(null);
+    setPromptOverride(null);
+    setPromptOverrideSource(null);
     showStatus('🔄 全リセット完了', true);
   };
 
   const handleApiSwitch = () => {
+    imageImportRequestRef.current += 1;
+    setIsAnalyzingImage(false);
     setApiKeyInput('');
     setSelectedEngine(null);
     setApiKeys('', '');
@@ -451,8 +629,13 @@ const App = () => {
   const displayImage = compareMode
     ? (activeSlot === 'B' ? slotBImage : (slotAImage || generatedImage))
     : generatedImage;
+  const promptStatusLabel = promptOverride === null
+    ? '同期正常'
+    : !generatedPrompt
+      ? 'クリア済み'
+      : promptOverrideSource === 'inferred' ? 'AI推定' : 'PNGから復元';
 
-  const isWorking = isGenerating || isImageGenerating || fieldGenerating !== null;
+  const isWorking = isGenerating || isImageGenerating || isAnalyzingImage || fieldGenerating !== null;
 
   useEffect(() => {
     let timer;
@@ -542,8 +725,8 @@ const App = () => {
 
           {/* ステータス（生成中は持続表示） */}
           {statusMessage && (
-            <div className="inline-status">
-              <span>{statusMessage} {isWorking ? `[${elapsedTime}s]` : ''}</span>
+            <div className="inline-status" role="status" aria-live="polite">
+              <span title={statusMessage}>{statusMessage} {isWorking ? `[${elapsedTime}s]` : ''}</span>
               <button onClick={() => setStatusMessage('')}>✕</button>
             </div>
           )}
@@ -559,6 +742,9 @@ const App = () => {
               ))}
             </div>
             <div className="toolbar-right">
+              <span className="feature-badge" title="生成PNGに設計データを保存。PNG/JPGをドロップすると画像を表示し、設計データがあれば復元、なければAIが推定します">
+                🧬 PNG設計保存・復元 / PNG・JPG解析
+              </span>
               <span className="engine-badge">
                 {getActiveEngine() === 'openai' ? '🤖 ChatGPT' : '✨ Gemini'}
               </span>
@@ -606,18 +792,12 @@ const App = () => {
                 <div className="prompt-title-group">
                   <div className="prompt-icon-box">⚡</div>
                   <div>
-                    <p className="prompt-title">リアルタイム設計プロンプト</p>
-                    <p className="prompt-subtitle">パラメータ変更で即時更新（API呼び出しなし）</p>
+                    <p className="prompt-title">設計プロンプト</p>
+                    <p className="prompt-subtitle">リアルタイム更新・PNG復元・AI画像解析</p>
                   </div>
                 </div>
                 <div className="prompt-actions">
-                  <input
-                    className="prompt-save-name"
-                    aria-label="保存するプロンプト名"
-                    value={savedPromptName}
-                    onChange={(event) => setSavedPromptName(event.target.value)}
-                    placeholder="保存名（任意）"
-                  />
+                  <button className="btn-clear-prompt" onClick={clearPrompt} disabled={!generatedPrompt}>🧹 クリア</button>
                   <a
                     className="btn-save-prompt"
                     href={createPromptDownloadUrl(generatedPrompt)}
@@ -627,9 +807,13 @@ const App = () => {
                   <button className="btn-copy" onClick={copyPrompt}>{copied ? '✓ Copy済' : '📋 テキストCopy'}</button>
                 </div>
               </div>
-              <div className="prompt-content"><pre className="prompt-text">{generatedPrompt}</pre></div>
+              <div className="prompt-content">
+                {generatedPrompt
+                  ? <pre className="prompt-text">{generatedPrompt}</pre>
+                  : <p className="prompt-empty">プロンプトはクリアされています。項目を変更すると再作成されます。</p>}
+              </div>
               <div className="status-bar">
-                <div className="status-item"><span style={{ color: 'var(--emerald)' }}>●</span> 同期正常</div>
+                <div className="status-item"><span style={{ color: 'var(--emerald)' }}>●</span> {promptStatusLabel}</div>
                 <div className="status-item"><span style={{ color: 'var(--rose)' }}>●</span> {currentFormData.sex} / {currentFormData.species}</div>
                 {textModel && <div className="status-item"><span style={{ color: 'var(--cyan)' }}>●</span> TXT: {textModel}</div>}
                 {imageModel && <div className="status-item"><span style={{ color: 'var(--amber)' }}>●</span> IMG: {imageModel}</div>}
@@ -641,7 +825,7 @@ const App = () => {
               {/* 画像パネル */}
               <div className="image-panel">
                 <div className="image-panel-header">
-                <p className="image-panel-title">🎨 生成結果</p>
+                <p className="image-panel-title">🎨 生成結果・画像ドロップ（PNG/JPG）</p>
                 {isImageGenerating && <span className="animate-pulse" style={{ fontSize: '0.7rem', color: 'var(--amber)' }}>◉ 画像鋳造中... ({elapsedTime}s)</span>}
               </div>
               {/* A/B比較タブ（画像パネル直下に配置） */}
@@ -657,26 +841,62 @@ const App = () => {
                   </div>
                 </div>
               )}
-              {compareMode ? (
-                <div className="compare-mode">
-                  <div className={`compare-slot${activeSlot === 'A' ? ' active' : ''}`} onClick={switchToSlotA}>
-                    <span className="compare-slot-label">A</span>
-                    <div className="image-result">
-                      {(slotAImage || generatedImage) ? <img src={slotAImage || generatedImage} alt="A" /> : <div className="image-placeholder">スロットA</div>}
+              <input
+                ref={promptFileInputRef}
+                className="visually-hidden"
+                type="file"
+                accept="image/png,image/jpeg,.png,.jpg,.jpeg"
+                onChange={handlePromptImageSelect}
+                tabIndex="-1"
+              />
+              <div
+                className={`image-drop-zone${isPromptDropActive ? ' is-dragging' : ''}`}
+                role="button"
+                tabIndex="0"
+                aria-label="PNG/JPGを表示し設計プロンプトを復元またはAI推定"
+                onDragOver={handlePromptImageDragOver}
+                onDragLeave={handlePromptImageDragLeave}
+                onDrop={handlePromptImageDrop}
+                onPaste={handlePromptImagePaste}
+                onKeyDown={handlePromptImageKeyDown}
+              >
+                {isPromptDropActive && <div className="image-drop-overlay">この画像を表示し、設計プロンプトを復元またはAI推定します</div>}
+                {compareMode ? (
+                  <div className="compare-mode">
+                    <div className={`compare-slot${activeSlot === 'A' ? ' active' : ''}`} onClick={switchToSlotA}>
+                      <span className="compare-slot-label">A</span>
+                      <div className="image-result">
+                        {(slotAImage || generatedImage) ? <img src={slotAImage || generatedImage} alt="A" /> : <div className="image-placeholder">スロットA</div>}
+                      </div>
+                    </div>
+                    <div className={`compare-slot${activeSlot === 'B' ? ' active' : ''}`} onClick={switchToSlotB}>
+                      <span className="compare-slot-label" style={{ background: 'var(--rose)' }}>B</span>
+                      <div className="image-result">
+                        {slotBImage ? <img src={slotBImage} alt="B" /> : <div className="image-placeholder">スロットB</div>}
+                      </div>
                     </div>
                   </div>
-                  <div className={`compare-slot${activeSlot === 'B' ? ' active' : ''}`} onClick={switchToSlotB}>
-                    <span className="compare-slot-label" style={{ background: 'var(--rose)' }}>B</span>
-                    <div className="image-result">
-                      {slotBImage ? <img src={slotBImage} alt="B" /> : <div className="image-placeholder">スロットB</div>}
-                    </div>
+                ) : (
+                  <div className="image-result">
+                    {displayImage ? <img src={displayImage} alt="生成結果" />
+                      : imageError ? <div className="image-placeholder" style={{ color: 'var(--rose)' }}>⚠️ {imageError}</div>
+                      : <div className="image-placeholder">「🎨 画像生成」ボタンを押すと画像が生成されます</div>}
                   </div>
-                </div>
-              ) : (
-                <div className="image-result">
-                  {displayImage ? <img src={displayImage} alt="生成結果" />
-                    : imageError ? <div className="image-placeholder" style={{ color: 'var(--rose)' }}>⚠️ {imageError}</div>
-                    : <div className="image-placeholder">「🎨 画像生成」ボタンを押すと画像が生成されます</div>}
+                )}
+                <div className="image-drop-hint">PNG/JPGをドロップ / Enterで選択 → 画像を表示・プロンプト更新（データなしはAI解析・API使用）</div>
+              </div>
+              {imageResultStatus && <div className="image-import-notice" role="status">{imageResultStatus}</div>}
+              {importedImageNotice && (
+                <div className="image-import-notice" role="status">
+                  📂 読み込み画像: {importedImageNotice.name} を表示中。
+                  {importedImageNotice.kind === 'restored' && ' 埋め込み設計プロンプトを復元しました。'}
+                  {importedImageNotice.kind === 'analyzing' && ' 設計データがないためAI解析中です（画像を選択中のAPIへ送信）。'}
+                  {importedImageNotice.kind === 'inferred' && ' AIが画像から推定したプロンプトに更新しました。元のプロンプトと同一とは限りません。'}
+                  {importedImageNotice.kind === 'missing-key' && ' 設計データがありません。AI解析にはAPIキーが必要です。'}
+                  {importedImageNotice.kind === 'too-large' && ' 設計データがありません。14MBを超えるためAI解析できません。'}
+                  {importedImageNotice.kind === 'analysis-failed' && ' 設計データがありません。AI解析に失敗したためプロンプトは更新されていません。'}
+                  {importedImageNotice.kind === 'form-edited' && ' フォーム変更によりプロンプトは現在の設定に戻りました。'}
+                  {importedImageNotice.kind === 'prompt-cleared' && ' プロンプトはクリアされています。'}
                 </div>
               )}
               <div className="image-actions">
