@@ -16,7 +16,7 @@ import {
 } from './lib/png-character-sheet-metadata';
 import FieldInput from './components/FieldInput';
 
-const SYSTEM_VERSION = "1.4.3";
+const SYSTEM_VERSION = "1.4.4";
 const APP_NAME = "AIキャラクターシートメーカー";
 
 // === スマート連携テーブル ===
@@ -812,6 +812,13 @@ const App = () => {
                   ? <pre className="prompt-text">{generatedPrompt}</pre>
                   : <p className="prompt-empty">プロンプトはクリアされています。項目を変更すると再作成されます。</p>}
               </div>
+              {generatedPrompt && (promptOverrideSource === 'restored' || promptOverrideSource === 'inferred') && (
+                <p className="prompt-origin-note" role="status">
+                  {promptOverrideSource === 'restored'
+                    ? 'このプロンプトは、読み込んだPNG内の設計データから復元しました。'
+                    : 'このプロンプトは、読み込んだ画像をAIが解析して推定したものです。元のプロンプトではなく、同じ画像の再現も保証しません。'}
+                </p>
+              )}
               <div className="status-bar">
                 <div className="status-item"><span style={{ color: 'var(--emerald)' }}>●</span> {promptStatusLabel}</div>
                 <div className="status-item"><span style={{ color: 'var(--rose)' }}>●</span> {currentFormData.sex} / {currentFormData.species}</div>

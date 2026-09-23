@@ -12,7 +12,20 @@ Codex
 `C:\Users\sx717\Antigravity\character_sheet`
 
 ## Current Goal
-The current v1.4.3 release candidate turns generated PNGs into re-editable character files: it embeds a versioned design-prompt payload and restores it from a result-area drop or keyboard file selection. Dropped PNG and JPG/JPEG images become the displayed image. PNGs with app metadata restore the exact prompt; JPEGs and PNGs without metadata are sent to the selected AI provider to infer a prompt, with a visible message distinguishing an estimate from exact restoration. The manual save-name field is removed, prompt clearing is available, and the top menu names the feature. Recreating from a restored or AI-inferred prompt no longer applies unrelated current-form profile data over the image. User authorized the official v1.4.3 release and public-note update on 2026-09-23; full backup remains outside scope.
+Complete the user-authorized v1.4.4 delivery: structured image-to-prompt identity analysis, direct provenance text below imported prompts, official release/deployment, public note update, and black-window full backup. The v1.4.3 PNG design-data restoration and text-only regeneration remain in place.
+
+## Current Status (2026-09-23)
+- Local implementation and tests are in progress. A prior live OpenAI analysis of an existing character-sheet PNG succeeded, followed by one explicitly authorized repeat after an instruction correction and one text-only image generation. The result retained major features (white wings, large rear bow, long brown hair, beads, white layered robe, tattoos, daggers), but fine hair flow and a small nose decoration did not match; no quantitative improvement claim is supported.
+- The follow-up UI request adds a prompt-panel explanation for restored versus AI-inferred prompts. Its focused layout test passes; default form prompts display no provenance warning. Complete the full suite, build, official release, public-note readback, and official full-backup verification before reporting delivery complete. Do not spend another paid API call for this UI-only addition.
+
+## 2026-09-23 Prompt-only Reconstruction Plan For Sol
+
+- Earlier plan snapshot (now superseded by Current Status): structured analysis parser/compiler and both provider routes were locally implemented. The live OpenAI proof described above has since completed. Official output limits checked 2026-09-23: OpenAI gpt-4.1-mini 32,768 tokens (https://developers.openai.com/api/docs/models/gpt-4.1-mini); Gemini 3.5 Flash 65,536 tokens (https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash). GPT image prompt maximum 32,000 characters is an official API limit (https://developers.openai.com/api/reference/cli/resources/images/methods/generate).
+- Latest request: plan structured extraction of hair, face, clothing and accessory identity, explicit preservation priorities and anti-simplification rules; implementation is assigned to Sol after the user resumes with that model.
+- Plan: [Prompt-only character reconstruction](docs/superpowers/plans/2026-09-23-prompt-only-character-reconstruction.md). It owns the implementation checklist; no duplicate task board.
+- User clarification: remove arbitrary brevity limits. Do not carry over the 2,400-character / 1,200-token settings or replace them with another undocumented universal cap; verify model/API capacity and preserve all distinguishing features.
+- Evidence: inspected local v1.4.3 / `5fa6593`. Current inference produces prose limited to 2,400 characters and 1,200 output tokens in both provider routes. Image generation already receives text only. The plan adds structured observation, validation and deterministic prompt assembly while retaining this boundary.
+- Status: planning complete; implementation and live reconstruction comparison not started. Next: Sol reads the plan and implements Tasks 1–4 when the user resumes implementation. API comparison, publishing and full backup are not authorized by this planning request.
 
 ## 2026-09-23 Public Note Update
 

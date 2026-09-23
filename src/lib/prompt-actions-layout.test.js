@@ -67,6 +67,14 @@ test('inferred prompt source remains visible after image regeneration', () => {
   assert.doesNotMatch(generationHandler, /setPromptOverrideSource\(null\)/);
 });
 
+test('imported prompt explains its provenance directly below the prompt', () => {
+  assert.match(appSource, /className="prompt-content"[\s\S]*?className="prompt-origin-note"[\s\S]*?className="status-bar"/);
+  assert.match(appSource, /promptOverrideSource === 'restored'[\s\S]*?このプロンプトは、読み込んだPNG内の設計データから復元しました/);
+  assert.match(appSource, /promptOverrideSource === 'inferred'[\s\S]*?このプロンプトは、読み込んだ画像をAIが解析して推定したものです/);
+  assert.match(appSource, /元のプロンプトではなく、同じ画像の再現も保証しません/);
+  assert.match(appStyles, /\.prompt-origin-note\s*\{/);
+});
+
 test('regeneration from an imported prompt does not stamp unrelated form details on the image', () => {
   const generationHandler = appSource.split('const handleImageGenerate = async () => {')[1]
     .split('// ===')[0];

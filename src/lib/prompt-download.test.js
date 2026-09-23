@@ -10,7 +10,7 @@ test('prompt download uses a safe text filename', () => {
 });
 
 test('prompt download URL contains the exact UTF-8 prompt text', () => {
-  const prompt = '日本語のプロンプト\nsecond line';
+  const prompt = '日本語のプロンプト\nsecond line\n' + 'distinctive lock and clasp '.repeat(300);
   const url = createPromptDownloadUrl(prompt);
 
   assert.match(url, /^data:text\/plain;charset=utf-8,/);

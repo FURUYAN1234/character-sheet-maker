@@ -35,6 +35,13 @@ test('character sheet metadata survives a PNG embed and extract round trip', asy
   });
 });
 
+test('long structured prompt survives metadata import without trimming', async () => {
+  const prompt = `CHARACTER IDENTITY\n${'Specific hair, face, clothing and accessory placement. '.repeat(300)}\nPRESERVATION RULES`;
+  const embedded = embedCharacterSheetMetadata(ONE_PIXEL_PNG, createCharacterSheetMetadata({ prompt }));
+  const imported = await importCharacterSheetImage(embedded);
+  assert.equal(imported.metadata.prompt, prompt);
+});
+
 test('re-embedding replaces the previous Character Sheet Maker metadata', async () => {
   const first = embedCharacterSheetMetadata(ONE_PIXEL_PNG, createCharacterSheetMetadata({
     appVersion: '1.4.2',

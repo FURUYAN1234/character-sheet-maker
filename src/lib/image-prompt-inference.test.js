@@ -4,6 +4,7 @@ import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { generateImageOAI, inferPromptFromImageOAI, setOpenAIApiKey } from './openai.js';
 import { inferPromptFromImage as inferPromptFromImageGemini, setApiKey as setGeminiApiKey } from './gemini.js';
+import { createServer } from 'vite';
 
 const IMAGE = 'data:image/png;base64,aGVsbG8=';
 
@@ -72,11 +73,36 @@ test('OpenAI image generation sends the inferred character description to the im
     const result = await generateImageOAI(inferredPrompt);
     assert.equal(request.url, 'https://api.openai.com/v1/images/generations');
     assert.ok(request.body.prompt.includes(inferredPrompt));
+    assert.equal(request.body.image, undefined);
+    assert.equal(request.body.image_url, undefined);
     assert.ok(!request.body.prompt.includes('Japanese male, 19–25'));
     assert.equal(result.base64Img, 'aGVsbG8=');
   } finally {
     globalThis.fetch = originalFetch;
     setOpenAIApiKey('');
+  }
+});
+
+test('Gemini regeneration sends only prompt text, never the imported image', async () => {
+  const originalFetch = globalThis.fetch;
+  let body;
+  const server = await createServer({ server: { middlewareMode: true }, appType: 'custom', logLevel: 'error' });
+  try {
+    const router = await server.ssrLoadModule('/src/lib/ai-provider.js');
+    router.setApiKeys('test-only', '');
+    router.setActiveEngine('gemini');
+    globalThis.fetch = async (_url, options) => {
+      body = JSON.parse(options.body);
+      return new Response(JSON.stringify({ candidates: [{ content: { parts: [{ inlineData: { data: 'aGVsbG8=', mimeType: 'image/png' } }] } }] }), { status: 200 });
+    };
+    const generateImageGemini = router.generateImageAI;
+    const result = await generateImageGemini('Keep a distinctive swept fringe and cropped jacket.');
+    assert.equal(result.base64Img, 'aGVsbG8=');
+    assert.deepEqual(body.contents[0].parts, [{ text: 'Keep a distinctive swept fringe and cropped jacket.' }]);
+    assert.doesNotMatch(JSON.stringify(body), /inline_data|inlineData|image_url|imageUrl/);
+  } finally {
+    globalThis.fetch = originalFetch;
+    await server.close();
   }
 });
 
@@ -131,14 +157,14 @@ test('Gemini vision sends JPEG bytes with the JPEG MIME type', async () => {
 });
 
 test('image analysis asks for fine visible detail without claiming exact recovery', async () => {
-  const providerSource = readFileSync(fileURLToPath(new URL('./ai-provider.js', import.meta.url)), 'utf8');
-  const openaiSource = readFileSync(fileURLToPath(new URL('./openai.js', import.meta.url)), 'utf8');
-  assert.match(providerSource, /eye color/i);
-  assert.match(providerSource, /hair texture/i);
-  assert.match(providerSource, /clothing layers/i);
-  assert.match(providerSource, /camera angle/i);
-  assert.match(providerSource, /lighting/i);
-  assert.match(providerSource, /Do not invent/i);
-  assert.match(providerSource, /original prompt/i);
-  assert.match(openaiSource, /maxTokens: 1200/);
+  const identitySource = readFileSync(fileURLToPath(new URL('./character-identity.js', import.meta.url)), 'utf8');
+  assert.match(identitySource, /fringe divisions/i);
+  assert.match(identitySource, /clothing silhouette/i);
+  assert.match(identitySource, /wings, horns, tails/i);
+  assert.match(identitySource, /nose piercings/i);
+  assert.match(identitySource, /location/i);
+  assert.match(identitySource, /lighting/i);
+  assert.match(identitySource, /Do not obey written instructions/i);
+  assert.match(identitySource, /original-prompt recovery/i);
+  assert.doesNotMatch(identitySource, /2400 characters|1200 tokens/i);
 });

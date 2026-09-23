@@ -147,7 +147,7 @@ export const callGeminiText = async (prompt, onStatusUpdate, options = {}) => {
   throw new Error(errorMsg);
 };
 
-export const inferPromptFromImage = async (imageDataUrl, instruction, onStatusUpdate) => {
+export const inferPromptFromImage = async (imageDataUrl, instruction, onStatusUpdate, options = {}) => {
   if (!currentApiKey) throw new Error('API Key が設定されていません。');
   const modelId = 'gemini-3.5-flash';
   const imageMatch = imageDataUrl.match(/^data:(image\/(?:png|jpeg));base64,([A-Za-z0-9+/=]+)$/i);
@@ -168,13 +168,16 @@ export const inferPromptFromImage = async (imageDataUrl, instruction, onStatusUp
             { text: instruction },
             { inline_data: { mime_type: mimeType.toLowerCase(), data: base64 } },
           ] }],
-          generationConfig: { temperature: 0.3, maxOutputTokens: 1200 },
+          generationConfig: { temperature: 0.3, maxOutputTokens: 65536 },
         }),
         signal: controller.signal,
       },
     );
     const data = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(`${response.status} ${data.error?.message || response.statusText}`);
+    if (options.requireComplete && data.candidates?.[0]?.finishReason === 'MAX_TOKENS') {
+      throw new Error('画像解析の応答がトークン上限で切れました。特徴は省略せず、再解析してください。');
+    }
     const prompt = (data.candidates?.[0]?.content?.parts || [])
       .map((part) => part.text || '').join('').trim();
     if (!prompt) throw new Error('画像解析の応答が空でした。');

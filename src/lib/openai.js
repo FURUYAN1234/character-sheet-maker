@@ -48,6 +48,10 @@ const callChatCompletion = async (modelId, messages, apiKey, options = {}) => {
       throw new Error(`${response.status} ${data.error?.message || response.statusText}`);
     }
 
+    if (options.requireComplete && data.choices?.[0]?.finish_reason === 'length') {
+      throw new Error('画像解析の応答がトークン上限で切れました。特徴は省略せず、再解析してください。');
+    }
+
     const text = data.choices?.[0]?.message?.content || "";
     if (!text) throw new Error("Empty response");
     return { text, model: modelId };
@@ -135,7 +139,7 @@ ${buildGachaContextText(context)}`;
   return null;
 };
 
-export const inferPromptFromImageOAI = async (imageDataUrl, instruction, onStatusUpdate) => {
+export const inferPromptFromImageOAI = async (imageDataUrl, instruction, onStatusUpdate, options = {}) => {
   if (!currentOpenAIApiKey) throw new Error('OpenAI API key is not set.');
   const modelId = 'gpt-4.1-mini';
   onStatusUpdate?.(`> [image analysis] ${modelId} starting...`);
@@ -145,7 +149,7 @@ export const inferPromptFromImageOAI = async (imageDataUrl, instruction, onStatu
       { type: 'text', text: instruction },
       { type: 'image_url', image_url: { url: imageDataUrl, detail: 'high' } },
     ],
-  }], currentOpenAIApiKey, { timeoutMs: 60000, temperature: 0.3, maxTokens: 1200 });
+  }], currentOpenAIApiKey, { timeoutMs: 60000, temperature: 0.3, maxTokens: 32768, requireComplete: options.requireComplete });
   return { prompt: result.text.trim(), model: result.model };
 };
 

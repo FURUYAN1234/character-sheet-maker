@@ -1,6 +1,6 @@
 # AI Character Sheet Maker / AIキャラクターシートメーカー
 
-![Version](https://img.shields.io/badge/version-1.4.3-4f46e5)
+![Version](https://img.shields.io/badge/version-1.4.4-4f46e5)
 ![Framework](https://img.shields.io/badge/framework-React%2019%20%2F%20Vite%206-646cff)
 ![AI](https://img.shields.io/badge/AI-Gemini%20%2F%20OpenAI-f97316)
 ![Output](https://img.shields.io/badge/output-1120x1584%20PNG-10b981)
@@ -21,13 +21,13 @@ AIキャラクターシートメーカーは、自由入力プロンプトだけ
 
 ## Current Release Line / 現行仕様
 
-The current public line is **v1.4.3**. This version is a browser-based React/Vite app with session-only API keys, dual Gemini/OpenAI routing, A/B comparison, parameter locks, deterministic Japanese profile typesetting for form-driven sheets, automatically named prompt-file downloads, exact `1120x1584` output, and provenance watermarking. It also embeds versioned design JSON in generated PNGs so the exact prompt can be restored later.
+The current public line is **v1.4.4**. This version is a browser-based React/Vite app with session-only API keys, dual Gemini/OpenAI routing, A/B comparison, parameter locks, deterministic Japanese profile typesetting for form-driven sheets, automatically named prompt-file downloads, exact `1120x1584` output, and provenance watermarking. It also embeds versioned design JSON in generated PNGs so the exact prompt can be restored later.
 
-現行公開系統は **v1.4.3** です。ブラウザ上で動作する React/Vite アプリで、セッション限定APIキー、Gemini/OpenAIの切り替え、A/B比較、項目ロック、フォーム生成時の日本語プロフィール決定的文字合成、自動命名されるプロンプトファイルの直接ダウンロード、1120x1584の固定出力、来歴ウォーターマークを備えています。生成PNGにはバージョン付き設計JSONも埋め込み、後から正確なプロンプトを復元できます。
+現行公開系統は **v1.4.4** です。ブラウザ上で動作する React/Vite アプリで、セッション限定APIキー、Gemini/OpenAIの切り替え、A/B比較、項目ロック、フォーム生成時の日本語プロフィール決定的文字合成、自動命名されるプロンプトファイルの直接ダウンロード、1120x1584の固定出力、来歴ウォーターマークを備えています。生成PNGにはバージョン付き設計JSONも埋め込み、後から正確なプロンプトを復元できます。
 
 | Area / 領域 | Current behavior / 現行挙動 |
 |---|---|
-| App version / バージョン | `1.4.3`, displayed in the API gate, header, footer, and watermark. |
+| App version / バージョン | `1.4.4`, displayed in the API gate, header, footer, and watermark. |
 | API key handling / APIキー | Memory-only. Keys are not written to localStorage, source files, or output images. |
 | Gemini text / Geminiテキスト | `gemini-3.5-flash` -> `gemini-2.5-flash` -> `gemini-2.5-pro` -> `gemini-flash-latest` -> `gemini-pro-latest` |
 | Gemini image / Gemini画像 | `gemini-3.1-flash-image` |
@@ -195,9 +195,9 @@ The top toolbar advertises **PNG設計保存・復元 / PNG・JPG解析**. Drop 
 
 画面上の「設計プロンプト」欄には、リアルタイム更新・PNGからの復元・AI画像解析のいずれの結果も表示します。「生成結果・画像ドロップ（PNG/JPG）」欄は画像の表示と読み込みを兼ねます。
 
-The top one-line status reports the selected file, analysis progress/model, and final result or failure; the result remains visible until dismissed or replaced. The vision instruction asks for fine visible details of face, hair, outfit layers, props, pose, framing, background, lighting, and style while omitting uncertain details. Pressing image generation uses the displayed prompt as text only: the imported image is not sent as a generation reference. When the prompt came from a restored or AI-inferred image, the result is a new image without a conflicting Japanese profile header from the current form, and the result panel explicitly says which prompt source was used. Even an exact restored PNG prompt does not guarantee a pixel-identical image; an AI-inferred prompt is an approximation.
+The top one-line status reports the selected file, analysis progress/model, and final result or failure; the result remains visible until dismissed or replaced. AI analysis separates observable identity from presentation: it records hair structure and endpoints, facial geometry, clothing layers and accessory placement, retains known left/right relationships, and leaves occluded traits unknown. The displayed English prompt puts identity first, then pose/background, then preservation rules. Analysis may use more output tokens than before; a truncated or invalid response fails instead of silently dropping details. Pressing image generation uses the displayed prompt as text only: the imported image is not sent as a generation reference. When the prompt came from a restored or AI-inferred image, the result is a new image without a conflicting Japanese profile header from the current form, and the result panel explicitly says which prompt source was used. Even an exact restored PNG prompt does not guarantee a pixel-identical image; an AI-inferred prompt is an approximation whose visual fidelity must be judged from actual outputs.
 
-上部の1行ステータスには、対象ファイル・解析中のモデル・完了または失敗を表示し、閉じるか別の操作をするまで結果を残します。画像解析では顔・髪・衣装の重なり・小物・姿勢・構図・背景・照明・画風の見える細部を詳しく記述し、不確かな内容は推測しません。「画像生成」は表示中のプロンプトをテキストとして使う新規生成で、読み込んだ画像自体は参照画像として送られません。復元・AI推定プロンプトから再生成する場合は、現在のフォーム値と矛盾する日本語プロフィール欄を合成せず、結果欄に使用したプロンプトの出所を表示します。PNGから元プロンプトを正確に復元しても画像の完全一致は保証されず、AI推定プロンプトではさらに差が出ます。
+上部の1行ステータスには、対象ファイル・解析中のモデル・完了または失敗を表示し、閉じるか別の操作をするまで結果を残します。画像解析では髪型の分け目・毛先位置、顔の形、衣装の内外の重なり、アクセサリーの位置など、見える識別特徴と姿勢・背景を分けて記録します。左右が確かな部分だけを保持し、隠れた部分は推測で補いません。表示する英語プロンプトは人物の同一性を先に、姿勢・背景を次に、保持条件を最後に配置します。解析応答が長くなる場合がありますが、途中で切れた結果や不正な形式は特徴を黙って削らず失敗として表示します。「画像生成」は表示中のプロンプトをテキストとして使う新規生成で、読み込んだ画像自体は参照画像として送られません。復元・AI推定プロンプトから再生成する場合は、現在のフォーム値と矛盾する日本語プロフィール欄を合成せず、プロンプト欄直下と結果欄に出所を表示します。PNGから元プロンプトを正確に復元しても画像の完全一致は保証されず、AI推定プロンプトの再現度は実際の生成画像で確認する必要があります。
 
 Because the prompt and character fields are stored inside the PNG, treat the image as carrying those design details when sharing it with another person or service.
 
@@ -271,7 +271,7 @@ Generated images are normalized after the provider returns the image.
 * File type: PNG
 * Embedded design data: `furu.character_sheet` schema v1 JSON in an `iTXt` chunk; exact prompt restoration without pixel analysis.
 * Profile text: exact Japanese character information is rendered by the app above the illustration.
-* Watermark: `Generated by Super FURU AI Character Sheet v1.4.3`
+* Watermark: `Generated by Super FURU AI Character Sheet v1.4.4`
 * Watermark position: bottom-right
 * Filename pattern: `character_sheet_<timestamp>.png`
 
@@ -415,6 +415,10 @@ APIキーはReact state上にのみ保持され、localStorageやファイルへ
 ---
 
 ## Changelog / 更新履歴
+
+### v1.4.4
+
+* Image-to-prompt analysis now extracts structured visible identity details for hair, face, outfit layers, and accessories before composing a text-only reconstruction prompt. The prompt panel directly labels exact PNG restoration versus AI inference and warns that inference cannot guarantee the original prompt or image. / 画像から髪・顔・衣装の重なり・装飾品など見える識別特徴を構造化し、テキストのみで再生成するプロンプトへ組み立てます。プロンプト欄直下にPNGの正確な復元とAI推定を区別して表示し、推定から元のプロンプトや画像の一致は保証しないと明示します。
 
 ### v1.4.3
 
