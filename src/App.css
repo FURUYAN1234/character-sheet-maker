@@ -495,3 +495,6 @@ html, body { margin: 0; padding: 0; min-height: 100vh; }
 .api-gate-links-sep {
   color: var(--text-dim); font-size: 0.7rem;
 }
+
+.openai-model-control p { font-size: 10px; font-weight: 400; line-height: 1.35; margin: 4px 0; color: #a8a8b8; }
+.openai-model-control select { max-width: 100%; }

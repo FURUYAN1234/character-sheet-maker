@@ -14,7 +14,7 @@ test('OpenAI vision receives the image and returns one inferred prompt', async (
   setOpenAIApiKey('test-only');
   globalThis.fetch = async (url, options) => {
     requests.push({ url, options });
-    return new Response(JSON.stringify({ choices: [{ message: { content: '  silver-haired warrior  ' } }] }), {
+    return new Response(JSON.stringify({ choices: [{ finish_reason: 'stop', message: { content: '  silver-haired warrior  ' } }] }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
@@ -39,7 +39,7 @@ test('OpenAI vision forwards a JPEG image data URL', async () => {
   setOpenAIApiKey('test-only');
   globalThis.fetch = async (_url, options) => {
     imageUrl = JSON.parse(options.body).messages[0].content[1].image_url.url;
-    return new Response(JSON.stringify({ choices: [{ message: { content: 'brown hair' } }] }), {
+    return new Response(JSON.stringify({ choices: [{ finish_reason: 'stop', message: { content: 'brown hair' } }] }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });

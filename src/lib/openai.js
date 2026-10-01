@@ -1,3 +1,16 @@
+import catalog from './openai-models.json' with { type: 'json' };
+export const OPENAI_TEXT_MODELS = catalog.models;
+export const DEFAULT_OPENAI_TEXT_MODEL = 'gpt-6.1-sol';
+let selectedTextModel = DEFAULT_OPENAI_TEXT_MODEL;
+let textModelStatus = { selected: selectedTextModel, attempted: [], adopted: null };
+export const getOpenAITextModelStatus = () => ({...textModelStatus, attempted: [...textModelStatus.attempted]});
+export const getTextModelRoute = (id = selectedTextModel) => {
+  const index = OPENAI_TEXT_MODELS.findIndex(model => model.id === id);
+  if (index < 0) throw new Error('Unknown OpenAI text model');
+  return OPENAI_TEXT_MODELS.slice(index).map(model => model.id);
+};
+export const setOpenAITextModel = id => { getTextModelRoute(id); selectedTextModel = id; textModelStatus = { selected: id, attempted: [], adopted: null }; };
+
 let currentOpenAIApiKey = "";
 
 export const setOpenAIApiKey = (key) => {
@@ -5,13 +18,6 @@ export const setOpenAIApiKey = (key) => {
 };
 
 export const getOpenAIApiKey = () => currentOpenAIApiKey;
-
-const TEXT_MODEL_IDS = [
-  "gpt-4.1",
-  "gpt-4.1-mini",
-  "gpt-4.1-nano",
-  "gpt-4o"
-];
 
 const OPENAI_IMAGE_MODELS = [
   { id: "gpt-image-2.5-sunburst", quality: "xhigh" },
@@ -23,7 +29,8 @@ const OPENAI_IMAGE_PROMPT_MAX_CHARS = 32000;
 
 const callChatCompletion = async (modelId, messages, apiKey, options = {}) => {
   const controller = new AbortController();
-  const timeoutMs = options.timeoutMs || 60000;
+  const reasoning = /^gpt-(6|5\.6)(?:[.-])/.test(modelId);
+  const timeoutMs = reasoning ? Math.max(options.timeoutMs || 60000, 120000) : options.timeoutMs || 60000;
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
@@ -36,8 +43,7 @@ const callChatCompletion = async (modelId, messages, apiKey, options = {}) => {
       body: JSON.stringify({
         model: modelId,
         messages,
-        temperature: options.temperature ?? 0.8,
-        max_tokens: options.maxTokens ?? 4096,
+        ...(reasoning ? { max_completion_tokens: Math.max(options.maxTokens || 0, 32768) } : { temperature: options.temperature ?? 0.8, max_tokens: options.maxTokens ?? 4096 }),
         ...(options.responseFormat ? { response_format: options.responseFormat } : {})
       }),
       signal: controller.signal,
@@ -45,15 +51,25 @@ const callChatCompletion = async (modelId, messages, apiKey, options = {}) => {
 
     const data = await response.json().catch(() => ({}));
     if (!response.ok) {
-      throw new Error(`${response.status} ${data.error?.message || response.statusText}`);
+      const error = new Error(`${response.status} ${data.error?.message || response.statusText}`);
+      error.terminal = [401, 403, 429].includes(response.status);
+      throw error;
     }
 
-    if (options.requireComplete && data.choices?.[0]?.finish_reason === 'length') {
-      throw new Error('画像解析の応答がトークン上限で切れました。特徴は省略せず、再解析してください。');
+    if (data.choices?.[0]?.finish_reason === 'length') {
+      const error = new Error('応答がトークン上限で切れました。再実行してください。');
+      error.terminal = true;
+      throw error;
     }
 
-    const text = data.choices?.[0]?.message?.content || "";
-    if (!text) throw new Error("Empty response");
+    if (data.choices?.[0]?.message?.refusal || data.choices?.[0]?.finish_reason === 'content_filter') {
+      const error = new Error('OpenAI refused the request'); error.terminal = true; throw error;
+    }
+    const choice = data.choices?.[0];
+    const text = choice?.message?.content;
+    if (choice?.finish_reason !== 'stop' || typeof text !== 'string' || !text.trim()) {
+      const error = new Error('OpenAI response is incomplete or empty'); error.terminal = true; throw error;
+    }
     return { text, model: modelId };
   } catch (e) {
     if (e.name === "AbortError") throw new Error(`Timeout (${timeoutMs / 1000}s)`);
@@ -92,13 +108,17 @@ ${contextToPromptText(context, fieldKey)}`;
 
   const messages = [{ role: "user", content: prompt }];
 
-  for (const modelId of TEXT_MODEL_IDS) {
+  textModelStatus = {selected: selectedTextModel, attempted: [], adopted: null};
+  for (const modelId of getTextModelRoute()) {
+    textModelStatus.attempted.push(modelId);
     try {
       if (onStatusUpdate) onStatusUpdate(`> [API] ${modelId} starting...`);
       const result = await callChatCompletion(modelId, messages, currentOpenAIApiKey);
+      textModelStatus.adopted = modelId;
       if (onStatusUpdate) onStatusUpdate(`> [API] complete (${modelId})`);
       return result.text.trim().replace(/^["「『]|["」』]$/g, "");
     } catch (e) {
+      if (e.terminal) throw e;
       console.warn(`[OpenAI FieldGen] ${modelId} failed:`, e.message);
       if (onStatusUpdate) onStatusUpdate(`> [API] ${modelId} failed. Trying next model...`);
     }
@@ -121,16 +141,20 @@ ${buildGachaContextText(context)}`;
 
   const messages = [{ role: "user", content: prompt }];
 
-  for (const modelId of TEXT_MODEL_IDS) {
+  textModelStatus = {selected: selectedTextModel, attempted: [], adopted: null};
+  for (const modelId of getTextModelRoute()) {
+    textModelStatus.attempted.push(modelId);
     try {
       if (onStatusUpdate) onStatusUpdate(`> [API] ${modelId} starting...`);
       const result = await callChatCompletion(modelId, messages, currentOpenAIApiKey, {
         timeoutMs: 25000,
         responseFormat: { type: "json_object" }
       });
+      textModelStatus.adopted = modelId;
       if (onStatusUpdate) onStatusUpdate(`> [API] complete (${modelId})`);
       return JSON.parse(result.text);
     } catch (e) {
+      if (e.terminal) throw e;
       console.warn(`[OpenAI GachaGen] ${modelId} failed:`, e.message);
       if (onStatusUpdate) onStatusUpdate(`> [API] ${modelId} failed. Trying next model...`);
     }

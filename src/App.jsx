@@ -1,3 +1,4 @@
+import { OPENAI_TEXT_MODELS, DEFAULT_OPENAI_TEXT_MODEL, setOpenAITextModel, getOpenAITextModelStatus } from './lib/openai';
 // AIキャラクターシートメーカー V1.0 — メインアプリ
 // 完全独立アプリ。他アプリとは混ぜない。
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
@@ -16,7 +17,7 @@ import {
 } from './lib/png-character-sheet-metadata';
 import FieldInput from './components/FieldInput';
 
-const SYSTEM_VERSION = "1.4.4";
+const SYSTEM_VERSION = "1.4.5";
 const APP_NAME = "AIキャラクターシートメーカー";
 
 // === スマート連携テーブル ===
@@ -42,6 +43,7 @@ const App = () => {
   // === API認証 ===
   const [apiKeyInput, setApiKeyInput] = useState('');
   const [selectedEngine, setSelectedEngine] = useState('openai');
+  const [openaiTextModel, setTextModelSelection] = useState(DEFAULT_OPENAI_TEXT_MODEL);
   const [isUnlocked, setIsUnlocked] = useState(false);
 
 
@@ -64,6 +66,7 @@ const App = () => {
   const [isAnalyzingImage, setIsAnalyzingImage] = useState(false);
   const [fieldGenerating, setFieldGenerating] = useState(null);
   const [statusMessage, setStatusMessage] = useState('');
+  const [textModelStatus, setTextModelStatus] = useState('未実行');
   const [elapsedTime, setElapsedTime] = useState(0);
 
   // === 画像結果 ===
@@ -117,6 +120,7 @@ const App = () => {
     if (key.length <= 10) return false;
     setApiKeys(selectedEngine === 'gemini' ? key : '', selectedEngine === 'openai' ? key : '');
     setActiveEngine(selectedEngine);
+    setOpenAITextModel(openaiTextModel);
     return true;
   };
 
@@ -186,6 +190,7 @@ const App = () => {
   // === ステータス表示 ===
   const statusTimerRef = useRef(null);
   const showStatus = (msg, autoHide = false) => {
+    if (msg.startsWith('> [API]')) { const status = getOpenAITextModelStatus(); setTextModelStatus(`選択 ${status.selected} / 試行 ${status.attempted.join(' → ') || '未実行'} / 採用 ${status.adopted || '未採用'}`); }
     if (statusTimerRef.current) clearTimeout(statusTimerRef.current);
     setStatusMessage(msg);
     if (autoHide) {
@@ -675,6 +680,11 @@ const App = () => {
               </button>
             </div>
 
+            {selectedEngine === 'openai' && <label>OpenAI テキストモデル
+              <select aria-label="OpenAI テキストモデル（接続前）" value={openaiTextModel} onChange={event => {setOpenAITextModel(event.target.value);setTextModelSelection(event.target.value); setTextModelStatus('未実行');}}>
+                {OPENAI_TEXT_MODELS.map(model => <option key={model.id} value={model.id}>{model.label} · ${model.inputPriceUsdPerM}/${model.outputPriceUsdPerM} / 100万tokens</option>)}
+              </select>
+            </label>}
             <input type="password" className="api-gate-input" placeholder="APIキーを入力すると自動判別します"
               value={apiKeyInput} onChange={handleApiKeyChange}
               onKeyDown={(e) => e.key === 'Enter' && handleApiKeySubmit()} />
@@ -722,6 +732,18 @@ const App = () => {
               </button>
             </div>
           </header>
+
+          {isUnlocked && selectedEngine === 'openai' && (
+            <div className="openai-model-control">
+              <label htmlFor="openai-text-model">OpenAI テキストモデル</label>
+              <select id="openai-text-model" value={openaiTextModel} disabled={isWorking} onChange={event => { setOpenAITextModel(event.target.value); setTextModelSelection(event.target.value); setTextModelStatus('未実行'); }}>
+                {OPENAI_TEXT_MODELS.map(model => <option key={model.id} value={model.id}>{model.label} · 入力 ${model.inputPriceUsdPerM} / 出力 ${model.outputPriceUsdPerM} / 100万tokens</option>)}
+              </select>
+              <p>初期選択: GPT-6.1 Sol。Astraが最上位。項目生成・テキストガチャは選択モデルから下位へフォールバックします。</p>
+              <p>{OPENAI_TEXT_MODELS.find(model => model.id === openaiTextModel)?.description} · 試行・採用モデルは生成ステータスに表示します。</p>
+            <p aria-live="polite">{textModelStatus}</p>
+            </div>
+          )}
 
           {/* ステータス（生成中は持続表示） */}
           {statusMessage && (

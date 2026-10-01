@@ -1,6 +1,16 @@
 # HANDOFF
 
+Live candidate evidence 2026-10-01: ordinary name-field generation completed with selected/tried/adopted GPT-6.1 Sol (黒瀬 隼人); ignored `output_sol61/api-readback.txt` and screenshot preserve proof. Model helper text is 10px and final production build passes. Root PLAN owns remaining authorized release/social/backup stages.
+
 This file is public-repository safe. Do not include API keys, private credentials, billing data, private tokens, personal local paths, or unreleased account details.
+
+## 2026-10-01 v1.4.5 GPT model selector
+
+- All 11 text fallback models are selectable, Astra first and Sol 6.1 default. Field generation and text gacha start at the selected model and descend only; dedicated image generation and image-to-prompt analysis routes remain separate.
+- Unknown models fail before requests; GPT-6/GPT-5.6 use compatible parameters. Incomplete, whitespace, nonstring, refusal and authentication responses stop additional fallback calls. Selected/tried/adopted status is retained and cleared when selection changes.
+- Full 54 Node tests passed. Production build passed before final small session restoration change; final build remains required.
+- Real Sol 6.1 field generation completed with the name 黒瀬 隼人, selected/tried/adopted all Sol 6.1. Local ignored output_sol61 contains screen/readback evidence. This verifies text generation, not newly generated image quality.
+- User-authorized release, note/X/Facebook and final full backup remain pending.
 
 ## Last Updated
 2026-09-23
