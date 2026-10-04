@@ -2,7 +2,7 @@
   "license": "SEE LICENSE IN LICENSE",
   "name": "character-sheet-foundry",
   "private": true,
-  "version": "1.4.6",
+  "version": "1.4.7",
   "type": "module",
   "scripts": {
     "dev": "vite",

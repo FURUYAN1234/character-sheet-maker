@@ -17,7 +17,7 @@ import {
 } from './lib/png-character-sheet-metadata';
 import FieldInput from './components/FieldInput';
 
-const SYSTEM_VERSION = "1.4.6";
+const SYSTEM_VERSION = "1.4.7";
 const APP_NAME = "AIキャラクターシートメーカー";
 
 // === スマート連携テーブル ===
@@ -697,7 +697,7 @@ const App = () => {
               <span className="api-gate-links-sep">|</span>
               <a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer">🔑 OpenAI APIキー取得</a>
             </div>
-            <p className="api-gate-note">※ APIキーはセッション限定（ブラウザに保存されません）<br/>※ キーはメモリ内のみ保持・ページを閉じると消去・外部送信一切なし</p>
+            <p className="api-gate-note">※ APIキーはメモリ内だけで保持し、再読み込み・ページ終了で消去します。<br/>※ API利用時は、キーと処理に必要な文章・画像を選択したGemini／OpenAIへブラウザから直接送信します。API通信はアプリ運営者のサーバーを経由しません。</p>
           </div>
         </div>
       )}

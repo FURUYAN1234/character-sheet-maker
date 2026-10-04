@@ -1,5 +1,11 @@
 # HANDOFF
 
+## 2026-10-04 v1.4.7 API explanation correction
+
+- Scope: publish the reviewed prepared wording correction only, with synchronized version metadata and release documentation. API behavior and license terms are unchanged.
+- The workspace PLAN.md owns this task and final acceptance evidence. This entry describes the release candidate; publication remains pending until the official transaction receipt verifies all required stages.
+- Reviewed the exact prepared wording diff against current memory-only key handling and provider routes. All 54 existing Node tests pass for this candidate. Fresh official validation/build and public wording readback remain required. No paid API run or full backup is part of this task.
+
 Current terms-publication status and acceptance evidence are maintained in the workspace PLAN.md; historical rollout entries below are unchanged.
 
 Live candidate evidence 2026-10-01: ordinary name-field generation completed with selected/tried/adopted GPT-6.1 Sol (黒瀬 隼人); ignored `output_sol61/api-readback.txt` and screenshot preserve proof. Model helper text is 10px and final production build passes. Root PLAN owns remaining authorized release/social/backup stages.
