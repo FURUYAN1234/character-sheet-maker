@@ -17,7 +17,7 @@ import {
 } from './lib/png-character-sheet-metadata';
 import FieldInput from './components/FieldInput';
 
-const SYSTEM_VERSION = "1.4.5";
+const SYSTEM_VERSION = "1.4.6";
 const APP_NAME = "AIキャラクターシートメーカー";
 
 // === スマート連携テーブル ===

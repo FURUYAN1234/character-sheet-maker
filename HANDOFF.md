@@ -1,5 +1,7 @@
 # HANDOFF
 
+Current terms-publication status and acceptance evidence are maintained in the workspace PLAN.md; historical rollout entries below are unchanged.
+
 Live candidate evidence 2026-10-01: ordinary name-field generation completed with selected/tried/adopted GPT-6.1 Sol (黒瀬 隼人); ignored `output_sol61/api-readback.txt` and screenshot preserve proof. Model helper text is 10px and final production build passes. Root PLAN owns remaining authorized release/social/backup stages.
 
 This file is public-repository safe. Do not include API keys, private credentials, billing data, private tokens, personal local paths, or unreleased account details.
