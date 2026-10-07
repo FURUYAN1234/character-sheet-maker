@@ -2,7 +2,7 @@
   "license": "SEE LICENSE IN LICENSE",
   "name": "character-sheet-foundry",
   "private": true,
-  "version": "1.4.8",
+  "version": "1.4.9",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "release:preflight": "powershell -ExecutionPolicy Bypass -File ..\\scripts\\release_app_preflight.ps1 -App character_sheet",
     "predeploy": "npm run release:preflight && npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "postbuild": "node scripts/web-security.mjs --verify-dist"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",
@@ -19,7 +20,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.4",
-    "gh-pages": "^6.3.0",
+    "gh-pages": "6.1.1",
     "vite": "^6.0.0"
   }
 }
