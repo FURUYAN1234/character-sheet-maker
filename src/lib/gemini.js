@@ -68,7 +68,6 @@ export const callGeminiText = async (prompt, onStatusUpdate, options = {}) => {
       const requestBody = {
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: {
-          temperature: 0.8,
           maxOutputTokens: 4096,
           ...(options.responseMimeType && { responseMimeType: options.responseMimeType }),
           ...(options.responseSchema && { responseSchema: options.responseSchema }),
@@ -168,7 +167,7 @@ export const inferPromptFromImage = async (imageDataUrl, instruction, onStatusUp
             { text: instruction },
             { inline_data: { mime_type: mimeType.toLowerCase(), data: base64 } },
           ] }],
-          generationConfig: { temperature: 0.3, maxOutputTokens: 65536 },
+          generationConfig: { maxOutputTokens: 65536 },
         }),
         signal: controller.signal,
       },
