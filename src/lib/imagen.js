@@ -2,21 +2,20 @@ import { getApiKey, diagnoseConnection } from "./gemini";
 
 const IMAGE_TIMEOUT_MS = 300000;
 const MODELS_TO_TRY = [
-  "gemini-3.1-flash-image"
+  "gemini-nano-banana-2.1"
 ];
 
-const buildGeminiImageBody = (prompt) => ({
-  contents: [{ role: "user", parts: [{ text: prompt }] }],
-  generationConfig: {
-    responseModalities: ["TEXT", "IMAGE"]
-  }
+const buildGeminiImageBody = (prompt, model) => ({
+  model,
+  input: [{ type: "text", text: prompt }],
+  response_format: { type: "image", mime_type: "image/jpeg" }
 });
 
 const extractGeminiImage = (data, modelId) => {
-  const parts = data.candidates?.flatMap(candidate => candidate.content?.parts || []) || [];
+  const parts = data.steps?.flatMap(step => step.content || []) || [];
   const imagePart = parts
-    .filter(part => part.inlineData?.data)
-    .sort((a, b) => (b.inlineData.data?.length || 0) - (a.inlineData.data?.length || 0))[0];
+    .filter(part => part.type === 'image' && part.data)
+    .sort((a, b) => b.data.length - a.data.length)[0];
 
   if (!imagePart) {
     const textResponse = parts
@@ -25,12 +24,12 @@ const extractGeminiImage = (data, modelId) => {
       .join(" ")
       .slice(0, 500);
     const suffix = textResponse ? ` Text response: ${textResponse}` : "";
-    throw new Error(`Unexpected format from ${modelId}: missing inlineData.${suffix}`);
+    throw new Error(`Unexpected format from ${modelId}: missing image output.${suffix}`);
   }
 
   return {
-    base64Img: imagePart.inlineData.data,
-    mimeType: imagePart.inlineData.mimeType || "image/png",
+    base64Img: imagePart.data,
+    mimeType: imagePart.mime_type || "image/jpeg",
     usedModel: modelId
   };
 };
@@ -52,11 +51,11 @@ export const generateImage = async (prompt, onStatusUpdate) => {
       if (onStatusUpdate) onStatusUpdate(`> [image] ${modelId} generation started... (2-5 min)`);
 
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${currentApiKey}`,
+        'https://generativelanguage.googleapis.com/v1beta/interactions',
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(buildGeminiImageBody(prompt)),
+          headers: { "Content-Type": "application/json", "x-goog-api-key": currentApiKey },
+          body: JSON.stringify(buildGeminiImageBody(prompt, modelId)),
           signal: controller.signal,
         }
       );

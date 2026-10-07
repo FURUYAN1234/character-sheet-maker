@@ -92,14 +92,24 @@ test('Gemini regeneration sends only prompt text, never the imported image', asy
     router.setApiKeys('test-only', '');
     router.setActiveEngine('gemini');
     globalThis.fetch = async (_url, options) => {
+      assert.match(_url, /\/v1beta\/interactions$/);
       body = JSON.parse(options.body);
-      return new Response(JSON.stringify({ candidates: [{ content: { parts: [{ inlineData: { data: 'aGVsbG8=', mimeType: 'image/png' } }] } }] }), { status: 200 });
+      return new Response(JSON.stringify({ status: 'completed', steps: [{ content: [{type: 'image', data: 'aGVsbG8=', mime_type: 'image/png'}] }] }), { status: 200 });
     };
     const generateImageGemini = router.generateImageAI;
     const result = await generateImageGemini('Keep a distinctive swept fringe and cropped jacket.');
     assert.equal(result.base64Img, 'aGVsbG8=');
-    assert.deepEqual(body.contents[0].parts, [{ text: 'Keep a distinctive swept fringe and cropped jacket.' }]);
+    assert.equal(body.model, 'gemini-nano-banana-2.1');
+    assert.equal(result.usedModel, body.model);
+    assert.deepEqual(body.input, [{ type: 'text', text: 'Keep a distinctive swept fringe and cropped jacket.' }]);
     assert.doesNotMatch(JSON.stringify(body), /inline_data|inlineData|image_url|imageUrl/);
+    let imageCalls = 0;
+    globalThis.fetch = async (url) => {
+      if (url.endsWith('/interactions')) imageCalls++;
+      return new Response(JSON.stringify({ status: 'completed', steps: [] }));
+    };
+    await assert.rejects(generateImageGemini('A complete sheet'));
+    assert.equal(imageCalls, 1, 'missing images must not succeed or call an obsolete image model');
   } finally {
     globalThis.fetch = originalFetch;
     await server.close();
