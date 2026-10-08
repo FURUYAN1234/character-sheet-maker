@@ -8,14 +8,11 @@
 ![AI](https://img.shields.io/badge/AI-Gemini%20%2F%20OpenAI-f97316)
 ![Output](https://img.shields.io/badge/output-1120x1584%20PNG-10b981)
 
-> **A visible-parameter character design tool for manga, story, and AI image workflows.**
-> **漫画・物語・AI画像生成のために、キャラクター設計を見えるパラメータへ分解する制作支援ツールです。**
+> **A visible-parameter character design tool for manga, story, and AI image workflows.** / **漫画・物語・AI画像生成のために、キャラクター設計を見えるパラメータへ分解する制作支援ツールです。**
 > 
  [!['ChatGPT Image 2026年6月25日 22_19_30'](https://github.com/user-attachments/assets/d850ac7f-aa1c-40cc-a378-b8c6673c726c)](https://youtu.be/pqYVxUUg0Cs?si=27g1I3tO2EuZkOuxJ)
 
-AI Character Sheet Maker creates structured character reference sheets from dozens of editable design axes instead of relying on a single free-form prompt. It is designed to feed downstream systems such as **Super FURU AI 4-koma System**, Story Maker, and manual ChatGPT / Gemini image workflows.
-
-AIキャラクターシートメーカーは、自由入力プロンプトだけに頼らず、多数の編集可能な設計軸からキャラクター参照シートを作るツールです。**Super FURU AI 4-koma System**、Story Maker、ChatGPT / Gemini の画像生成ワークフローへ渡しやすい、構造化されたキャラクター資料を作ることを目的にしています。
+AI Character Sheet Maker creates structured character reference sheets from dozens of editable design axes instead of relying on a single free-form prompt. It is designed to feed downstream systems such as **Super FURU AI 4-koma System**, Story Maker, and manual ChatGPT / Gemini image workflows. / AIキャラクターシートメーカーは、自由入力プロンプトだけに頼らず、多数の編集可能な設計軸からキャラクター参照シートを作るツールです。**Super FURU AI 4-koma System**、Story Maker、ChatGPT / Gemini の画像生成ワークフローへ渡しやすい、構造化されたキャラクター資料を作ることを目的にしています。
 
 > **Demo / 公開版**
 > [https://furuyan1234.github.io/character-sheet-maker/](https://furuyan1234.github.io/character-sheet-maker/)
@@ -24,61 +21,55 @@ AIキャラクターシートメーカーは、自由入力プロンプトだけ
 
 ## Current Release Line / 現行仕様
 
-The current public line is **v1.5.0**. This version is a browser-based React/Vite app with session-only API keys, dual Gemini/OpenAI routing, A/B comparison, parameter locks, deterministic Japanese profile typesetting for form-driven sheets, automatically named prompt-file downloads, exact `1120x1584` output, and provenance watermarking. It also embeds versioned design JSON in generated PNGs so the exact prompt can be restored later.
-
-現行公開系統は **v1.5.0** です。ブラウザ上で動作する React/Vite アプリで、セッション限定APIキー、Gemini/OpenAIの切り替え、A/B比較、項目ロック、フォーム生成時の日本語プロフィール決定的文字合成、自動命名されるプロンプトファイルの直接ダウンロード、1120x1584の固定出力、来歴ウォーターマークを備えています。生成PNGにはバージョン付き設計JSONも埋め込み、後から正確なプロンプトを復元できます。
+The current public line is **v1.5.0**. This version is a browser-based React/Vite app with session-only API keys, dual Gemini/OpenAI routing, A/B comparison, parameter locks, deterministic Japanese profile typesetting for form-driven sheets, automatically named prompt-file downloads, exact `1120x1584` output, and provenance watermarking. It also embeds versioned design JSON in generated PNGs so the exact prompt can be restored later. / 現行公開系統は **v1.5.0** です。ブラウザ上で動作する React/Vite アプリで、セッション限定APIキー、Gemini/OpenAIの切り替え、A/B比較、項目ロック、フォーム生成時の日本語プロフィール決定的文字合成、自動命名されるプロンプトファイルの直接ダウンロード、1120x1584の固定出力、来歴ウォーターマークを備えています。生成PNGにはバージョン付き設計JSONも埋め込み、後から正確なプロンプトを復元できます。
 
 | Area / 領域 | Current behavior / 現行挙動 |
 |---|---|
-| App version / バージョン | `1.5.0`, displayed in the API gate, header, footer, and watermark. |
-| API key handling / APIキー | Memory-only. Keys are not written to localStorage, source files, or output images. |
+| App version / バージョン | `1.5.0`, displayed in the API gate, header, footer, and watermark.  / APIゲート、ヘッダー、フッター、透かしに1.5.0を表示します。|
+| API key handling / APIキー | Memory-only. Keys are not written to localStorage, source files, or output images.  / メモリ限定。キーをlocalStorage、ソース、出力画像へ書き込みません。|
 | Gemini text / Geminiテキスト | `gemini-3.5-flash` -> `gemini-2.5-flash` -> `gemini-2.5-pro` -> `gemini-flash-latest` -> `gemini-pro-latest` |
 | Gemini image / Gemini画像 | `gemini-nano-banana-2.1` |
-| OpenAI text / OpenAIテキスト | 全11モデルから選択（既定 `gpt-6.1-sol`、選択から下位のみ） |
+| OpenAI text / OpenAIテキスト | Select from all 11 models; default gpt-6.1-sol, downward fallback from the selection. / 全11モデルから選択（既定 `gpt-6.1-sol`、選択から下位のみ） |
 | OpenAI image / OpenAI画像 | `gpt-image-2.5-sunburst` (`xhigh`) -> `gpt-image-2` (`high`) |
-| Output canvas / 出力キャンバス | The final PNG is exactly `1120x1584` (`70:99`, the same ratio as A4). The complete provider artwork is fitted below the Japanese profile header without cropping. |
-| Image import / 画像読み込み | Generated PNGs contain `furu.character_sheet` schema v1 JSON for exact prompt restoration. PNG and JPG/JPEG images can be dropped or selected; images without this metadata use AI prompt inference. |
+| Output canvas / 出力キャンバス | The final PNG is exactly `1120x1584` (`70:99`, the same ratio as A4). The complete provider artwork is fitted below the Japanese profile header without cropping.  / 最終PNGは1120x1584（70:99、A4と同比率）です。生成イラストを切り抜かず日本語プロフィールヘッダーの下へ収めます。|
+| Image import / 画像読み込み | Generated PNGs contain `furu.character_sheet` schema v1 JSON for exact prompt restoration. PNG and JPG/JPEG images can be dropped or selected; images without this metadata use AI prompt inference.  / 生成PNGにはfuru.character_sheetスキーマv1の設計JSONを埋め込み、正確なプロンプトを復元します。PNG・JPG/JPEGをドロップまたは選択でき、設計情報がない画像はAIでプロンプトを推定します。|
 | Local port / ローカルポート | `http://127.0.0.1:5176/` with Vite `strictPort: true`. |
 
 ---
 
 ## Core Concept / 基本コンセプト
 
-Most AI character generation failures come from vague prompts: the same adjectives are reused, anatomy changes from image to image, and the resulting character is hard to carry into manga panels or story scenes. This app turns character design into a visible control surface.
+Most AI character generation failures come from vague prompts: the same adjectives are reused, anatomy changes from image to image, and the resulting character is hard to carry into manga panels or story scenes. This app turns character design into a visible control surface. / AIキャラクター生成で起きる失敗の多くは、曖昧なプロンプトから始まります。同じ形容詞が何度も使われ、身体・衣装・口調・役割が画像ごとに揺れ、漫画や物語へ持ち込めないキャラクターになります。このアプリは、キャラクター設計を見える操作面へ変換します。
 
-AIキャラクター生成で起きる失敗の多くは、曖昧なプロンプトから始まります。同じ形容詞が何度も使われ、身体・衣装・口調・役割が画像ごとに揺れ、漫画や物語へ持ち込めないキャラクターになります。このアプリは、キャラクター設計を見える操作面へ変換します。
-
-The user edits concrete axes such as body build, face type, costume, role, voice image, action tendency, emotion range, transformation state, and manga-direction metadata. The app then assembles those axes into a provider-specific prompt and renders a normalized character sheet.
-
-ユーザーは、体型、顔立ち、衣装、役割、声質イメージ、得意アクション、感情レンジ、覚醒状態、漫画演出連携情報などを具体的に編集します。アプリはそれらの軸をプロバイダー向けプロンプトへ組み立て、正規化されたキャラクターシートとして出力します。
+The user edits concrete axes such as body build, face type, costume, role, voice image, action tendency, emotion range, transformation state, and manga-direction metadata. The app then assembles those axes into a provider-specific prompt and renders a normalized character sheet. / ユーザーは、体型、顔立ち、衣装、役割、声質イメージ、得意アクション、感情レンジ、覚醒状態、漫画演出連携情報などを具体的に編集します。アプリはそれらの軸をプロバイダー向けプロンプトへ組み立て、正規化されたキャラクターシートとして出力します。
 
 ---
 
 ## Workflow / 操作フロー
 
 1. **Select provider / プロバイダー選択**
-   Choose Gemini or OpenAI in the API gate and enter the matching API key.
+   Choose Gemini or OpenAI in the API gate and enter the matching API key. / APIゲートでGeminiまたはOpenAIを選択し、対応するAPIキーを入力します。
 
 2. **Design the character / キャラクター設計**
-   Edit dropdowns, text fields, and textarea fields across the visible sections.
+   Edit dropdowns, text fields, and textarea fields across the visible sections. / 表示されている各欄のプルダウン、テキスト入力、複数行入力を編集します。
 
 3. **Lock important axes / 重要項目をロック**
-   Lock fields that must not change during randomization or AI text generation.
+   Lock fields that must not change during randomization or AI text generation. / ランダム化やAI文章生成で変更したくない項目をロックします。
 
 4. **Use presets or full random / プリセット・全体ランダム**
-   Apply one of the representative-character presets or run the gacha-style randomizer. Smart linkage keeps combinations coherent. Use **キャラ固定** to preserve the character's identity, then use the same single preset row as appearance themes; **固定解除** returns those buttons to full-character presets.
+   Apply one of the representative-character presets or run the gacha-style randomizer. Smart linkage keeps combinations coherent. Use **キャラ固定** to preserve the character's identity, then use the same single preset row as appearance themes; **固定解除** returns those buttons to full-character presets. / 代表キャラのプリセットかガチャ風ランダム化を使います。スマート連携で組み合わせを整えます。「キャラ固定」は人物像を保持しながら見た目だけを試し、「固定解除」で完全なプリセット適用へ戻します。
 
 5. **Generate text details / テキスト詳細生成**
-   Let the selected LLM propose names, catchphrases, dialogue, likes, dislikes, nicknames, and similar textual details when needed.
+   Let the selected LLM propose names, catchphrases, dialogue, likes, dislikes, nicknames, and similar textual details when needed. / 必要に応じて、選択したLLMに名前、口癖、台詞、好き嫌い、呼び名などの文章項目を提案させます。
 
 6. **Generate the sheet / シート生成**
-   Send the provider-specific prompt to Gemini or OpenAI image generation.
+   Send the provider-specific prompt to Gemini or OpenAI image generation. / プロバイダー別のプロンプトをGeminiまたはOpenAIの画像生成へ送信します。
 
 7. **Typeset, normalize, and compare / 文字合成・正規化・比較**
-   The app adds the exact profile fields in a Japanese header, fits the complete provider artwork below it without cropping, and applies the version watermark. The final PNG is always 1120x1584 (70:99, the same ratio as A4). A/B mode allows two slots to be compared side by side.
+   The app adds the exact profile fields in a Japanese header, fits the complete provider artwork below it without cropping, and applies the version watermark. The final PNG is always 1120x1584 (70:99, the same ratio as A4). A/B mode allows two slots to be compared side by side. / アプリが正確なプロフィール項目を日本語ヘッダーへ合成し、生成イラストを切り抜かずその下へ収め、バージョンの透かしを付けます。最終PNGは常に1120x1584（70:99、A4と同比率）です。A/Bモードでは2つのスロットを並べて比較できます。
 
 8. **Download or reuse / 保存・再利用**
-   Download the current prompt with its automatic character-based filename, download PNG output, or load previous image session thumbnails for comparison. Generated PNGs retain the exact prompt as versioned design data; drop one onto the result region to display that image and restore its prompt without image analysis.
+   Download the current prompt with its automatic character-based filename, download PNG output, or load previous image session thumbnails for comparison. Generated PNGs retain the exact prompt as versioned design data; drop one onto the result region to display that image and restore its prompt without image analysis. / 人物に基づく自動ファイル名で現在のプロンプトやPNGを保存し、履歴の画像を読み込んで比較できます。生成PNGには正確なプロンプトを版付き設計データとして保存し、結果欄へドロップすると画像解析をせず画像とプロンプトを復元します。
 
 ---
 
@@ -86,71 +77,59 @@ The user edits concrete axes such as body build, face type, costume, role, voice
 
 ### 1. API Gate / APIゲート
 
-The app starts locked until the user selects Gemini or OpenAI and enters an API key. The key stays only in memory for the current browser session.
+The app starts locked until the user selects Gemini or OpenAI and enters an API key. The key stays only in memory for the current browser session. / アプリはAPIキー入力前にはロック状態です。Gemini または OpenAI を選び、対応するキーを入力してから制作画面へ進みます。キーは現在のブラウザセッション内のメモリにのみ保持されます。
 
-アプリはAPIキー入力前にはロック状態です。Gemini または OpenAI を選び、対応するキーを入力してから制作画面へ進みます。キーは現在のブラウザセッション内のメモリにのみ保持されます。
-
-* Gemini key acquisition link: Google AI Studio.
-* OpenAI key acquisition link: OpenAI Platform.
-* API switch button returns to the gate without persisting the previous key.
-* Reloading the page requires entering the key again.
+* Gemini key acquisition link: Google AI Studio. / Geminiキーの取得リンク：Google AI Studio。
+* OpenAI key acquisition link: OpenAI Platform. / OpenAIキーの取得リンク：OpenAI Platform。
+* API switch button returns to the gate without persisting the previous key. / API切替ボタンは、前のキーを永続保存せずAPIゲートへ戻ります。
+* Reloading the page requires entering the key again. / ページを再読み込みした場合はキーの再入力が必要です。
 
 ### 2. Visible Character Axes / 見えるキャラクター設計軸
 
-The current UI organizes fields into nine main sections:
-
-現在のUIは、以下の9セクションに項目を整理しています。
+The current UI organizes fields into nine main sections: / 現在のUIは、以下の9セクションに項目を整理しています。
 
 | Section / セクション | Main fields / 主な項目 |
 |---|---|
-| 1. 生体・身体・精神プロファイル | name, sex, species, age, height, weight, body build, personality, likes, dislikes, catchphrase, dialogue |
-| 2. 顔・頭部・メイク詳細 | face type, eye shape, eye color, makeup, hair style, hair color, facial hair, skin type |
-| 3. 装飾品・紋様・特殊部位 | glasses, head accessory, earrings, neck accessory, piercings, body art, wings, horns, tail, mechanical arms |
-| 4. 衣装・装備・エフェクト | world era, costume, material, outfit condition, fit, weapon, sub weapon, magic effect, aura |
-| 5. 画風・レンダリング・陰影 | art style, layout, rendering mode, screentone, pen style, lighting, shadow, color theme |
-| 6. ポーズ・表現 | base pose, expression, gaze direction, hand expression |
-| 7. ロール・演技設定 | archetype, nickname, organization, voice type, speech style |
-| 8. マンガ演出連携 | action tendency, emotion range, direction style, awakening / transformation |
-| 9. 自由記述 | free-form extra detail for anything the fixed controls cannot express |
+| 1. 生体・身体・精神プロファイル | name, sex, species, age, height, weight, body build, personality, likes, dislikes, catchphrase, dialogue  / 名前、性別、種族、年齢、身長、体重、体型、性格、好き嫌い、口癖、台詞|
+| 2. 顔・頭部・メイク詳細 | face type, eye shape, eye color, makeup, hair style, hair color, facial hair, skin type  / 顔立ち、目の形・色、化粧、髪型・髪色、ひげ、肌|
+| 3. 装飾品・紋様・特殊部位 | glasses, head accessory, earrings, neck accessory, piercings, body art, wings, horns, tail, mechanical arms  / 眼鏡、頭・耳・首の装飾、ピアス、ボディアート、翼、角、尾、機械腕|
+| 4. 衣装・装備・エフェクト | world era, costume, material, outfit condition, fit, weapon, sub weapon, magic effect, aura  / 世界観の時代、衣装、素材、衣装の状態・フィット、武器、補助武器、魔法効果、オーラ|
+| 5. 画風・レンダリング・陰影 | art style, layout, rendering mode, screentone, pen style, lighting, shadow, color theme  / 画風、レイアウト、描画方式、スクリーントーン、ペン、光、影、色テーマ|
+| 6. ポーズ・表現 | base pose, expression, gaze direction, hand expression  / 基本ポーズ、表情、視線、手の表現|
+| 7. ロール・演技設定 | archetype, nickname, organization, voice type, speech style  / 類型、呼び名、所属、声の種類、口調|
+| 8. マンガ演出連携 | action tendency, emotion range, direction style, awakening / transformation  / 得意アクション、感情レンジ、演出傾向、覚醒・変身|
+| 9. 自由記述 | free-form extra detail for anything the fixed controls cannot express  / 固定項目で表現できない内容を補う自由入力|
 
-This structure is intentionally dense. The goal is to make character continuity easier to inspect before an image is generated, not to hide design decisions inside a single paragraph.
-
-この構造は意図的に細かくしています。目的は、画像生成前にキャラクターの一貫性を見て確認できるようにすることであり、設計判断を1つの長文プロンプトの中へ隠すことではありません。
+This structure is intentionally dense. The goal is to make character continuity easier to inspect before an image is generated, not to hide design decisions inside a single paragraph. / この構造は意図的に細かくしています。目的は、画像生成前にキャラクターの一貫性を見て確認できるようにすることであり、設計判断を1つの長文プロンプトの中へ隠すことではありません。
 
 ### 3. Parameter Locks / パラメータロック
 
-Each editable field can be locked. Locked fields are preserved when the user runs random generation or asks the AI to fill missing text fields.
+Each editable field can be locked. Locked fields are preserved when the user runs random generation or asks the AI to fill missing text fields. / 各編集項目はロックできます。ロックした項目は、全体ランダムやAIによるテキスト補完を実行しても保持されます。
 
-各編集項目はロックできます。ロックした項目は、全体ランダムやAIによるテキスト補完を実行しても保持されます。
+This is especially useful for: / 特に次の用途に使えます。
 
-This is especially useful for:
-
-* Keeping a fixed sex/species/age while exploring costume or pose.
-* Holding a weapon and action tendency while changing art style.
-* Preserving a name, catchphrase, or speech style across multiple visual attempts.
-* Comparing two designs with only one or two axes changed.
+* Keeping a fixed sex/species/age while exploring costume or pose. / 性別・種族・年齢を固定して、衣装やポーズを試す。
+* Holding a weapon and action tendency while changing art style. / 武器と得意アクションを維持しながら画風を変える。
+* Preserving a name, catchphrase, or speech style across multiple visual attempts. / 複数の作画で名前、口癖、話し方を維持する。
+* Comparing two designs with only one or two axes changed. / 1～2項目だけを変えた2つの設計を比較する。
 
 ### 4. Smart Linkage Engine / スマート連携エンジン
 
-Randomization is not purely uniform. The app applies light-weight consistency rules so random characters are less likely to become incoherent.
+Randomization is not purely uniform. The app applies light-weight consistency rules so random characters are less likely to become incoherent. / ランダム生成は完全な無作為ではありません。設定同士が破綻しにくいように、軽量な整合ルールを挟んでいます。
 
-ランダム生成は完全な無作為ではありません。設定同士が破綻しにくいように、軽量な整合ルールを挟んでいます。
+Examples: / 例：
 
-Examples:
+* Child age groups are nudged toward smaller body builds. / 子供の年齢区分では、小さめの体型を選びやすくします。
+* Certain species imply suitable body types or special parts. / 種族に合わせて体型や特殊部位を選びます。
+* Military and cyberpunk worlds can bias weapons or goggles. / 軍事やサイバーパンクの世界観は、武器やゴーグルの選択に影響します。
+* Sex and character type can influence speech style, body build, and voice image. / 性別とキャラの種類は、口調、体型、声のイメージに影響します。
+* Non-combat roles are less likely to receive heavy weapons unless the user locks them. / 利用者が固定していない限り、非戦闘の役割では重武器を選びにくくします。
 
-* Child age groups are nudged toward smaller body builds.
-* Certain species imply suitable body types or special parts.
-* Military and cyberpunk worlds can bias weapons or goggles.
-* Sex and character type can influence speech style, body build, and voice image.
-* Non-combat roles are less likely to receive heavy weapons unless the user locks them.
-
-These are generic linkage rules, not hardcoded examples for one character.
-
-これらは特定キャラ用の一回限りの分岐ではなく、汎用的な連携ルールです。
+These are generic linkage rules, not hardcoded examples for one character. / これらは特定キャラ用の一回限りの分岐ではなく、汎用的な連携ルールです。
 
 ### 5. Preset Templates / プリセットテンプレート
 
-The app includes ready-to-use starting points:
+The app includes ready-to-use starting points: / すぐに使える次の初期プリセットを用意しています。
 
 * Dark fantasy warrior / ダークファンタジー戦士
 * School romantic-comedy heroine / 学園ラブコメヒロイン
@@ -159,52 +138,36 @@ The app includes ready-to-use starting points:
 * Isekai mage / 異世界魔導師
 * Retro monster-movie creature / レトロ怪獣映画の怪物
 
-Presets are complete starting characters: they include identity, personality, catchphrase, dialogue, and a themed appearance. Every applied field remains editable. When **キャラ固定** is active, the same one-row buttons change only the non-identity visual/theme fields; **固定解除** restores full-preset behavior.
-
-プリセットは人物像・性格・口癖・台詞・見た目まで含む開始キャラクターであり、適用後もすべての項目を編集できます。**キャラ固定**中は同じ一列のボタンが見た目テーマのみを変更し、**固定解除**で完全なプリセット適用に戻ります。
+Presets are complete starting characters: they include identity, personality, catchphrase, dialogue, and a themed appearance. Every applied field remains editable. When **キャラ固定** is active, the same one-row buttons change only the non-identity visual/theme fields; **固定解除** restores full-preset behavior. / プリセットは人物像・性格・口癖・台詞・見た目まで含む開始キャラクターであり、適用後もすべての項目を編集できます。**キャラ固定**中は同じ一列のボタンが見た目テーマのみを変更し、**固定解除**で完全なプリセット適用に戻ります。
 
 ### 6. A/B Compare Mode / A/B比較モード
 
-A/B mode maintains two independent slots. Each slot can hold its own parameters and generated image.
+A/B mode maintains two independent slots. Each slot can hold its own parameters and generated image. / A/B比較モードでは、2つの独立したスロットを保持します。各スロットはそれぞれ別の設定値と生成画像を持てます。
 
-A/B比較モードでは、2つの独立したスロットを保持します。各スロットはそれぞれ別の設定値と生成画像を持てます。
+Typical uses: / 主な用途：
 
-Typical uses:
-
-* Compare Gemini and OpenAI outputs from similar settings.
-* Keep Slot A as the stable design and use Slot B for risky style changes.
-* Test whether a character is more readable in 12-panel reference layout or three-view structural layout.
-* Compare subtle changes in voice image, action tendency, or facial expression.
+* Compare Gemini and OpenAI outputs from similar settings. / 同じような設定からGeminiとOpenAIの出力を比較する。
+* Keep Slot A as the stable design and use Slot B for risky style changes. / Aを基準の設計として残し、Bで大きな画風変更を試す。
+* Test whether a character is more readable in 12-panel reference layout or three-view structural layout. / 12枠の参照レイアウトと三面図の構造レイアウトで、人物の見やすさを比較する。
+* Compare subtle changes in voice image, action tendency, or facial expression. / 声のイメージ、得意アクション、表情の細かな違いを比較する。
 
 ### 7. Session History / セッション履歴
 
-Generated images are kept as session thumbnails. Users can reload a previous image into the current slot or delete individual entries.
+Generated images are kept as session thumbnails. Users can reload a previous image into the current slot or delete individual entries. / 生成された画像はセッション内のサムネイル履歴として保持されます。過去画像を現在スロットへ戻したり、個別削除したりできます。プロンプトはキャラクター名から自動命名されたUTF-8テキストファイルとして直接ダウンロードできます。
 
-生成された画像はセッション内のサムネイル履歴として保持されます。過去画像を現在スロットへ戻したり、個別削除したりできます。プロンプトはキャラクター名から自動命名されたUTF-8テキストファイルとして直接ダウンロードできます。
-
-This history is for short-term creative comparison. It is not a long-term database and is not a place to store API keys.
-
-この履歴は短時間の比較用です。長期保存データベースではなく、APIキーを保存する場所でもありません。
+This history is for short-term creative comparison. It is not a long-term database and is not a place to store API keys. / この履歴は短時間の比較用です。長期保存データベースではなく、APIキーを保存する場所でもありません。
 
 ### 8. Editable PNG Design Data / PNG設計データの保存・復元
 
-Every newly generated PNG contains an uncompressed PNG `iTXt` chunk under the dedicated key `furu.character_sheet`. The schema v1 JSON stores the exact prompt, character fields, app version, timestamp, and non-secret generation details such as model and canvas size. API keys are never embedded.
+Every newly generated PNG contains an uncompressed PNG `iTXt` chunk under the dedicated key `furu.character_sheet`. The schema v1 JSON stores the exact prompt, character fields, app version, timestamp, and non-secret generation details such as model and canvas size. API keys are never embedded. / 新しく生成するPNGには、専用キー `furu.character_sheet` の非圧縮PNG `iTXt` チャンクを埋め込みます。schema v1のJSONには、完全なプロンプト、キャラクター項目、アプリバージョン、生成日時、モデル名・キャンバス寸法などの非機密な生成情報を保存します。APIキーは埋め込みません。
 
-新しく生成するPNGには、専用キー `furu.character_sheet` の非圧縮PNG `iTXt` チャンクを埋め込みます。schema v1のJSONには、完全なプロンプト、キャラクター項目、アプリバージョン、生成日時、モデル名・キャンバス寸法などの非機密な生成情報を保存します。APIキーは埋め込みません。
+The top toolbar advertises **PNG設計保存・復元 / PNG・JPG解析**. Drop a PNG or JPG/JPEG onto the generated-image region, or focus the region and press Enter to choose a file. The dropped image replaces the displayed result, and a persistent line below it names the loaded file. When a PNG contains app metadata, the exact prompt is restored. A JPEG or a PNG without app metadata is sent to the selected AI provider for an inferred prompt. The line identifies that prompt as an AI estimate, not the original, and shows analysis progress or failure. This API call can incur charges. **クリア** empties only the prompt preview; changing any character field resumes the live prompt. / 上部メニューには **PNG設計保存・復元 / PNG・JPG解析** を表示します。PNGまたはJPG/JPEGを生成結果領域へドロップするか、その領域へフォーカスして Enter を押してファイルを選ぶと、表示画像がその画像に切り替わり、結果欄の下にファイル名が残ります。PNGに専用メタデータがあればプロンプトを正確に復元します。JPG/JPEGや設計データのないPNGは選択中のAIへ送って画像を解析し、推定プロンプトを作ります。この場合はAPI使用料が発生する可能性があり、元のプロンプトを完全に再現するものではありません。結果欄には解析中・推定完了・失敗も表示します。**クリア** はプロンプト表示だけを空にし、いずれかのキャラクター項目を変更するとリアルタイム生成へ戻ります。
 
-The top toolbar advertises **PNG設計保存・復元 / PNG・JPG解析**. Drop a PNG or JPG/JPEG onto the generated-image region, or focus the region and press Enter to choose a file. The dropped image replaces the displayed result, and a persistent line below it names the loaded file. When a PNG contains app metadata, the exact prompt is restored. A JPEG or a PNG without app metadata is sent to the selected AI provider for an inferred prompt. The line identifies that prompt as an AI estimate, not the original, and shows analysis progress or failure. This API call can incur charges. **クリア** empties only the prompt preview; changing any character field resumes the live prompt.
+The top one-line status reports the selected file, analysis progress/model, and final result or failure; the result remains visible until dismissed or replaced. AI analysis separates observable identity from presentation: it records hair structure and endpoints, facial geometry, clothing layers and accessory placement, retains known left/right relationships, and leaves occluded traits unknown. The displayed English prompt puts identity first, then pose/background, then preservation rules. Analysis may use more output tokens than before; a truncated or invalid response fails instead of silently dropping details. Pressing image generation uses the displayed prompt as text only: the imported image is not sent as a generation reference. When the prompt came from a restored or AI-inferred image, the result is a new image without a conflicting Japanese profile header from the current form, and the result panel explicitly says which prompt source was used. Even an exact restored PNG prompt does not guarantee a pixel-identical image; an AI-inferred prompt is an approximation whose visual fidelity must be judged from actual outputs. / 画面上の「設計プロンプト」欄には、リアルタイム更新・PNGからの復元・AI画像解析のいずれの結果も表示します。「生成結果・画像ドロップ（PNG/JPG）」欄は画像の表示と読み込みを兼ねます。
 
-上部メニューには **PNG設計保存・復元 / PNG・JPG解析** を表示します。PNGまたはJPG/JPEGを生成結果領域へドロップするか、その領域へフォーカスして Enter を押してファイルを選ぶと、表示画像がその画像に切り替わり、結果欄の下にファイル名が残ります。PNGに専用メタデータがあればプロンプトを正確に復元します。JPG/JPEGや設計データのないPNGは選択中のAIへ送って画像を解析し、推定プロンプトを作ります。この場合はAPI使用料が発生する可能性があり、元のプロンプトを完全に再現するものではありません。結果欄には解析中・推定完了・失敗も表示します。**クリア** はプロンプト表示だけを空にし、いずれかのキャラクター項目を変更するとリアルタイム生成へ戻ります。
+Because the prompt and character fields are stored inside the PNG, treat the image as carrying those design details when sharing it with another person or service. / 上部の1行ステータスには、対象ファイル・解析中のモデル・完了または失敗を表示し、閉じるか別の操作をするまで結果を残します。画像解析では髪型の分け目・毛先位置、顔の形、衣装の内外の重なり、アクセサリーの位置など、見える識別特徴と姿勢・背景を分けて記録します。左右が確かな部分だけを保持し、隠れた部分は推測で補いません。表示する英語プロンプトは人物の同一性を先に、姿勢・背景を次に、保持条件を最後に配置します。解析応答が長くなる場合がありますが、途中で切れた結果や不正な形式は特徴を黙って削らず失敗として表示します。「画像生成」は表示中のプロンプトをテキストとして使う新規生成で、読み込んだ画像自体は参照画像として送られません。復元・AI推定プロンプトから再生成する場合は、現在のフォーム値と矛盾する日本語プロフィール欄を合成せず、プロンプト欄直下と結果欄に出所を表示します。PNGから元プロンプトを正確に復元しても画像の完全一致は保証されず、AI推定プロンプトの再現度は実際の生成画像で確認する必要があります。
 
-画面上の「設計プロンプト」欄には、リアルタイム更新・PNGからの復元・AI画像解析のいずれの結果も表示します。「生成結果・画像ドロップ（PNG/JPG）」欄は画像の表示と読み込みを兼ねます。
-
-The top one-line status reports the selected file, analysis progress/model, and final result or failure; the result remains visible until dismissed or replaced. AI analysis separates observable identity from presentation: it records hair structure and endpoints, facial geometry, clothing layers and accessory placement, retains known left/right relationships, and leaves occluded traits unknown. The displayed English prompt puts identity first, then pose/background, then preservation rules. Analysis may use more output tokens than before; a truncated or invalid response fails instead of silently dropping details. Pressing image generation uses the displayed prompt as text only: the imported image is not sent as a generation reference. When the prompt came from a restored or AI-inferred image, the result is a new image without a conflicting Japanese profile header from the current form, and the result panel explicitly says which prompt source was used. Even an exact restored PNG prompt does not guarantee a pixel-identical image; an AI-inferred prompt is an approximation whose visual fidelity must be judged from actual outputs.
-
-上部の1行ステータスには、対象ファイル・解析中のモデル・完了または失敗を表示し、閉じるか別の操作をするまで結果を残します。画像解析では髪型の分け目・毛先位置、顔の形、衣装の内外の重なり、アクセサリーの位置など、見える識別特徴と姿勢・背景を分けて記録します。左右が確かな部分だけを保持し、隠れた部分は推測で補いません。表示する英語プロンプトは人物の同一性を先に、姿勢・背景を次に、保持条件を最後に配置します。解析応答が長くなる場合がありますが、途中で切れた結果や不正な形式は特徴を黙って削らず失敗として表示します。「画像生成」は表示中のプロンプトをテキストとして使う新規生成で、読み込んだ画像自体は参照画像として送られません。復元・AI推定プロンプトから再生成する場合は、現在のフォーム値と矛盾する日本語プロフィール欄を合成せず、プロンプト欄直下と結果欄に出所を表示します。PNGから元プロンプトを正確に復元しても画像の完全一致は保証されず、AI推定プロンプトの再現度は実際の生成画像で確認する必要があります。
-
-Because the prompt and character fields are stored inside the PNG, treat the image as carrying those design details when sharing it with another person or service.
-
-PNG自体にプロンプトとキャラクター項目が含まれるため、他者や外部サービスへ画像を渡す場合は、その設計情報も共有されるものとして扱ってください。
+The PNG itself contains the prompt and character fields. Sharing the image with another person or external service also shares that design information. / PNG自体にプロンプトとキャラクター項目が含まれるため、他者や外部サービスへ画像を渡す場合は、その設計情報も共有されるものとして扱ってください。
 
 ---
 
@@ -212,11 +175,9 @@ PNG自体にプロンプトとキャラクター項目が含まれるため、�
 
 ### Gemini
 
-Gemini is used for both text assistance and image generation. The text layer uses a fallback chain, while the image layer currently uses `gemini-nano-banana-2.1`.
+Gemini is used for both text assistance and image generation. The text layer uses a fallback chain, while the image layer currently uses `gemini-nano-banana-2.1`. / Geminiはテキスト補助と画像生成の両方に使われます。テキスト層はフォールバックチェーンを使い、画像層は現行では `gemini-nano-banana-2.1` を使用します。
 
-Geminiはテキスト補助と画像生成の両方に使われます。テキスト層はフォールバックチェーンを使い、画像層は現行では `gemini-nano-banana-2.1` を使用します。
-
-Text fallback:
+Text fallback: / 文章モデルの切替：
 
 ```text
 gemini-3.5-flash
@@ -226,7 +187,7 @@ gemini-3.5-flash
 -> gemini-pro-latest
 ```
 
-Image model:
+Image model: / 画像モデル：
 
 ```text
 gemini-nano-banana-2.1
@@ -234,11 +195,9 @@ gemini-nano-banana-2.1
 
 ### OpenAI
 
-OpenAI is used for text assistance and image generation through the current OpenAI API paths.
+OpenAI is used for text assistance and image generation through the current OpenAI API paths. / OpenAIは、現行OpenAI API経路でテキスト補助と画像生成に使われます。
 
-OpenAIは、現行OpenAI API経路でテキスト補助と画像生成に使われます。
-
-Text fallback:
+Text fallback: / 文章モデルの切替：
 
 ```text
 gpt-6.1-sol (default; Astra is selectable above)
@@ -253,7 +212,7 @@ gpt-6.1-sol (default; Astra is selectable above)
 -> gpt-4o
 ```
 
-Image fallback:
+Image fallback: / 画像モデルの切替：
 
 ```text
 gpt-image-2.5-sunburst (xhigh)
@@ -262,48 +221,40 @@ gpt-image-2.5-sunburst (xhigh)
 
 ### Provider Boundary / プロバイダー境界
 
-The same design data is used for both providers, but provider-specific prompt and API handling live in separate modules. This keeps the UI consistent while allowing each provider path to handle its own model behavior.
-
-同じ設計データを両プロバイダーで使いますが、プロンプトとAPI処理はプロバイダー別モジュールに分けています。UIは共通に保ちつつ、各プロバイダーの挙動に合わせた処理を行うためです。
+The same design data is used for both providers, but provider-specific prompt and API handling live in separate modules. This keeps the UI consistent while allowing each provider path to handle its own model behavior. / 同じ設計データを両プロバイダーで使いますが、プロンプトとAPI処理はプロバイダー別モジュールに分けています。UIは共通に保ちつつ、各プロバイダーの挙動に合わせた処理を行うためです。
 
 ---
 
 ## Output Contract / 出力仕様
 
-Generated images are normalized after the provider returns the image.
+Generated images are normalized after the provider returns the image. / プロバイダーから画像が返ったあと、出力画像はアプリ側で正規化されます。
 
-プロバイダーから画像が返ったあと、出力画像はアプリ側で正規化されます。
-
-* Artwork area: the complete provider image is contained below the profile header without cropping.
-* Final PNG: exactly `1120x1584`.
-* Aspect ratio: `70:99`, the same ratio as A4 (`210:297`).
-* File type: PNG
-* Embedded design data: `furu.character_sheet` schema v1 JSON in an `iTXt` chunk; exact prompt restoration without pixel analysis.
-* Profile text: exact Japanese character information is rendered by the app above the illustration.
+* Artwork area: the complete provider image is contained below the profile header without cropping. / イラスト領域：生成画像全体を切り抜かず、プロフィールヘッダーの下へ収めます。
+* Final PNG: exactly `1120x1584`. / 最終PNG：1120x1584固定。
+* Aspect ratio: `70:99`, the same ratio as A4 (`210:297`). / 縦横比：70:99。A4（210:297）と同比率です。
+* File type: PNG / ファイル形式：PNG
+* Embedded design data: `furu.character_sheet` schema v1 JSON in an `iTXt` chunk; exact prompt restoration without pixel analysis. / 埋め込み設計データ：iTXtチャンクにfuru.character_sheetスキーマv1のJSONを保存し、画素解析をせず正確なプロンプトを復元します。
+* Profile text: exact Japanese character information is rendered by the app above the illustration. / プロフィール文字：正確な日本語の人物情報を、アプリがイラストの上に合成します。
 * Watermark: `Generated by Super FURU AI Character Sheet v1.5.0`
-* Watermark position: bottom-right
+* Watermark position: bottom-right / 透かし位置：右下。
 * Filename pattern: `character_sheet_<timestamp>.png`
 
-The normalization and typesetting steps make downstream use more predictable. A character sheet can be passed to another AI, attached as a visual reference, or read by OCR-oriented manga systems. Text rendered inside the illustration itself can still vary by provider.
-
-正規化によって、後段利用が安定します。任意サイズの画像をそのまま扱うのではなく、別AIへの参照画像、漫画制作のキャラクター資料、OCR前提の資料として扱いやすい縦長シートへそろえます。
+The normalization and typesetting steps make downstream use more predictable. A character sheet can be passed to another AI, attached as a visual reference, or read by OCR-oriented manga systems. Text rendered inside the illustration itself can still vary by provider. / 正規化によって、後段利用が安定します。任意サイズの画像をそのまま扱うのではなく、別AIへの参照画像、漫画制作のキャラクター資料、OCR前提の資料として扱いやすい縦長シートへそろえます。
 
 ---
 
 ## Integration With Super FURU / Super FURU連携
 
-This app is part of the same creative tool ecosystem as **Super FURU AI 4-koma System**.
+This app is part of the same creative tool ecosystem as **Super FURU AI 4-koma System**. / このアプリは **Super FURU AI 4-koma System** と同じ創作ツール群の一部です。
 
-このアプリは **Super FURU AI 4-koma System** と同じ創作ツール群の一部です。
+The generated sheet can be used to: / 生成したシートは次の用途に使えます。
 
-The generated sheet can be used to:
+* Provide a stable character reference before four-panel manga generation. / 4コマ漫画生成前の安定したキャラクター参照にする。
+* Preserve visible design decisions that would otherwise be lost inside a prompt. / プロンプトの中に埋もれがちな、表示上の設計判断を保持する。
+* Supply manga-direction metadata such as action tendency, emotion range, direction style, and awakening state. / 得意アクション、感情レンジ、演出傾向、覚醒状態などの漫画演出情報を渡す。
+* Help downstream tools distinguish a character's role, voice image, costume, and visual silhouette. / 連携先のツールが人物の役割、声のイメージ、衣装、シルエットを区別するために使う。
 
-* Provide a stable character reference before four-panel manga generation.
-* Preserve visible design decisions that would otherwise be lost inside a prompt.
-* Supply manga-direction metadata such as action tendency, emotion range, direction style, and awakening state.
-* Help downstream tools distinguish a character's role, voice image, costume, and visual silhouette.
-
-生成シートは、4コマ漫画生成前のキャラクター参照、プロンプト内に埋もれがちな設計判断の保持、得意アクション・感情レンジ・演出傾向・覚醒状態などの漫画演出メタデータの受け渡しに使えます。
+Generated sheets provide character references before manga generation, preserve design decisions otherwise buried in prompts, and pass on action tendencies, emotional range, direction and awakening metadata. / 生成シートは、4コマ漫画生成前のキャラクター参照、プロンプト内に埋もれがちな設計判断の保持、得意アクション・感情レンジ・演出傾向・覚醒状態などの漫画演出メタデータの受け渡しに使えます。
 
 ---
 
@@ -311,7 +262,7 @@ The generated sheet can be used to:
 
 ### Public version / 公開版
 
-Use the GitHub Pages build:
+Use the GitHub Pages build: / GitHub Pagesの公開版を使用します。
 
 ```text
 https://furuyan1234.github.io/character-sheet-maker/
@@ -324,21 +275,19 @@ npm install
 npm run dev
 ```
 
-The Vite dev server uses:
+The Vite dev server uses: / Vite開発サーバーの接続先は次のとおりです。
 
 ```text
 http://127.0.0.1:5176/
 ```
 
-The repository also includes:
+The repository also includes: / リポジトリには次のファイルも含みます。
 
 ```text
 start_character_sheet_app.bat
 ```
 
-This launcher is intended for Windows users who want to start the local app without typing the npm command each time.
-
-この起動バッチは、毎回npmコマンドを入力せずにローカルアプリを開きたいWindows利用者向けです。
+This launcher is intended for Windows users who want to start the local app without typing the npm command each time. / この起動バッチは、毎回npmコマンドを入力せずにローカルアプリを開きたいWindows利用者向けです。
 
 ### Build / ビルド
 
@@ -346,9 +295,7 @@ This launcher is intended for Windows users who want to start the local app with
 npm run build
 ```
 
-The production build uses a relative Vite base (`./`) so the app can be deployed to GitHub Pages.
-
-本番ビルドではViteのbaseを `./` にしており、GitHub Pages配布で動作しやすい構成です。
+The production build uses a relative Vite base (`./`) so the app can be deployed to GitHub Pages. / 本番ビルドではViteのbaseを `./` にしており、GitHub Pages配布で動作しやすい構成です。
 
 ---
 
@@ -390,37 +337,37 @@ character_sheet/
 
 | File / ファイル | Role / 役割 |
 |---|---|
-| `src/App.jsx` | Main UI state, API gate, randomization, locks, A/B slots, history, download, canvas normalization. |
-| `src/lib/options.js` | All option lists, sections, default values, backup text data, and presets. |
-| `src/lib/prompt.js` | Provider-neutral character prompt construction. |
-| `src/lib/gemini.js` | Gemini text model calls and model fallback. |
-| `src/lib/imagen.js` | Gemini image generation path. |
-| `src/lib/openai.js` | OpenAI text and image generation paths. |
-| `src/components/FieldInput.jsx` | Reusable field component with lock and AI-fill controls. |
+| `src/App.jsx` | Main UI state, API gate, randomization, locks, A/B slots, history, download, canvas normalization.  / 主画面の状態、APIゲート、ランダム化、ロック、A/Bスロット、履歴、保存、キャンバス正規化。|
+| `src/lib/options.js` | All option lists, sections, default values, backup text data, and presets.  / 選択肢、欄、初期値、バックアップ用文章データ、プリセット。|
+| `src/lib/prompt.js` | Provider-neutral character prompt construction.  / プロバイダーに依存しない人物プロンプトの構築。|
+| `src/lib/gemini.js` | Gemini text model calls and model fallback.  / Gemini文章モデルの呼び出しと切替。|
+| `src/lib/imagen.js` | Gemini image generation path.  / Geminiの画像生成経路。|
+| `src/lib/openai.js` | OpenAI text and image generation paths.  / OpenAIの文章・画像生成経路。|
+| `src/components/FieldInput.jsx` | Reusable field component with lock and AI-fill controls.  / ロックとAI補完を持つ共通入力部品。|
 
 ---
 
 ## Security Notes / セキュリティ方針
 
-* API keys are kept in React state only.
-* API keys are not stored in localStorage.
-* API keys are not written to generated images or metadata.
-* The app does not include bundled secret keys.
-* Users must enter their own Gemini or OpenAI API key in the UI.
-* Browser reload clears the key.
-* API requests send the key and necessary text/images directly from the browser to the selected Gemini/OpenAI provider; the app operator does not relay API requests.
+* API keys are kept in React state only. / APIキーはReact stateだけに保持します。
+* API keys are not stored in localStorage. / APIキーをlocalStorageへ保存しません。
+* API keys are not written to generated images or metadata. / APIキーを生成画像やメタデータへ書き込みません。
+* The app does not include bundled secret keys. / 秘密鍵をアプリへ同梱しません。
+* Users must enter their own Gemini or OpenAI API key in the UI. / 利用者自身のGeminiまたはOpenAIのAPIキーを画面へ入力します。
+* Browser reload clears the key. / ブラウザーの再読み込みでキーを消去します。
+* API requests send the key and necessary text/images directly from the browser to the selected Gemini/OpenAI provider; the app operator does not relay API requests. / キーと必要な文章・画像をブラウザーから選択したGemini／OpenAIへ直接送信し、アプリ運営者はAPIリクエストを中継しません。
 
-APIキーはReact state上にのみ保持され、localStorageやファイルへ保存されません。公開版にも秘密鍵は同梱しません。ユーザー自身がUIへ入力したキーだけで動作し、再読み込みでキーは消去されます。API利用時には、キーと処理に必要な文章・画像をブラウザから選択したGemini／OpenAIへ直接送信します。API通信はアプリ運営者のサーバーを経由しません。
+API keys remain only in React state and are not stored in localStorage or files. The public app bundles no secret key and uses only the user's UI-entered key, which is cleared on reload. The browser sends the key and required text/images directly to the selected Gemini/OpenAI provider; API requests do not pass through the app operator's server. / APIキーはReact state上にのみ保持され、localStorageやファイルへ保存されません。公開版にも秘密鍵は同梱しません。ユーザー自身がUIへ入力したキーだけで動作し、再読み込みでキーは消去されます。API利用時には、キーと処理に必要な文章・画像をブラウザから選択したGemini／OpenAIへ直接送信します。API通信はアプリ運営者のサーバーを経由しません。
 
 ---
 
 ## Limitations / 制限事項
 
-* Image quality depends on the selected provider, model availability, quota, and safety filters.
-* A/B comparison is session-local and not a project database.
-* The app creates visual reference sheets; it does not guarantee legal usability of every generated character in every context.
-* The smart linkage rules reduce obvious contradictions, but final character intent still belongs to the user.
-* Provider API changes may require model-list updates.
+* Image quality depends on the selected provider, model availability, quota, and safety filters. / 画像品質は選択したプロバイダー、モデルの提供状況、利用枠、安全フィルターに依存します。
+* A/B comparison is session-local and not a project database. / A/B比較は現在のセッション内の機能で、プロジェクトのデータベースではありません。
+* The app creates visual reference sheets; it does not guarantee legal usability of every generated character in every context. / 本アプリは参照シートを作るもので、すべての人物をあらゆる場面で適法に利用できる保証はありません。
+* The smart linkage rules reduce obvious contradictions, but final character intent still belongs to the user. / スマート連携は明らかな設定矛盾を減らす補助で、人物の最終的な意図は利用者が決めます。
+* Provider API changes may require model-list updates. / API仕様が変わった場合はモデル一覧の更新が必要になることがあります。
 
 ---
 
@@ -429,9 +376,7 @@ APIキーはReact state上にのみ保持され、localStorageやファイルへ
 
 This update further strengthens security while preserving the existing creation workflow. / 今回の更新では、既存の制作フローを保ちながらセキュリティをさらに強化しました。
 
-The app limits script execution and API connections with Content Security Policy, disables embedded frames and form submissions, and sends no referrer. Open the app directly in its own tab. API keys remain sensitive while in memory; these protections do not guarantee the absence of every vulnerability. Every deployment checks dependencies, source safeguards and the built policy.
-
-CSPでスクリプト実行・API接続先を制限し、埋め込み表示とフォーム送信を禁止、参照元情報を送信しません。アプリは直接タブで開いてください。メモリー内のAPIキーも機密情報であり、すべての脆弱性がないことを保証するものではありません。毎回のデプロイで依存ライブラリ・ソースの防御・ビルド後の設定を検査します。
+The app limits script execution and API connections with Content Security Policy, disables embedded frames and form submissions, and sends no referrer. Open the app directly in its own tab. API keys remain sensitive while in memory; these protections do not guarantee the absence of every vulnerability. Every deployment checks dependencies, source safeguards and the built policy. / CSPでスクリプト実行・API接続先を制限し、埋め込み表示とフォーム送信を禁止、参照元情報を送信しません。アプリは直接タブで開いてください。メモリー内のAPIキーも機密情報であり、すべての脆弱性がないことを保証するものではありません。毎回のデプロイで依存ライブラリ・ソースの防御・ビルド後の設定を検査します。
 
 ## Terms & Output Rights / 利用条件・作品の権利
 
@@ -522,11 +467,10 @@ These are custom source-available terms. Restrictions on productization mean tha
 
 ### v1.4.7 (2026-10-04)
 
-- 開始画面で、APIキーのメモリ内保持と再読み込み時の消去、Gemini／OpenAIへの直接API送信を分けて説明しました。API通信はアプリ運営者のサーバーを経由しません。
-- Clarified memory-only key handling, clearing on reload, and direct browser requests to Gemini/OpenAI without the app operator acting as an API relay.
+- Clarified memory-only key handling, clearing on reload, and direct browser requests to Gemini/OpenAI without the app operator acting as an API relay. / 開始画面で、APIキーのメモリ内保持と再読み込み時の消去、Gemini／OpenAIへの直接API送信を分けて説明しました。API通信はアプリ運営者のサーバーを経由しません。
 
 ### v1.4.6 (2026-10-04)
-- [terms] 個人・業務利用と自身の成果物の収益化を認める利用条件に統一。アプリ本体の有料配布等は事前許可制とし、過去の有効な許諾と第三者の条件を維持します。 / Unify free personal/business use and output monetization terms; paid app distribution and services require prior permission, while valid prior grants and third-party terms remain intact.
+- Unify free personal/business use and output monetization terms; paid app distribution and services require prior permission, while valid prior grants and third-party terms remain intact. / [terms] 個人・業務利用と自身の成果物の収益化を認める利用条件に統一。アプリ本体の有料配布等は事前許可制とし、過去の有効な許諾と第三者の条件を維持します。
 
 
 ### v1.4.5
@@ -568,79 +512,71 @@ These are custom source-available terms. Restrictions on productization mean tha
 
 ### v1.3.7
 
-* Updated the public title references to align with the current **Super FURU AI 4-koma System** naming.
-* Kept API-key handling memory-only.
-* Preserved the current dual Gemini/OpenAI architecture.
-* Maintained 1024x1536 artwork normalization and version watermarking.
+* Updated the public title references to align with the current **Super FURU AI 4-koma System** naming. / 公開名称を現在のSuper FURU AI 4-koma Systemへ揃えました。
+* Kept API-key handling memory-only. / APIキーのメモリ限定保持を維持しました。
+* Preserved the current dual Gemini/OpenAI architecture. / Gemini／OpenAIの両API構成を維持しました。
+* Maintained 1024x1536 artwork normalization and version watermarking. / 1024x1536の画像正規化と版の透かしを維持しました。
 
 ### v1.3.x
 
-* Added A/B comparison slots for side-by-side character design testing.
-* Added field locks for safer randomization.
-* Added session history thumbnails with reload and delete controls.
-* Expanded the Smart Linkage behavior for more coherent random characters.
-* Updated Gemini and OpenAI model lists to current provider families.
+* Added A/B comparison slots for side-by-side character design testing. / 人物設計を並べて比較するA/Bスロットを追加しました。
+* Added field locks for safer randomization. / ランダム化で設定を保つ項目ロックを追加しました。
+* Added session history thumbnails with reload and delete controls. / 再読み込み・削除操作付きのセッション履歴サムネイルを追加しました。
+* Expanded the Smart Linkage behavior for more coherent random characters. / 人物のランダム設定を整合させるスマート連携を拡張しました。
+* Updated Gemini and OpenAI model lists to current provider families. / Gemini／OpenAIのモデル一覧を当時の提供系列へ更新しました。
 
 ### v1.2.x
 
-* Added dual-provider support for Gemini and OpenAI.
-* Added prompt and image-generation routing modules.
-* Added API switch UI and API-key acquisition links.
-* Added strict canvas normalization and provenance watermarking.
+* Added dual-provider support for Gemini and OpenAI. / Gemini／OpenAI両対応を追加しました。
+* Added prompt and image-generation routing modules. / プロンプトと画像生成のルーティングモジュールを追加しました。
+* Added API switch UI and API-key acquisition links. / API切替画面とキー取得リンクを追加しました。
+* Added strict canvas normalization and provenance watermarking. / キャンバス正規化と来歴の透かしを追加しました。
 
 ### v1.0.x
 
-* Initial public character sheet generation workflow.
-* Added structured parameter sections, presets, dropdown controls, and prompt builder.
+* Initial public character sheet generation workflow. / キャラクターシート生成の初回公開版です。
+* Added structured parameter sections, presets, dropdown controls, and prompt builder. / 設計項目、プリセット、プルダウン操作、プロンプト構築を追加しました。
 
 ---
 
 ## Compliance & Legal Stance / 法的遵守について
 
-This project is a creative support tool. It is not designed to reproduce specific copyrighted characters, brands, artists, or existing works. Users are responsible for the legality and appropriateness of their own inputs, generated outputs, publication, and commercial use.
+This project is a creative support tool. It is not designed to reproduce specific copyrighted characters, brands, artists, or existing works. Users are responsible for the legality and appropriateness of their own inputs, generated outputs, publication, and commercial use. / 本プロジェクトは創作支援ツールです。特定の既存キャラクター、ブランド、作家、作品を再現する目的では設計していません。入力内容、生成結果、公開、商用利用の適法性と妥当性はユーザー自身が確認する必要があります。
 
-本プロジェクトは創作支援ツールです。特定の既存キャラクター、ブランド、作家、作品を再現する目的では設計していません。入力内容、生成結果、公開、商用利用の適法性と妥当性はユーザー自身が確認する必要があります。
-
-The software logic is shared for technical and creative experimentation. Prompt structure, documentation, and generated creative workflow ideas should be used in a way that respects applicable laws, platform terms, and third-party rights.
-
-ソフトウェアロジックは技術検証と創作実験のために公開されています。プロンプト構造、ドキュメント、生成ワークフローの利用にあたっては、関連法令、各プラットフォーム規約、第三者の権利を尊重してください。
+The software logic is shared for technical and creative experimentation. Prompt structure, documentation, and generated creative workflow ideas should be used in a way that respects applicable laws, platform terms, and third-party rights. / ソフトウェアロジックは技術検証と創作実験のために公開されています。プロンプト構造、ドキュメント、生成ワークフローの利用にあたっては、関連法令、各プラットフォーム規約、第三者の権利を尊重してください。
 
 ### Prohibited or discouraged use / 禁止・非推奨用途
 
-* Recreating an existing character, artist style, brand mascot, or protected design in a way that may infringe rights.
-* Using generated material to mislead others about authorship, endorsement, or official affiliation.
-* Selling the tool, prompts, or outputs as a guaranteed income method or deceptive information product.
-* Uploading private, sensitive, or third-party confidential data as prompt material.
-* Attempting to bypass provider safety policies.
+* Recreating an existing character, artist style, brand mascot, or protected design in a way that may infringe rights. / 権利を侵害するおそれがある既存キャラクター、作家の画風、ブランドのマスコット、保護されたデザインの再現。
+* Using generated material to mislead others about authorship, endorsement, or official affiliation. / 作者、公認、公式との関係について誤認させる生成物の利用。
+* Selling the tool, prompts, or outputs as a guaranteed income method or deceptive information product. / ツール、プロンプト、生成物を、収入を保証する手法や詐欺的な情報商材として販売する行為。
+* Uploading private, sensitive, or third-party confidential data as prompt material. / 私的情報、機微情報、第三者の秘密情報をプロンプト素材としてアップロードする行為。
+* Attempting to bypass provider safety policies. / プロバイダーの安全規則を迂回しようとする行為。
 
 ---
 
 ## AI Manga Creative Suite / AIまんが制作エコシステム
 
-This app is one component in a broader AI-assisted manga and story production workflow.
-
-このアプリは、AIを活用した漫画・物語制作ワークフローの一部です。
+This app is one component in a broader AI-assisted manga and story production workflow. / このアプリは、AIを活用した漫画・物語制作ワークフローの一部です。
 
 | Tool / ツール | Role / 役割 | Repository / リポジトリ |
 |---|---|---|
-| Super FURU AI 4-koma System | AI 4-panel manga generation / AI 4コマ漫画生成 | [nano-banana-pro](https://github.com/FURUYAN1234/nano-banana-pro) |
+| Super FURU AI 4-koma System / Super FURU AI 4コマシステム | AI 4-panel manga generation / AI 4コマ漫画生成 | [nano-banana-pro](https://github.com/FURUYAN1234/nano-banana-pro) |
 | Story Maker | Story and plot generation / 物語・プロット生成 | [story-maker](https://github.com/FURUYAN1234/story-maker) |
-| AI Character Sheet Maker | Character reference generation / キャラクター資料生成 | [character-sheet-maker](https://github.com/FURUYAN1234/character-sheet-maker) |
-| AI Comic Translation Tool | Manga translation and regeneration / 漫画翻訳・再生成 | [comic-translation](https://github.com/FURUYAN1234/comic-translation) |
-| 360° AI Panorama Generator | 360-degree background generation / 360度背景生成 | [panoforge](https://github.com/FURUYAN1234/panoforge) |
-| AI Voice Comic Maker | Voice comic video generation / フルボイス動画化 | [ai-voice-comic-maker](https://github.com/FURUYAN1234/ai-voice-comic-maker) |
+| AI Character Sheet Maker / AIキャラクターシートメーカー | Character reference generation / キャラクター資料生成 | [character-sheet-maker](https://github.com/FURUYAN1234/character-sheet-maker) |
+| AI Comic Translation Tool / AI漫画翻訳ツール | Manga translation and regeneration / 漫画翻訳・再生成 | [comic-translation](https://github.com/FURUYAN1234/comic-translation) |
+| 360° AI Panorama Generator / 360度AIパノラマ生成ツール | 360-degree background generation / 360度背景生成 | [panoforge](https://github.com/FURUYAN1234/panoforge) |
+| AI Voice Comic Maker / AI音声コミックメーカー | Voice comic video generation / フルボイス動画化 | [ai-voice-comic-maker](https://github.com/FURUYAN1234/ai-voice-comic-maker) |
 
 ---
 
 ## Repository Info / リポジトリ情報
 
-* Owner: [FURUYAN1234](https://github.com/FURUYAN1234)
-* App path in Antigravity workspace: `C:\Users\sx717\Antigravity\character_sheet`
-* Public app: [https://furuyan1234.github.io/character-sheet-maker/](https://furuyan1234.github.io/character-sheet-maker/)
-* Local dev port: `5176`
+* Owner: [FURUYAN1234](https://github.com/FURUYAN1234) / 所有者：FURUYAN1234
+* App path in Antigravity workspace: `C:\Users\sx717\Antigravity\character_sheet` / Antigravityワークスペース内のアプリフォルダー：character_sheet。
+* Public app: [https://furuyan1234.github.io/character-sheet-maker/](https://furuyan1234.github.io/character-sheet-maker/) / 公開アプリ：上記リンクから開けます。
+* Local dev port: `5176` / ローカル開発ポート：5176
 
 ## OpenAI text model selection / テキストモデル選択
 
-All 11 GPT fallback models are selectable. Astra is first and GPT-6.1 Sol is the default. Field generation and text gacha start at the selected model and fall back only downward. The status retains the attempted/adopted model. Image generation and image-to-prompt analysis keep their dedicated routes.
-
-全11モデルを選択できます。Astraが最上位、GPT-6.1 Solが初期選択です。項目生成とテキストガチャは選択モデルから下位へ切り替え、試行・採用モデルを表示します。画像生成と画像からのプロンプト解析は専用経路を維持します。
+All 11 GPT fallback models are selectable. Astra is first and GPT-6.1 Sol is the default. Field generation and text gacha start at the selected model and fall back only downward. The status retains the attempted/adopted model. Image generation and image-to-prompt analysis keep their dedicated routes. / 全11モデルを選択できます。Astraが最上位、GPT-6.1 Solが初期選択です。項目生成とテキストガチャは選択モデルから下位へ切り替え、試行・採用モデルを表示します。画像生成と画像からのプロンプト解析は専用経路を維持します。
