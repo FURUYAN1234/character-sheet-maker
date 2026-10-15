@@ -22,7 +22,7 @@ test('OpenAI vision receives the image and returns one inferred prompt', async (
 
   try {
     const result = await inferPromptFromImageOAI(IMAGE, 'Describe visible details');
-    assert.deepEqual(result, { prompt: 'silver-haired warrior', model: 'gpt-4.1-mini' });
+    assert.deepEqual(result, { prompt: 'silver-haired warrior', model: 'gpt-6-luna' });
     assert.equal(requests.length, 1);
     const body = JSON.parse(requests[0].options.body);
     assert.equal(body.messages[0].content[1].image_url.url, IMAGE);

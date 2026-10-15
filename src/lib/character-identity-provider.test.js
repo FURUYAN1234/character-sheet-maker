@@ -38,7 +38,9 @@ test('selected OpenAI and Gemini vision routes compile complete text-only identi
       assert.doesNotMatch(result.prompt, /2400 characters|see attached image/i);
     }
     assert.equal(requests.length, 2);
-    assert.equal(requests[0].body.max_tokens, 32768);
+    assert.equal(requests[0].body.max_completion_tokens, 32768);
+    assert.equal(requests[0].body.max_tokens, undefined);
+    assert.deepEqual(requests[0].body.response_format, { type: 'json_object' });
     assert.equal(requests[1].body.generationConfig.maxOutputTokens, 65536);
     assert.match(requests[0].body.messages[0].content[0].text, /JSON object/);
     assert.equal(requests[0].body.messages[0].content[1].image_url.url, IMAGE);

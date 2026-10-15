@@ -1,5 +1,9 @@
 # HANDOFF
 
+## 2026-10-15 model retirement migration
+
+Workspace PLAN.md owns the four-app migration, official delivery and final backup. Candidate v1.5.1 removes retiring GPT-4 routes and preserves the app's existing content contracts. Local regression and real API evidence must be checked before the unchanged official release transaction; public release/copy and final backup remain pending until their receipts complete. No X publication is authorized.
+
 ## 2026-10-04 v1.4.7 API explanation correction
 
 - Scope: publish the reviewed prepared wording correction only, with synchronized version metadata and release documentation. API behavior and license terms are unchanged.

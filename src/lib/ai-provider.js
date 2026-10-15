@@ -64,7 +64,10 @@ export const generateImageAI = async (...args) => {
 
 export const inferPromptFromImageAI = async (imageDataUrl, onStatusUpdate) => {
   const infer = activeEngine === 'openai' ? inferPromptFromImageOAI : geminiInferPrompt;
-  const result = await infer(imageDataUrl, CHARACTER_ANALYSIS_INSTRUCTION, onStatusUpdate, { requireComplete: true });
+  const result = await infer(imageDataUrl, CHARACTER_ANALYSIS_INSTRUCTION, onStatusUpdate, {
+    requireComplete: true,
+    responseFormat: { type: 'json_object' },
+  });
   const analysis = parseCharacterAnalysis(result.prompt);
   return { prompt: compileCharacterPrompt(analysis), model: result.model };
 };

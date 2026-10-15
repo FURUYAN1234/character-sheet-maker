@@ -3,7 +3,7 @@
 > **Source code available; free to use.** Ordinary use, free integration and free provision require no application, prior contact or permission from FURU. You may sell and monetize your own works. External API costs and third-party terms are separate. See Terms & Output Rights below. / **ソースコード公開・利用無料。** 通常利用と無料の組み込み・無料提供に、申請・事前連絡・FURUの許可は不要です。自分の作品は販売・収益化できます。外部API料金と第三者の条件は別です。詳しくは「利用条件・作品の権利」をご確認ください。
 
 
-![Version](https://img.shields.io/badge/version-1.5.0-4f46e5)
+![Version](https://img.shields.io/badge/version-1.5.1-4f46e5)
 ![Framework](https://img.shields.io/badge/framework-React%2019%20%2F%20Vite%206-646cff)
 ![AI](https://img.shields.io/badge/AI-Gemini%20%2F%20OpenAI-f97316)
 ![Output](https://img.shields.io/badge/output-1120x1584%20PNG-10b981)
@@ -21,15 +21,15 @@ AI Character Sheet Maker creates structured character reference sheets from doze
 
 ## Current Release Line / 現行仕様
 
-The current public line is **v1.5.0**. This version is a browser-based React/Vite app with session-only API keys, dual Gemini/OpenAI routing, A/B comparison, parameter locks, deterministic Japanese profile typesetting for form-driven sheets, automatically named prompt-file downloads, exact `1120x1584` output, and provenance watermarking. It also embeds versioned design JSON in generated PNGs so the exact prompt can be restored later. / 現行公開系統は **v1.5.0** です。ブラウザ上で動作する React/Vite アプリで、セッション限定APIキー、Gemini/OpenAIの切り替え、A/B比較、項目ロック、フォーム生成時の日本語プロフィール決定的文字合成、自動命名されるプロンプトファイルの直接ダウンロード、1120x1584の固定出力、来歴ウォーターマークを備えています。生成PNGにはバージョン付き設計JSONも埋め込み、後から正確なプロンプトを復元できます。
+The current public line is **v1.5.1**. This version is a browser-based React/Vite app with session-only API keys, dual Gemini/OpenAI routing, A/B comparison, parameter locks, deterministic Japanese profile typesetting for form-driven sheets, automatically named prompt-file downloads, exact `1120x1584` output, and provenance watermarking. It also embeds versioned design JSON in generated PNGs so the exact prompt can be restored later. / 現行公開系統は **v1.5.1** です。ブラウザ上で動作する React/Vite アプリで、セッション限定APIキー、Gemini/OpenAIの切り替え、A/B比較、項目ロック、フォーム生成時の日本語プロフィール決定的文字合成、自動命名されるプロンプトファイルの直接ダウンロード、1120x1584の固定出力、来歴ウォーターマークを備えています。生成PNGにはバージョン付き設計JSONも埋め込み、後から正確なプロンプトを復元できます。
 
 | Area / 領域 | Current behavior / 現行挙動 |
 |---|---|
-| App version / バージョン | `1.5.0`, displayed in the API gate, header, footer, and watermark.  / APIゲート、ヘッダー、フッター、透かしに1.5.0を表示します。|
+| App version / バージョン | `1.5.1`, displayed in the API gate, header, footer, and watermark.  / APIゲート、ヘッダー、フッター、透かしに1.5.1を表示します。|
 | API key handling / APIキー | Memory-only. Keys are not written to localStorage, source files, or output images.  / メモリ限定。キーをlocalStorage、ソース、出力画像へ書き込みません。|
 | Gemini text / Geminiテキスト | `gemini-3.5-flash` -> `gemini-2.5-flash` -> `gemini-2.5-pro` -> `gemini-flash-latest` -> `gemini-pro-latest` |
 | Gemini image / Gemini画像 | `gemini-nano-banana-2.1` |
-| OpenAI text / OpenAIテキスト | Select from all 11 models; default gpt-6.1-sol, downward fallback from the selection. / 全11モデルから選択（既定 `gpt-6.1-sol`、選択から下位のみ） |
+| OpenAI text / OpenAIテキスト | Select from all 7 models; default gpt-6.1-sol, downward fallback from the selection. / 全7モデルから選択（既定 `gpt-6.1-sol`、選択から下位のみ） |
 | OpenAI image / OpenAI画像 | `gpt-image-2.5-sunburst` (`xhigh`) -> `gpt-image-2` (`high`) |
 | Output canvas / 出力キャンバス | The final PNG is exactly `1120x1584` (`70:99`, the same ratio as A4). The complete provider artwork is fitted below the Japanese profile header without cropping.  / 最終PNGは1120x1584（70:99、A4と同比率）です。生成イラストを切り抜かず日本語プロフィールヘッダーの下へ収めます。|
 | Image import / 画像読み込み | Generated PNGs contain `furu.character_sheet` schema v1 JSON for exact prompt restoration. PNG and JPG/JPEG images can be dropped or selected; images without this metadata use AI prompt inference.  / 生成PNGにはfuru.character_sheetスキーマv1の設計JSONを埋め込み、正確なプロンプトを復元します。PNG・JPG/JPEGをドロップまたは選択でき、設計情報がない画像はAIでプロンプトを推定します。|
@@ -206,10 +206,6 @@ gpt-6.1-sol (default; Astra is selectable above)
 -> gpt-5.6-terra
 -> gpt-6-luna
 -> gpt-5.6-luna
--> gpt-4.1
--> gpt-4.1-mini
--> gpt-4.1-nano
--> gpt-4o
 ```
 
 Image fallback: / 画像モデルの切替：
@@ -225,6 +221,9 @@ The same design data is used for both providers, but provider-specific prompt an
 
 ---
 
+
+Image-to-prompt analysis uses `gpt-6-luna` independently of the text selector. It explicitly requests JSON output and validates the complete structured identity contract before adoption. / 画像からプロンプトを作る解析は、文章モデル選択とは独立した`gpt-6-luna`を使用します。JSON形式を明示的に要求し、人物特徴の構造化出力を検証してから採用します。
+
 ## Output Contract / 出力仕様
 
 Generated images are normalized after the provider returns the image. / プロバイダーから画像が返ったあと、出力画像はアプリ側で正規化されます。
@@ -235,7 +234,7 @@ Generated images are normalized after the provider returns the image. / プロ�
 * File type: PNG / ファイル形式：PNG
 * Embedded design data: `furu.character_sheet` schema v1 JSON in an `iTXt` chunk; exact prompt restoration without pixel analysis. / 埋め込み設計データ：iTXtチャンクにfuru.character_sheetスキーマv1のJSONを保存し、画素解析をせず正確なプロンプトを復元します。
 * Profile text: exact Japanese character information is rendered by the app above the illustration. / プロフィール文字：正確な日本語の人物情報を、アプリがイラストの上に合成します。
-* Watermark: `Generated by Super FURU AI Character Sheet v1.5.0`
+* Watermark: `Generated by Super FURU AI Character Sheet v1.5.1`
 * Watermark position: bottom-right / 透かし位置：右下。
 * Filename pattern: `character_sheet_<timestamp>.png`
 
@@ -468,6 +467,13 @@ This app is one component in a broader AI-assisted manga and story production wo
 | Narration Video Maker / ナレーション動画メーカー | Video generation with narration, subtitles, and BGM / ナレーション・字幕・BGM付き動画生成 | [gemini-narration-studio](https://github.com/FURUYAN1234/gemini-narration-studio) |
 
 ## Changelog / 更新履歴
+
+### v1.5.1 (2026-10-15)
+
+- [json] Image identity analysis explicitly requests JSON output before validating the complete character schema. / 人物特徴の解析でJSON形式を明示的に要求し、完全な人物スキーマを検証してから採用します。
+
+- [vision] Migrated image-to-prompt analysis to GPT-6 Luna while retaining structured identity extraction, completeness checks and text-only image reconstruction. / 画像からプロンプトを作る解析をGPT-6 Lunaへ移行し、人物特徴の構造化抽出、応答の完了確認、文章だけによる画像再構成を維持しました。
+- [models] Removed retiring GPT-4 models from active text choices and fallback routes. / 終了予定のGPT-4系を文章の選択肢とフォールバックから除外しました。
 
 ### v1.5.0 (2026-10-07)
 

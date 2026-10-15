@@ -1,6 +1,7 @@
 import catalog from './openai-models.json' with { type: 'json' };
 export const OPENAI_TEXT_MODELS = catalog.models;
 export const DEFAULT_OPENAI_TEXT_MODEL = 'gpt-6.1-sol';
+export const OPENAI_IMAGE_ANALYSIS_MODEL = 'gpt-6-luna';
 let selectedTextModel = DEFAULT_OPENAI_TEXT_MODEL;
 let textModelStatus = { selected: selectedTextModel, attempted: [], adopted: null };
 export const getOpenAITextModelStatus = () => ({...textModelStatus, attempted: [...textModelStatus.attempted]});
@@ -165,7 +166,7 @@ ${buildGachaContextText(context)}`;
 
 export const inferPromptFromImageOAI = async (imageDataUrl, instruction, onStatusUpdate, options = {}) => {
   if (!currentOpenAIApiKey) throw new Error('OpenAI API key is not set.');
-  const modelId = 'gpt-4.1-mini';
+  const modelId = OPENAI_IMAGE_ANALYSIS_MODEL;
   onStatusUpdate?.(`> [image analysis] ${modelId} starting...`);
   const result = await callChatCompletion(modelId, [{
     role: 'user',
@@ -173,7 +174,11 @@ export const inferPromptFromImageOAI = async (imageDataUrl, instruction, onStatu
       { type: 'text', text: instruction },
       { type: 'image_url', image_url: { url: imageDataUrl, detail: 'high' } },
     ],
-  }], currentOpenAIApiKey, { timeoutMs: 60000, temperature: 0.3, maxTokens: 32768, requireComplete: options.requireComplete });
+  }], currentOpenAIApiKey, {
+    timeoutMs: 60000, temperature: 0.3, maxTokens: 32768,
+    requireComplete: options.requireComplete,
+    responseFormat: options.responseFormat,
+  });
   return { prompt: result.text.trim(), model: result.model };
 };
 
