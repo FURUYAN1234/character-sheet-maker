@@ -1,3 +1,10 @@
+## Gemini December migration candidate v1.5.3 — 2026-11-03
+
+- Current task: update Gemini fallback candidates and displays, verify real API behavior, and deploy through the established release transaction. No new backup or social publication.
+- Root PLAN points to the private task ledger. Full 58 tests, production build and shared security check (production/development audit 0) pass.
+- Normal full-random UI action called Gemini 3.8 Flash and produced new name/profile/dialogue fields. The normal image-generation action then completed with Nano Banana 2.1. The complete 1120x1584 profile sheet was inspected in the in-app browser and emitted inline as evidence. Official delivery remains pending.
+- Preserve existing feature contracts and dedicated image-generation routes.
+
 # HANDOFF
 
 ## 2026-10-15 model retirement migration

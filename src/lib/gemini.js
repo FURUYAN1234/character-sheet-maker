@@ -4,22 +4,20 @@
  * ※ このアプリ専用。Nano Banana Proとは完全独立。
  */
 
-// テキストのみリクエスト用 (シナリオ生成等): Next-Gen優先・無料枠優先
+// テキストのみリクエスト用 (シナリオ生成等): 現行GAモデルを明示し、旧モデルへの自動転送に依存しない
 const TEXT_MODEL_IDS = [
-    "gemini-3.5-flash",
-    "gemini-2.5-flash",
-    "gemini-2.5-pro",
-    "gemini-flash-latest",
-    "gemini-pro-latest"
+    "gemini-3.8-flash",
+    "gemini-3.6-flash",
+    "gemini-3.5-flash-lite",
+    "gemini-3.1-flash-lite"
 ];
 
-// 画像付きリクエスト用 (キャラクターシート認識等): フィルター寛容モデル優先
+// 画像付きリクエスト用 (キャラクターシート認識等): 現行GAモデルを明示
 const IMAGE_MODEL_IDS = [
-    "gemini-3.5-flash",
-    "gemini-2.5-flash",
-    "gemini-2.5-pro",
-    "gemini-flash-latest",
-    "gemini-pro-latest"
+    "gemini-3.8-flash",
+    "gemini-3.6-flash",
+    "gemini-3.5-flash-lite",
+    "gemini-3.1-flash-lite"
 ];
 
 // メモリ限定APIキー管理（セキュリティ要件: localStorage永続化なし）
@@ -148,7 +146,7 @@ export const callGeminiText = async (prompt, onStatusUpdate, options = {}) => {
 
 export const inferPromptFromImage = async (imageDataUrl, instruction, onStatusUpdate, options = {}) => {
   if (!currentApiKey) throw new Error('API Key が設定されていません。');
-  const modelId = 'gemini-3.5-flash';
+  const modelId = IMAGE_MODEL_IDS[0];
   const imageMatch = imageDataUrl.match(/^data:(image\/(?:png|jpeg));base64,([A-Za-z0-9+/=]+)$/i);
   if (!imageMatch) throw new Error('PNGまたはJPEG画像を読み込んでください。');
   const [, mimeType, base64] = imageMatch;

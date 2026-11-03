@@ -130,7 +130,7 @@ test('Gemini vision receives the PNG bytes and returns one inferred prompt', asy
 
   try {
     const result = await inferPromptFromImageGemini(IMAGE, 'Describe visible details');
-    assert.deepEqual(result, { prompt: 'blue coat, front view', model: 'gemini-3.5-flash' });
+    assert.deepEqual(result, { prompt: 'blue coat, front view', model: 'gemini-3.8-flash' });
     assert.equal(requests.length, 1);
     const body = JSON.parse(requests[0].options.body);
     assert.equal(body.contents[0].parts[1].inline_data.data, 'aGVsbG8=');
