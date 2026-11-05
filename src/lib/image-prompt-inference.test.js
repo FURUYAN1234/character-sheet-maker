@@ -72,6 +72,11 @@ test('OpenAI image generation sends the inferred character description to the im
   try {
     const result = await generateImageOAI(inferredPrompt);
     assert.equal(request.url, 'https://api.openai.com/v1/images/generations');
+    assert.equal(request.body.model, 'gpt-image-2.6-sunburst');
+    assert.equal(request.body.quality, 'xhigh');
+    assert.equal(request.body.size, '1024x1792');
+    assert.equal(request.body.output_format, 'png');
+    assert.equal(result.usedModel, 'gpt-image-2.6-sunburst');
     assert.ok(request.body.prompt.includes(inferredPrompt));
     assert.equal(request.body.image, undefined);
     assert.equal(request.body.image_url, undefined);

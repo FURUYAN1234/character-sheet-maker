@@ -21,7 +21,7 @@ export const setOpenAIApiKey = (key) => {
 export const getOpenAIApiKey = () => currentOpenAIApiKey;
 
 const OPENAI_IMAGE_MODELS = [
-  { id: "gpt-image-2.5-sunburst", quality: "xhigh" },
+  { id: "gpt-image-2.6-sunburst", quality: "xhigh" },
   { id: "gpt-image-2", quality: "high" }
 ];
 const OPENAI_IMAGE_TIMEOUT_MS = 600000;
