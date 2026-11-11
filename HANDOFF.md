@@ -1,3 +1,9 @@
+## GPT Image 2.0 route retirement candidate v1.5.5 — 2026-11-11
+
+- Authorized existing-app fix, official deployment and existing note/X/Facebook updates. Full backup is deferred until every app update and announcement is complete.
+- Removed active 2.0 routes while preserving the accepted 2.6 normal request/output behavior. Provider-error regression failed before correction and passes after correction. All 59 tests and the production build pass. Normal-UI GPT Image 2.6 generation completed on the candidate at 1120x1584; full-sheet visual review confirmed the profile and character views. Official delivery remains pending.
+- The existing private task record owns cross-app progress; no credentials are stored in this file.
+
 ## Gemini December migration candidate v1.5.3 — 2026-11-03
 
 - Current task: update Gemini fallback candidates and displays, verify real API behavior, and deploy through the established release transaction. No new backup or social publication.

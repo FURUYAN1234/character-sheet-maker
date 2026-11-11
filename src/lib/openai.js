@@ -21,8 +21,7 @@ export const setOpenAIApiKey = (key) => {
 export const getOpenAIApiKey = () => currentOpenAIApiKey;
 
 const OPENAI_IMAGE_MODELS = [
-  { id: "gpt-image-2.6-sunburst", quality: "xhigh" },
-  { id: "gpt-image-2", quality: "high" }
+  { id: "gpt-image-2.6-sunburst", quality: "xhigh" }
 ];
 const OPENAI_IMAGE_TIMEOUT_MS = 600000;
 const OPENAI_IMAGE_TIMEOUT_SECONDS = OPENAI_IMAGE_TIMEOUT_MS / 1000;
@@ -249,10 +248,6 @@ ${prompt}`;
       lastError = err.name === "AbortError"
         ? new Error(`Timeout (${OPENAI_IMAGE_TIMEOUT_SECONDS}s). The server may be congested; please retry later.`)
         : err;
-      const fallback = OPENAI_IMAGE_MODELS[index + 1];
-      if (fallback && onStatusUpdate) {
-        onStatusUpdate(`> [image] ${model} failed. Falling back to ${fallback.id}...`);
-      }
     } finally {
       clearTimeout(timeoutId);
     }
