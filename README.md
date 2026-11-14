@@ -42,7 +42,7 @@ AI Character Sheet Maker creates structured character reference sheets from doze
 
 ## Current Release Line / 現行仕様
 
-Version **v1.5.7** is a browser-based React/Vite app with session-only API keys, dual Gemini/OpenAI routing, A/B comparison, parameter locks, deterministic Japanese profile typesetting for form-driven sheets, automatically named prompt-file downloads, exact `1120x1584` output, and provenance watermarking. It also embeds versioned design JSON in generated PNGs so the exact prompt can be restored later. / **v1.5.7** はブラウザ上で動作する React/Vite アプリで、セッション限定APIキー、Gemini/OpenAIの切り替え、A/B比較、項目ロック、フォーム生成時の日本語プロフィール決定的文字合成、自動命名されるプロンプトファイルの直接ダウンロード、1120x1584の固定出力、来歴ウォーターマークを備えています。生成PNGにはバージョン付き設計JSONも埋め込み、後から正確なプロンプトを復元できます。
+Version **v1.5.8** is a browser-based React/Vite app with session-only API keys, dual Gemini/OpenAI routing, A/B comparison, parameter locks, deterministic Japanese profile typesetting for form-driven sheets, automatically named prompt-file downloads, exact `1120x1584` output, and provenance watermarking. It also embeds versioned design JSON in generated PNGs so the exact prompt can be restored later. / **v1.5.8** はブラウザ上で動作する React/Vite アプリで、セッション限定APIキー、Gemini/OpenAIの切り替え、A/B比較、項目ロック、フォーム生成時の日本語プロフィール決定的文字合成、自動命名されるプロンプトファイルの直接ダウンロード、1120x1584の固定出力、来歴ウォーターマークを備えています。生成PNGにはバージョン付き設計JSONも埋め込み、後から正確なプロンプトを復元できます。
 
 | Area / 領域 | Current behavior / 現行挙動 |
 |---|---|
@@ -598,3 +598,6 @@ All 11 GPT fallback models are selectable. Astra is first and GPT-6.1 Sol is the
 After API setup, use the upper-right red **Stop AI / 緊急停止** button while an AI request is thinking, generating or receiving its response. It is disabled while idle and after stopping. / API設定前には表示せず、起動後にAIが思考・生成・応答受信中のときは、右上の赤い「緊急停止」ボタンで通信を止められます。待機中と停止後は非活性です。
 
 Stopping preserves your inputs and previously accepted results. It cancels local transport/body reception, blocks fallback and later processing for that request, and ignores late results. Start the desired operation explicitly to try again. A request already submitted may still run on the provider and incur charges; stopping does not revoke payment. / 入力と取得済み結果を保持し、ローカルの通信・応答受信と、その実行のモデル切替・後続処理を止め、遅れて届いた結果を採用しません。再開する操作は改めて押してください。送信済み処理は提供元で継続・課金される場合があり、料金の取り消しを保証しません。
+
+### v1.5.8
+Emergency stop is red during AI work and disabled gray while idle, finished, stopped or after errors. API communication, retained inputs/results and cancellation are unchanged. / 緊急停止はAI処理中に赤で有効、待機・完了・停止・エラー後はグレーで無効になります。API通信・入力や結果の保持・中断処理は変更していません。

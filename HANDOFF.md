@@ -1,3 +1,7 @@
+## Disabled emergency stop v1.5.8 — 2026-11-14
+
+- Root observed disabled=true still dark red. Emergency-specific disabled rule explicitly selected#743132 with opacity1. Only disabled stop fill/border changed to neutral gray#525252/#a3a3a3, active red retained. API/action/input/result behavior unchanged; existing1.5.7 live cancellation evidence reusable. Root owns live gray appearance and publication. Published1.5.7 tag/notes retained.
+
 ## Final local release preparation v1.5.7 — 2026-11-14
 
 - Initial API gate hides the stop and reservation; workspace or active request shows the fixed red top-right control (top20/right12, 76px band), disabled idle/stopped. It sits outside lock/filter/sticky backdrop; narrow/short windows release sticky headers.
