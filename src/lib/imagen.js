@@ -1,4 +1,5 @@
-import { getApiKey, diagnoseConnection } from "./gemini";
+import {createApiWorkFetch,throwIfApiWorkCancelled} from './api-work.js';
+import { getApiKey, diagnoseConnection } from "./gemini.js";
 
 const IMAGE_TIMEOUT_MS = 300000;
 const MODELS_TO_TRY = [
@@ -35,6 +36,7 @@ const extractGeminiImage = (data, modelId) => {
 };
 
 export const generateImage = async (prompt, onStatusUpdate) => {
+  const fetchForWork = createApiWorkFetch();
   const currentApiKey = getApiKey();
   if (!currentApiKey) throw new Error("Gemini API key is not set.");
 
@@ -50,7 +52,7 @@ export const generateImage = async (prompt, onStatusUpdate) => {
       attemptedModels.push(modelId);
       if (onStatusUpdate) onStatusUpdate(`> [image] ${modelId} generation started... (2-5 min)`);
 
-      const response = await fetch(
+      const response = await fetchForWork(
         'https://generativelanguage.googleapis.com/v1beta/interactions',
         {
           method: "POST",
@@ -60,7 +62,7 @@ export const generateImage = async (prompt, onStatusUpdate) => {
         }
       );
 
-      const data = await response.json().catch(() => ({}));
+      const data = await response.json().catch(error => { throwIfApiWorkCancelled(error); return {}; });
       if (!response.ok || data.error) {
         throw new Error(`API Error: ${response.status} ${data.error?.message || response.statusText}`);
       }
@@ -69,6 +71,7 @@ export const generateImage = async (prompt, onStatusUpdate) => {
       if (onStatusUpdate) onStatusUpdate(`> [image] generation complete (${modelId})`);
       return result;
     } catch (e) {
+      throwIfApiWorkCancelled(e);
       const msg = e.name === "AbortError" ? `Timeout (${IMAGE_TIMEOUT_MS / 1000}s)` : e.message;
       console.warn(`[ImageGen] ${modelId} failed:`, msg);
       lastError = new Error(msg);
@@ -93,6 +96,7 @@ export const generateImage = async (prompt, onStatusUpdate) => {
     }
     throw new Error(`All Gemini image models failed. ${diagnosis}`);
   } catch (diagErr) {
+      throwIfApiWorkCancelled(diagErr);
     throw diagErr || lastError || new Error(`All image generation models failed (${attemptedModels.join(", ")}).`);
   }
 };

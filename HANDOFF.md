@@ -1,3 +1,19 @@
+## Final local release preparation v1.5.7 — 2026-11-14
+
+- Initial API gate hides the stop and reservation; workspace or active request shows the fixed red top-right control (top20/right12, 76px band), disabled idle/stopped. It sits outside lock/filter/sticky backdrop; narrow/short windows release sticky headers.
+- Root observed live text and image cancellation followed by successful fresh normal runs; inputs and completed character sheets retained. Latest positioning still awaits root final live UI acceptance. No new live API claims are made by this preparation step.
+- Operation PDF page6 independently rendered/viewed; no text clipping. Operation/API PDFs synchronized from current source. README banners and reciprocal links preserved. Provider cancellation code reviewed with previous independent regression evidence; no unrelated refactor.
+- Local commit is preparation only. Root owns push, official transaction, final live/public readback, note/SNS and full backup. Final local test/build/preflight results are recorded in the private preparation JSON.
+
+## Emergency AI stop candidate v1.5.7 — 2026-11-14 (local checks passed; real API root-owned)
+
+- Added workspace-visible red `#ai-emergency-stop`, disabled idle/stopped and enabled for active thinking/request/body reception. Preserves inputs and accepted results. A new explicit action resets the cancelled signal.
+- Provider requests capture their action signal before asynchronous preprocessing. Header/body waits settle on cancellation; CANCELLED is terminal across fallback/diagnosis/backup handling. UI action identity prevents old results, status callbacks and finally from changing a new action.
+- Actual baseline UI action accepted a delayed response after stop; current action rejects it: private `ui-abort-baseline-regression.json`. Mock-provider cancellation covers text/image paths; this is not live API evidence.
+- Full prebuild tests: 67/67 pass,0fail. Production build/security pass. New PDF version/manual stop page rendered; all pages visually checked and bounds pass. Existing README image banners and targets unchanged.
+- Root owns normal-UI/API interruption, idle/active/stopped display, restart, publication and final integration. No API calls, commit, push, deploy, note/SNS or backup performed by this worker. Do not describe this candidate as real-API accepted yet.
+- Evidence `/home/furu/Codex/work/story-abort-20261114/`; stop contract and source refs in character-comic-cancellation-inventory.json. Other agents are working; preserve their changes.
+
 ## Local candidate checkpoint v1.5.6 — 2026-11-14
 
 - Existing-app update: operation/API PDFs, visible separate-tab manual links, bilingual README and release notes are prepared. Local candidate only; no push, tag, release, deployment or backup.

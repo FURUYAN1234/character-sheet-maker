@@ -42,7 +42,7 @@ AI Character Sheet Maker creates structured character reference sheets from doze
 
 ## Current Release Line / 現行仕様
 
-Version **v1.5.6** is a browser-based React/Vite app with session-only API keys, dual Gemini/OpenAI routing, A/B comparison, parameter locks, deterministic Japanese profile typesetting for form-driven sheets, automatically named prompt-file downloads, exact `1120x1584` output, and provenance watermarking. It also embeds versioned design JSON in generated PNGs so the exact prompt can be restored later. / **v1.5.6** はブラウザ上で動作する React/Vite アプリで、セッション限定APIキー、Gemini/OpenAIの切り替え、A/B比較、項目ロック、フォーム生成時の日本語プロフィール決定的文字合成、自動命名されるプロンプトファイルの直接ダウンロード、1120x1584の固定出力、来歴ウォーターマークを備えています。生成PNGにはバージョン付き設計JSONも埋め込み、後から正確なプロンプトを復元できます。
+Version **v1.5.7** is a browser-based React/Vite app with session-only API keys, dual Gemini/OpenAI routing, A/B comparison, parameter locks, deterministic Japanese profile typesetting for form-driven sheets, automatically named prompt-file downloads, exact `1120x1584` output, and provenance watermarking. It also embeds versioned design JSON in generated PNGs so the exact prompt can be restored later. / **v1.5.7** はブラウザ上で動作する React/Vite アプリで、セッション限定APIキー、Gemini/OpenAIの切り替え、A/B比較、項目ロック、フォーム生成時の日本語プロフィール決定的文字合成、自動命名されるプロンプトファイルの直接ダウンロード、1120x1584の固定出力、来歴ウォーターマークを備えています。生成PNGにはバージョン付き設計JSONも埋め込み、後から正確なプロンプトを復元できます。
 
 | Area / 領域 | Current behavior / 現行挙動 |
 |---|---|
@@ -450,6 +450,11 @@ This app is one component in a broader AI-assisted manga and story production wo
 
 ## Changelog / 更新履歴
 
+### v1.5.7
+
+- Add a red emergency stop for active AI transport and response reception, with terminal cancellation, retained input/results and restart protection. / AI通信・応答受信中の赤い緊急停止、モデル切替の停止、入力・結果の保持、再実行の保護を追加しました。
+
+
 ### v1.5.6 (2026-11-14)
 
 - Added secondary links to Story Maker and Super FURU AI 4-koma System below the toolbar and in the API gate, with purpose descriptions and separate-tab labels. Save the sheet and import it into manga STEP1; links do not transfer data automatically. / ツールバーの下とAPI接続画面に、用途説明・別タブ表示付きのStory MakerとSuper FURU AI 4-koma Systemへの補助リンクを追加しました。シートを保存し、漫画アプリのSTEP1へ読み込みます。データの自動転送はありません。
@@ -586,3 +591,10 @@ The software logic is shared for technical and creative experimentation. Prompt 
 ## OpenAI text model selection / テキストモデル選択
 
 All 11 GPT fallback models are selectable. Astra is first and GPT-6.1 Sol is the default. Field generation and text gacha start at the selected model and fall back only downward. The status retains the attempted/adopted model. Image generation and image-to-prompt analysis keep their dedicated routes. / 全11モデルを選択できます。Astraが最上位、GPT-6.1 Solが初期選択です。項目生成とテキストガチャは選択モデルから下位へ切り替え、試行・採用モデルを表示します。画像生成と画像からのプロンプト解析は専用経路を維持します。
+
+
+## Emergency stop / 緊急停止
+
+After API setup, use the upper-right red **Stop AI / 緊急停止** button while an AI request is thinking, generating or receiving its response. It is disabled while idle and after stopping. / API設定前には表示せず、起動後にAIが思考・生成・応答受信中のときは、右上の赤い「緊急停止」ボタンで通信を止められます。待機中と停止後は非活性です。
+
+Stopping preserves your inputs and previously accepted results. It cancels local transport/body reception, blocks fallback and later processing for that request, and ignores late results. Start the desired operation explicitly to try again. A request already submitted may still run on the provider and incur charges; stopping does not revoke payment. / 入力と取得済み結果を保持し、ローカルの通信・応答受信と、その実行のモデル切替・後続処理を止め、遅れて届いた結果を採用しません。再開する操作は改めて押してください。送信済み処理は提供元で継続・課金される場合があり、料金の取り消しを保証しません。

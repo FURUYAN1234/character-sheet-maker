@@ -1,3 +1,4 @@
+import {createApiWorkFetch,throwIfApiWorkCancelled} from './api-work.js';
 /**
  * Gemini API Client for キャラクターシート鋳造所
  * Nano Banana Pro最新版のZenith Protocolを踏襲（順序・名称完全一致）
@@ -30,9 +31,10 @@ export const getApiKey = () => currentApiKey;
  * 診断機能: このAPIキーで利用可能なモデル一覧を取得
  */
 export const diagnoseConnection = async () => {
+  const fetchForWork = createApiWorkFetch();
   if (!currentApiKey) return "API Key not set.";
   try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${currentApiKey}`);
+    const response = await fetchForWork(`https://generativelanguage.googleapis.com/v1beta/models?key=${currentApiKey}`);
     const data = await response.json();
     if (data.error) return `API Error: ${data.error.message}`;
     if (!data.models) return "No models returned by API.";
@@ -41,6 +43,7 @@ export const diagnoseConnection = async () => {
       .filter(name => name.includes("gemini") || name.includes("imagen"));
     return `Available Models: ${relevantModels.join(", ")}`;
   } catch (e) {
+      throwIfApiWorkCancelled(e);
     return `Diagnostic Failed: ${e.message}`;
   }
 };
@@ -53,6 +56,7 @@ export const diagnoseConnection = async () => {
  * @returns {{ text: string, model: string }}
  */
 export const callGeminiText = async (prompt, onStatusUpdate, options = {}) => {
+  const fetchForWork = createApiWorkFetch();
   if (!currentApiKey) throw new Error("API Key が設定されていません。");
 
   for (const modelId of TEXT_MODEL_IDS) {
@@ -78,7 +82,7 @@ export const callGeminiText = async (prompt, onStatusUpdate, options = {}) => {
         ]
       };
 
-      const response = await fetch(
+      const response = await fetchForWork(
         `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${currentApiKey}`,
         {
           method: "POST",
@@ -89,7 +93,7 @@ export const callGeminiText = async (prompt, onStatusUpdate, options = {}) => {
       );
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
+        const errorData = await response.json().catch(error => { throwIfApiWorkCancelled(error); return {}; });
         throw new Error(`API Error: ${response.status} ${errorData.error?.message || response.statusText}`);
       }
 
@@ -115,6 +119,7 @@ export const callGeminiText = async (prompt, onStatusUpdate, options = {}) => {
       return { text, model: modelId };
 
     } catch (err) {
+      throwIfApiWorkCancelled(err);
       let msg = err.message;
       if (err.name === 'AbortError') msg = "Timeout (25s)";
       console.warn(`[Gemini] ${modelId} failed:`, msg);
@@ -145,6 +150,7 @@ export const callGeminiText = async (prompt, onStatusUpdate, options = {}) => {
 };
 
 export const inferPromptFromImage = async (imageDataUrl, instruction, onStatusUpdate, options = {}) => {
+  const fetchForWork = createApiWorkFetch();
   if (!currentApiKey) throw new Error('API Key が設定されていません。');
   const modelId = IMAGE_MODEL_IDS[0];
   const imageMatch = imageDataUrl.match(/^data:(image\/(?:png|jpeg));base64,([A-Za-z0-9+/=]+)$/i);
@@ -155,7 +161,7 @@ export const inferPromptFromImage = async (imageDataUrl, instruction, onStatusUp
   const timeoutId = setTimeout(() => controller.abort(), 60000);
   try {
     onStatusUpdate?.(`> [image analysis] ${modelId} starting...`);
-    const response = await fetch(
+    const response = await fetchForWork(
       `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent`,
       {
         method: 'POST',
@@ -170,7 +176,7 @@ export const inferPromptFromImage = async (imageDataUrl, instruction, onStatusUp
         signal: controller.signal,
       },
     );
-    const data = await response.json().catch(() => ({}));
+    const data = await response.json().catch(error => { throwIfApiWorkCancelled(error); return {}; });
     if (!response.ok) throw new Error(`${response.status} ${data.error?.message || response.statusText}`);
     if (options.requireComplete && data.candidates?.[0]?.finishReason === 'MAX_TOKENS') {
       throw new Error('画像解析の応答がトークン上限で切れました。特徴は省略せず、再解析してください。');
@@ -180,6 +186,7 @@ export const inferPromptFromImage = async (imageDataUrl, instruction, onStatusUp
     if (!prompt) throw new Error('画像解析の応答が空でした。');
     return { prompt, model: modelId };
   } catch (error) {
+      throwIfApiWorkCancelled(error);
     if (error.name === 'AbortError') throw new Error('画像解析がタイムアウトしました。');
     throw error;
   } finally {
@@ -247,7 +254,8 @@ export const generateGachaTexts = async (context, onStatusUpdate) => {
       }
     });
     return JSON.parse(result.text);
-  } catch {
+  } catch (cancelError) {
+    throwIfApiWorkCancelled(cancelError);
     return null;
   }
 };

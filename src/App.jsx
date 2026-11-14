@@ -1,3 +1,4 @@
+import {beginApiWork,cancelApiWork,isCurrentApiWork,isApiWorkCancelled} from './lib/api-work.js';
 import { OPENAI_TEXT_MODELS, DEFAULT_OPENAI_TEXT_MODEL, setOpenAITextModel, getOpenAITextModelStatus } from './lib/openai';
 // AIキャラクターシートメーカー V1.0 — メインアプリ
 // 完全独立アプリ。他アプリとは混ぜない。
@@ -18,7 +19,7 @@ import {
 } from './lib/png-character-sheet-metadata';
 import FieldInput from './components/FieldInput';
 
-const SYSTEM_VERSION = "1.5.6";
+const SYSTEM_VERSION = "1.5.7";
 const APP_NAME = "AIキャラクターシートメーカー";
 
 function ManualLinks() {
@@ -67,6 +68,21 @@ const ERA_COSTUME_MAP = {
 };
 
 const App = () => {
+  const [apiBusy, setApiBusy] = useState(false);
+  const startAiWork = () => {
+    const run = beginApiWork();
+    setIsGenerating(false); setIsImageGenerating(false); setIsAnalyzingImage(false); setFieldGenerating(null);
+    setApiBusy(true);
+    return run;
+  };
+  const stopAiWork = () => {
+    cancelApiWork();
+    setIsGenerating(false); setIsImageGenerating(false); setIsAnalyzingImage(false); setFieldGenerating(null);
+    setApiBusy(false);
+    imageImportRequestRef.current += 1;
+    showStatus('⏹ AI通信を緊急停止しました。入力と取得済み結果は保持しています。送信済み処理の課金は取り消せません。');
+  };
+
   // === API認証 ===
   const [apiKeyInput, setApiKeyInput] = useState('');
   const [selectedEngine, setSelectedEngine] = useState('openai');
@@ -228,17 +244,20 @@ const App = () => {
   // === 画像生成（明示的ボタンのみ） ===
   const handleImageGenerate = async () => {
     if (isImageGenerating || !isUnlocked) return;
+    const run = startAiWork();
     restoreApiSession();
     setIsImageGenerating(true);
     setImageError('');
     showStatus('🎨 画像生成中...');
     try {
-      const result = await generateImageAI(generatedPrompt, (s) => showStatus(s));
+      const result = await generateImageAI(generatedPrompt, (s) => { if (isCurrentApiWork(run)) showStatus(s); });
+      if (!isCurrentApiWork(run)) return;
       const rawSrc = `data:${result.mimeType || 'image/png'};base64,${result.base64Img}`;
       // 読み込み・AI推定プロンプトはフォームとは独立。古いフォーム情報を画像へ焼き込まない。
       const composedSrc = promptOverride !== null
         ? rawSrc
         : await composeCharacterSheet(rawSrc, currentFormData, SYSTEM_VERSION);
+      if (!isCurrentApiWork(run)) return;
       const imgSrc = embedCharacterSheetMetadata(
         composedSrc,
         createCharacterSheetMetadata({
@@ -266,30 +285,35 @@ const App = () => {
       setHistory(prev => [...prev, { image: imgSrc, model: result.usedModel, timestamp: Date.now() }]);
       showStatus(`✅ 画像生成完了 (${result.usedModel})`, true);
     } catch (err) {
+      if (!isCurrentApiWork(run) || isApiWorkCancelled(err)) return;
       setImageError(err.message);
       showStatus(`❌ ${err.message}`, true);
-    } finally { setIsImageGenerating(false); }
+    } finally { if (isCurrentApiWork(run)) { setIsImageGenerating(false); setApiBusy(false); } }
   };
 
   // === 単一フィールドAI生成 ===
   const handleFieldAiGenerate = async (fieldKey, fieldLabel) => {
     if (!isUnlocked) return;
+    const run = startAiWork();
     restoreApiSession();
     setFieldGenerating(fieldKey);
     showStatus(`🎲 ${fieldLabel} をAI生成中...`);
     try {
-      const value = await generateFieldValueAI(fieldKey, fieldLabel, currentFormData, (s) => showStatus(s));
+      const value = await generateFieldValueAI(fieldKey, fieldLabel, currentFormData, (s) => { if (isCurrentApiWork(run)) showStatus(s); });
+      if (!isCurrentApiWork(run)) return;
       updateField(fieldKey, value);
       showStatus(`✅ ${fieldLabel}: ${value}`, true);
     } catch (err) {
+      if (!isCurrentApiWork(run) || isApiWorkCancelled(err)) return;
       showStatus(`❌ ${fieldLabel}の生成失敗: ${err.message}`, true);
-    } finally { setFieldGenerating(null); }
+    } finally { if (isCurrentApiWork(run)) { setFieldGenerating(null); setApiBusy(false); } }
   };
 
   // === 全項目ランダム（スマート連携付き） ===
   const handleFullRandom = async () => {
     restoreApiSession();
     if (!isUnlocked) return;
+    const run = startAiWork();
     setIsGenerating(true);
     showStatus('🎲 全項目ランダム生成中...');
     try {
@@ -437,8 +461,9 @@ const App = () => {
 
     // Step 3: AIでテキスト系を生成
     showStatus('🤖 AIが名前・台詞を生成中...');
-    const aiResult = await generateGachaTextsAI(newData, (s) => showStatus(s));
+    const aiResult = await generateGachaTextsAI(newData, (s) => { if (isCurrentApiWork(run)) showStatus(s); });
 
+    if (!isCurrentApiWork(run)) return;
     Object.assign(newData, applyRandomProfileText({
       current: newData,
       generated: aiResult,
@@ -452,9 +477,10 @@ const App = () => {
       setTextModel(aiResult ? 'AI' : 'バックアップ');
       showStatus('✅ 全項目ランダム完了！「画像生成」ボタンで画像を生成できます。', true);
     } catch (err) {
+      if (!isCurrentApiWork(run) || isApiWorkCancelled(err)) return;
       showStatus(`❌ 全項目ランダム生成失敗: ${err.message}`, true);
     } finally {
-      setIsGenerating(false);
+      if (isCurrentApiWork(run)) { setIsGenerating(false); setApiBusy(false); }
     }
   };
 
@@ -541,24 +567,25 @@ const App = () => {
         return;
       }
 
+      const run = startAiWork();
       setIsAnalyzingImage(true);
       setImportedImageNotice({ name: file.name, kind: 'analyzing' });
       showStatus(`🔍 ${file.name}: AI解析中（設計データなし・選択中のAPIへ送信）...`);
       try {
         const result = await inferPromptFromImageAI(imageDataUrl, (status) => {
-          if (requestId === imageImportRequestRef.current) showStatus(`🔍 ${file.name}: ${status}`);
+          if (isCurrentApiWork(run) && requestId === imageImportRequestRef.current) showStatus(`🔍 ${file.name}: ${status}`);
         });
-        if (requestId !== imageImportRequestRef.current) return;
+        if (!isCurrentApiWork(run) || requestId !== imageImportRequestRef.current) return;
         setPromptOverride(result.prompt);
         setPromptOverrideSource('inferred');
         setImportedImageNotice({ name: file.name, kind: 'inferred' });
         showStatus(`✅ ${file.name} をAI解析し、推定プロンプトを作成しました（${result.model}）`);
       } catch (error) {
-        if (requestId !== imageImportRequestRef.current) return;
+        if (!isCurrentApiWork(run) || requestId !== imageImportRequestRef.current) return;
         setImportedImageNotice({ name: file.name, kind: 'analysis-failed' });
         showStatus(`❌ ${file.name} のAI解析に失敗しました: ${error.message}`);
       } finally {
-        if (requestId === imageImportRequestRef.current) setIsAnalyzingImage(false);
+        if (isCurrentApiWork(run) && requestId === imageImportRequestRef.current) { setIsAnalyzingImage(false); setApiBusy(false); }
       }
     } catch (error) {
       if (requestId === imageImportRequestRef.current) showStatus(`❌ 画像読み込みに失敗しました: ${error.message}`);
@@ -682,6 +709,7 @@ const App = () => {
   // === レンダリング ===
   return (
     <div className="app-container">
+      {(isUnlocked || apiBusy) && <div className="emergency-stop-bar"><button id="ai-emergency-stop" type="button" className="ai-emergency-stop" disabled={!apiBusy} aria-label="AI通信を緊急停止" onClick={stopAiWork} title={apiBusy ? '進行中のAI通信を停止します。入力・取得済み結果は保持します。' : '現在停止できるAI通信はありません。'}>■ 緊急停止 / Stop AI</button></div>}
       {/* APIゲート */}
       {!isUnlocked && (
         <div className="api-gate">

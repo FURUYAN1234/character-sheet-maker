@@ -1,3 +1,4 @@
+import {createApiWorkFetch,throwIfApiWorkCancelled} from './api-work.js';
 import catalog from './openai-models.json' with { type: 'json' };
 export const OPENAI_TEXT_MODELS = catalog.models;
 export const DEFAULT_OPENAI_TEXT_MODEL = 'gpt-6.1-sol';
@@ -28,13 +29,14 @@ const OPENAI_IMAGE_TIMEOUT_SECONDS = OPENAI_IMAGE_TIMEOUT_MS / 1000;
 const OPENAI_IMAGE_PROMPT_MAX_CHARS = 32000;
 
 const callChatCompletion = async (modelId, messages, apiKey, options = {}) => {
+  const fetchForWork = createApiWorkFetch();
   const controller = new AbortController();
   const reasoning = /^gpt-(6|5\.6)(?:[.-])/.test(modelId);
   const timeoutMs = reasoning ? Math.max(options.timeoutMs || 60000, 120000) : options.timeoutMs || 60000;
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    const response = await fetchForWork("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -49,7 +51,7 @@ const callChatCompletion = async (modelId, messages, apiKey, options = {}) => {
       signal: controller.signal,
     });
 
-    const data = await response.json().catch(() => ({}));
+    const data = await response.json().catch(error => { throwIfApiWorkCancelled(error); return {}; });
     if (!response.ok) {
       const error = new Error(`${response.status} ${data.error?.message || response.statusText}`);
       error.terminal = [401, 403, 429].includes(response.status);
@@ -72,6 +74,7 @@ const callChatCompletion = async (modelId, messages, apiKey, options = {}) => {
     }
     return { text, model: modelId };
   } catch (e) {
+      throwIfApiWorkCancelled(e);
     if (e.name === "AbortError") throw new Error(`Timeout (${timeoutMs / 1000}s)`);
     throw e;
   } finally {
@@ -118,6 +121,7 @@ ${contextToPromptText(context, fieldKey)}`;
       if (onStatusUpdate) onStatusUpdate(`> [API] complete (${modelId})`);
       return result.text.trim().replace(/^["「『]|["」』]$/g, "");
     } catch (e) {
+      throwIfApiWorkCancelled(e);
       if (e.terminal) throw e;
       console.warn(`[OpenAI FieldGen] ${modelId} failed:`, e.message);
       if (onStatusUpdate) onStatusUpdate(`> [API] ${modelId} failed. Trying next model...`);
@@ -154,6 +158,7 @@ ${buildGachaContextText(context)}`;
       if (onStatusUpdate) onStatusUpdate(`> [API] complete (${modelId})`);
       return JSON.parse(result.text);
     } catch (e) {
+      throwIfApiWorkCancelled(e);
       if (e.terminal) throw e;
       console.warn(`[OpenAI GachaGen] ${modelId} failed:`, e.message);
       if (onStatusUpdate) onStatusUpdate(`> [API] ${modelId} failed. Trying next model...`);
@@ -182,6 +187,7 @@ export const inferPromptFromImageOAI = async (imageDataUrl, instruction, onStatu
 };
 
 export const generateImageOAI = async (prompt, onStatusUpdate) => {
+  const fetchForWork = createApiWorkFetch();
   if (!currentOpenAIApiKey) throw new Error("OpenAI API key is not set.");
 
   const dallePrompt = `Please generate an illustration of a character perfectly reflecting the settings below.
@@ -208,7 +214,7 @@ ${prompt}`;
 
     try {
       if (onStatusUpdate) onStatusUpdate(`> [image] ${model} generation started... (2-10 min)`);
-      const response = await fetch("https://api.openai.com/v1/images/generations", {
+      const response = await fetchForWork("https://api.openai.com/v1/images/generations", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -225,7 +231,7 @@ ${prompt}`;
         signal: controller.signal
       });
 
-      const data = await response.json().catch(() => ({}));
+      const data = await response.json().catch(error => { throwIfApiWorkCancelled(error); return {}; });
       if (!response.ok) {
         throw new Error(`OpenAI API Error: ${response.status} ${data.error?.message || response.statusText}`);
       }
@@ -242,6 +248,7 @@ ${prompt}`;
         usedModel: model
       };
     } catch (err) {
+      throwIfApiWorkCancelled(err);
       if (/safety|SAFETY|content_policy/i.test(err.message)) {
         throw new Error("OpenAI image generation was blocked by the content policy.");
       }
