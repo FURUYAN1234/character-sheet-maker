@@ -1,3 +1,17 @@
+## Local candidate checkpoint v1.5.6 — 2026-11-14
+
+- Existing-app update: operation/API PDFs, visible separate-tab manual links, bilingual README and release notes are prepared. Local candidate only; no push, tag, release, deployment or backup.
+- The ordinary Character Maker → Story Maker → manga integration completed real API verification before the latest manga guard/camera patch. That latest manga patch still requires its own API verification; this checkpoint does not claim it passed. Character sheets remain manually imported; images are not compared across apps.
+- Related-app links remain secondary to generation controls. PNG download preserves embedded design metadata; ordinary integration used the saved sheet. Prior 59-test note below is superseded by final-character-tests.log (61 pass).
+- The private task ledger /home/furu/Codex/work/story-manga-contract-20261114 owns acceptance and saved test/build evidence. Shared preflight will be recorded after this local commit; a clean candidate is not deployment authorization. Historical sections below retain their original timestamps.
+
+## Related-app navigation candidate v1.5.6 — 2026-11-14
+
+- Existing-app local update only: secondary public-site links to Story Maker and Super FURU AI 4-koma System, each with visible purpose and separate-tab labels. Shared component appears below the sticky toolbar and in the API gate. Saved sheets are imported manually into manga STEP1; links do not transfer data.
+- Version metadata, bilingual README and docs/releases/v1.5.6.md aligned. No API/model changes, paid generation, commit, push, deployment or backup performed.
+- npm run build passed all 59 tests, Vite build and BUILT_WEB_SECURITY_VERIFIED. Shared security check passed production-and-development audit=0; git diff --check passed. Official preflight stopped at its clean-worktree requirement because this candidate is intentionally uncommitted.
+- Root owns browser acceptance and the single private task ledger. Local preview http://127.0.0.1:5176/ uses Vite session 34149. Browser acceptance and any authorized integration remain pending.
+
 ## GPT Image 2.0 route retirement candidate v1.5.5 — 2026-11-11
 
 - Authorized existing-app fix, official deployment and existing note/X/Facebook updates. Full backup is deferred until every app update and announcement is complete.

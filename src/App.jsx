@@ -10,6 +10,7 @@ import { generateFieldValueAI, generateGachaTextsAI, generateImageAI, inferPromp
 import { applyRandomProfileText } from './lib/profile-randomizer';
 import { applyThemePreset, lockCharacterIdentity, releaseCharacterIdentity } from './lib/preset-actions';
 import { createPromptDownloadUrl, createPromptFileName } from './lib/prompt-download';
+import { downloadCharacterImage } from './lib/image-download';
 import {
   createCharacterSheetMetadata,
   embedCharacterSheetMetadata,
@@ -17,8 +18,34 @@ import {
 } from './lib/png-character-sheet-metadata';
 import FieldInput from './components/FieldInput';
 
-const SYSTEM_VERSION = "1.5.5";
+const SYSTEM_VERSION = "1.5.6";
 const APP_NAME = "AIキャラクターシートメーカー";
+
+function ManualLinks() {
+  return (
+    <nav className="manual-links" aria-label="PDFマニュアル">
+      <a href="./downloads/character-sheet-maker-manual.pdf" target="_blank" rel="noopener noreferrer">📖 操作マニュアル PDF（別タブ）</a>
+      <a href="./downloads/character-sheet-maker-api-guide.pdf" target="_blank" rel="noopener noreferrer">🔑 API設定ガイド PDF（別タブ）</a>
+      <span>人物設計・シート保存の操作とAPIの準備を確認できます。</span>
+    </nav>
+  );
+}
+
+function RelatedApps() {
+  return (
+    <nav className="related-apps" aria-label="関連アプリ">
+      <a className="related-app-link" href="https://furuyan1234.github.io/story-maker/" target="_blank" rel="noopener noreferrer">
+        <span className="related-app-heading">Story Maker <small>別タブ ↗</small></span>
+        <span className="related-app-description">保存したシートを「登場人物」へ読み込み、物語や漫画シナリオを作ります。</span>
+      </a>
+      <a className="related-app-link" href="https://furuyan1234.github.io/nano-banana-pro/" target="_blank" rel="noopener noreferrer">
+        <span className="related-app-heading">Super FURU AI 4-koma System <small>別タブ ↗</small></span>
+        <span className="related-app-description">保存したキャラクターシートをSTEP1へ読み込み、漫画を作ります。</span>
+      </a>
+    </nav>
+  );
+}
+
 
 // === スマート連携テーブル ===
 // 幼児系 → 体型制限
@@ -578,11 +605,11 @@ const App = () => {
 
   const downloadImage = () => {
     if (!displayImage) return;
-    // ウォーターマークは既に焼き込み済み、そのままダウンロード
-    const link = document.createElement('a');
-    link.href = displayImage;
-    link.download = `character_sheet_${Date.now()}.png`;
-    link.click();
+    try {
+      downloadCharacterImage(displayImage, `character_sheet_${Date.now()}.png`);
+    } catch {
+      setStatusMessage('画像を保存できませんでした。表示中の画像を確認して、もう一度お試しください。');
+    }
   };
 
   // === 履歴 ===
@@ -698,6 +725,8 @@ const App = () => {
               <a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer">🔑 OpenAI APIキー取得</a>
             </div>
             <p className="api-gate-note">※ APIキーはメモリ内だけで保持し、再読み込み・ページ終了で消去します。<br/>※ API利用時は、キーと処理に必要な文章・画像を選択したGemini／OpenAIへブラウザから直接送信します。API通信はアプリ運営者のサーバーを経由しません。</p>
+            <ManualLinks />
+            <RelatedApps />
           </div>
         </div>
       )}
@@ -774,6 +803,9 @@ const App = () => {
           </div>
         </div>
 
+        <ManualLinks />
+            <RelatedApps />
+
         {/* メイングリッド */}
         <div className="main-grid">
           {/* 左側：設定パネル */}
@@ -826,7 +858,7 @@ const App = () => {
                     download={promptFileName}
                     onClick={savePrompt}
                   >💾 保存</a>
-                  <button className="btn-copy" onClick={copyPrompt}>{copied ? '✓ Copy済' : '📋 テキストCopy'}</button>
+                  <button className="btn-copy" title="表示中の設計プロンプトをコピー（画像生成用）" onClick={copyPrompt}>{copied ? '✓ Copy済' : '📋 テキストCopy'}</button>
                 </div>
               </div>
               <div className="prompt-content">
