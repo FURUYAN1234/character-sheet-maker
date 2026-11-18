@@ -1,5 +1,9 @@
 # AI Character Sheet Maker / AIキャラクターシートメーカー
 
+OpenAI field generation and text gacha now offers **GPT-6.2 Sol** and **GPT-6.2 Astra**. The initial selection is **GPT-6 Luna**. / OpenAIによる項目生成・テキストガチャに **GPT-6.2 Sol** と **GPT-6.2 Astra** を追加しました。初期選択は **GPT-6 Luna** です。
+
+Standard input / output per million tokens: GPT-6 Luna $0.10 / $0.50, GPT-6.2 Sol $2 / $10, GPT-6.2 Astra $8 / $40 (November 18, 2026). / 100万トークン当たりの通常入力／出力単価はGPT-6 Luna $0.10／$0.50、GPT-6.2 Sol $2／$10、GPT-6.2 Astra $8／$40です（2026年11月18日確認）。
+
 **Gemini model route / Geminiモデル候補**: `gemini-3.8-flash` → `gemini-3.6-flash` → `gemini-3.5-flash-lite` → `gemini-3.1-flash-lite`. Explicit stable IDs avoid the December 1, 2026 redirects; image-generation models keep their dedicated routes. / 2026年12月1日の旧モデル自動転送に依存しないよう、現行GAモデルを明示します。画像生成は専用のモデル経路を使います。
 
 > **MIT License; your outputs remain yours.** You may use, modify, redistribute and sell the app, including in paid products and services, without individual permission from FURU. Retain the copyright and MIT license notices in copies or substantial portions of the software. External API fees and third-party terms are separate. / **アプリはMITライセンス。成果物の権利は従来どおり利用者に帰属します。** アプリの利用・改変・再配布・販売、有料商品やサービスへの組み込みに、FURUへの個別許可は不要です。ソフトウェアの複製または重要な部分には著作権表示とMITの許諾表示を残してください。外部API料金と第三者の条件は別です。
@@ -42,7 +46,7 @@ AI Character Sheet Maker creates structured character reference sheets from doze
 
 ## Current Release Line / 現行仕様
 
-Version **v1.5.8** is a browser-based React/Vite app with session-only API keys, dual Gemini/OpenAI routing, A/B comparison, parameter locks, deterministic Japanese profile typesetting for form-driven sheets, automatically named prompt-file downloads, exact `1120x1584` output, and provenance watermarking. It also embeds versioned design JSON in generated PNGs so the exact prompt can be restored later. / **v1.5.8** はブラウザ上で動作する React/Vite アプリで、セッション限定APIキー、Gemini/OpenAIの切り替え、A/B比較、項目ロック、フォーム生成時の日本語プロフィール決定的文字合成、自動命名されるプロンプトファイルの直接ダウンロード、1120x1584の固定出力、来歴ウォーターマークを備えています。生成PNGにはバージョン付き設計JSONも埋め込み、後から正確なプロンプトを復元できます。
+Version **v1.5.9** is a browser-based React/Vite app with session-only API keys, dual Gemini/OpenAI routing, A/B comparison, parameter locks, deterministic Japanese profile typesetting for form-driven sheets, automatically named prompt-file downloads, exact `1120x1584` output, and provenance watermarking. It also embeds versioned design JSON in generated PNGs so the exact prompt can be restored later. / **v1.5.9** はブラウザ上で動作する React/Vite アプリで、セッション限定APIキー、Gemini/OpenAIの切り替え、A/B比較、項目ロック、フォーム生成時の日本語プロフィール決定的文字合成、自動命名されるプロンプトファイルの直接ダウンロード、1120x1584の固定出力、来歴ウォーターマークを備えています。生成PNGにはバージョン付き設計JSONも埋め込み、後から正確なプロンプトを復元できます。
 
 | Area / 領域 | Current behavior / 現行挙動 |
 |---|---|
@@ -50,7 +54,7 @@ Version **v1.5.8** is a browser-based React/Vite app with session-only API keys,
 | API key handling / APIキー | Memory-only. Keys are not written to localStorage, source files, or output images.  / メモリ限定。キーをlocalStorage、ソース、出力画像へ書き込みません。|
 | Gemini text / Geminiテキスト | `gemini-3.8-flash` → `gemini-3.6-flash` → `gemini-3.5-flash-lite` → `gemini-3.1-flash-lite` |
 | Gemini image / Gemini画像 | `gemini-nano-banana-2.1` |
-| OpenAI text / OpenAIテキスト | Select from all 8 models; default gpt-6.1-sol, downward fallback from the selection. / 全8モデルから選択（既定 `gpt-6.1-sol`、選択から下位のみ） |
+| OpenAI text / OpenAIテキスト | Select from all 10 models; default gpt-6-luna, downward fallback from the selection. / 全10モデルから選択（既定 `gpt-6-luna`、選択から下位のみ） |
 | OpenAI image / OpenAI画像 | `gpt-image-2.6-sunburst` (`xhigh`); no automatic model fallback / 自動モデル切替なし |
 | Output canvas / 出力キャンバス | The final PNG is exactly `1120x1584` (`70:99`, the same ratio as A4). The complete provider artwork is fitted below the Japanese profile header without cropping.  / 最終PNGは1120x1584（70:99、A4と同比率）です。生成イラストを切り抜かず日本語プロフィールヘッダーの下へ収めます。|
 | Image import / 画像読み込み | Generated PNGs contain `furu.character_sheet` schema v1 JSON for exact prompt restoration. PNG and JPG/JPEG images can be dropped or selected; images without this metadata use AI prompt inference.  / 生成PNGにはfuru.character_sheetスキーマv1の設計JSONを埋め込み、正確なプロンプトを復元します。PNG・JPG/JPEGをドロップまたは選択でき、設計情報がない画像はAIでプロンプトを推定します。|
@@ -220,7 +224,7 @@ OpenAI is used for text assistance and image generation through the current Open
 Text fallback: / 文章モデルの切替：
 
 ```text
-gpt-6.1-sol (default; Astra is selectable above)
+gpt-6-luna (default; GPT-6.2 Sol and GPT-6.2 Astra are selectable)
 -> gpt-6.1-terra
 -> gpt-6-sol
 -> gpt-5.6-sol
@@ -590,7 +594,7 @@ The software logic is shared for technical and creative experimentation. Prompt 
 
 ## OpenAI text model selection / テキストモデル選択
 
-All 11 GPT fallback models are selectable. Astra is first and GPT-6.1 Sol is the default. Field generation and text gacha start at the selected model and fall back only downward. The status retains the attempted/adopted model. Image generation and image-to-prompt analysis keep their dedicated routes. / 全11モデルを選択できます。Astraが最上位、GPT-6.1 Solが初期選択です。項目生成とテキストガチャは選択モデルから下位へ切り替え、試行・採用モデルを表示します。画像生成と画像からのプロンプト解析は専用経路を維持します。
+All 10 GPT fallback models are selectable. Astra is first and GPT-6 Luna is the default. Field generation and text gacha start at the selected model and fall back only downward. The status retains the attempted/adopted model. Image generation and image-to-prompt analysis keep their dedicated routes. / 全10モデルを選択できます。Astraが最上位、GPT-6 Lunaが初期選択です。項目生成とテキストガチャは選択モデルから下位へ切り替え、試行・採用モデルを表示します。画像生成と画像からのプロンプト解析は専用経路を維持します。
 
 
 ## Emergency stop / 緊急停止

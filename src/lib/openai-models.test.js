@@ -2,10 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { DEFAULT_OPENAI_TEXT_MODEL, OPENAI_TEXT_MODELS, getTextModelRoute, setOpenAITextModel, setOpenAIApiKey, generateFieldValueOAI, getOpenAITextModelStatus } from './openai.js';
 
-test('catalog defaults to Sol 6.1 and never ascends from selected model', () => {
-  assert.equal(DEFAULT_OPENAI_TEXT_MODEL, 'gpt-6.1-sol');
-  assert.equal(OPENAI_TEXT_MODELS.length, 8);
-  assert.equal(OPENAI_TEXT_MODELS[0].id, 'gpt-6-astra');
+test('catalog defaults to Luna and never ascends from selected model', () => {
+  assert.equal(DEFAULT_OPENAI_TEXT_MODEL, 'gpt-6-luna');
+  assert.equal(OPENAI_TEXT_MODELS.length, 10);
+  assert.equal(OPENAI_TEXT_MODELS[0].id, 'gpt-6.2-astra');
   const terra = OPENAI_TEXT_MODELS.find(model => model.id === 'gpt-6.1-terra');
   assert.equal(terra.inputPriceUsdPerM, 1);
   assert.equal(terra.outputPriceUsdPerM, 5);
@@ -16,9 +16,9 @@ test('catalog defaults to Sol 6.1 and never ascends from selected model', () => 
   assert.throws(() => setOpenAITextModel('unknown'));
 });
 
-test('Terra selection reaches Chat Completions with reasoning parameters and stops on authentication failure', async () => {
+test('GPT-6.2 selection reaches Chat Completions with reasoning parameters and stops on authentication failure', async () => {
   const original = globalThis.fetch; const calls = [];
-  setOpenAIApiKey('test-only'); setOpenAITextModel('gpt-6.1-terra');
+  setOpenAIApiKey('test-only'); setOpenAITextModel('gpt-6.2-astra');
   globalThis.fetch = async (_, options) => {
     calls.push(JSON.parse(options.body));
     return new Response('{}', {status: 401});
@@ -26,7 +26,7 @@ test('Terra selection reaches Chat Completions with reasoning parameters and sto
   try {
     await assert.rejects(generateFieldValueOAI('name', '名前', {}));
     assert.equal(calls.length, 1);
-    assert.equal(calls[0].model, 'gpt-6.1-terra');
+    assert.equal(calls[0].model, 'gpt-6.2-astra');
     assert.equal(calls[0].max_completion_tokens, 32768);
     assert.equal(calls[0].temperature, undefined);
   } finally { globalThis.fetch = original; setOpenAIApiKey(''); setOpenAITextModel(DEFAULT_OPENAI_TEXT_MODEL); }

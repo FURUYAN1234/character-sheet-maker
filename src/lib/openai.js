@@ -1,7 +1,7 @@
 import {createApiWorkFetch,throwIfApiWorkCancelled} from './api-work.js';
 import catalog from './openai-models.json' with { type: 'json' };
 export const OPENAI_TEXT_MODELS = catalog.models;
-export const DEFAULT_OPENAI_TEXT_MODEL = 'gpt-6.1-sol';
+export const DEFAULT_OPENAI_TEXT_MODEL = 'gpt-6-luna';
 export const OPENAI_IMAGE_ANALYSIS_MODEL = 'gpt-6-luna';
 let selectedTextModel = DEFAULT_OPENAI_TEXT_MODEL;
 let textModelStatus = { selected: selectedTextModel, attempted: [], adopted: null };

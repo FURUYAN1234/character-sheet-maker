@@ -19,7 +19,7 @@ import {
 } from './lib/png-character-sheet-metadata';
 import FieldInput from './components/FieldInput';
 
-const SYSTEM_VERSION = "1.5.8";
+const SYSTEM_VERSION = "1.5.9";
 const APP_NAME = "AIキャラクターシートメーカー";
 
 function ManualLinks() {
@@ -796,7 +796,7 @@ const App = () => {
               <select id="openai-text-model" value={openaiTextModel} disabled={isWorking} onChange={event => { setOpenAITextModel(event.target.value); setTextModelSelection(event.target.value); setTextModelStatus('未実行'); }}>
                 {OPENAI_TEXT_MODELS.map(model => <option key={model.id} value={model.id}>{model.label} · 入力 ${model.inputPriceUsdPerM} / 出力 ${model.outputPriceUsdPerM} / 100万tokens</option>)}
               </select>
-              <p>初期選択: GPT-6.1 Sol。Astraが最上位。項目生成・テキストガチャは選択モデルから下位へフォールバックします。</p>
+              <p>初期選択: GPT-6 Luna。GPT-6.2 SolとGPT-6.2 Astraも選択できます。項目生成・テキストガチャは選択モデルから下位へフォールバックします。</p>
               <p>{OPENAI_TEXT_MODELS.find(model => model.id === openaiTextModel)?.description} · 試行・採用モデルは生成ステータスに表示します。</p>
             <p aria-live="polite">{textModelStatus}</p>
             </div>

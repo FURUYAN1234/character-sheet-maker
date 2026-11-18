@@ -1,6 +1,6 @@
 {
   "app": "AI Character Sheet Maker",
-  "version": "1.5.8",
+  "version": "1.5.9",
   "stem": "character-sheet-maker",
   "manual": [
     {
@@ -42,7 +42,7 @@
         ],
         [
           "box",
-          "本書は候補ソースv1.5.8の操作説明です。公開版は画面と配布先で確認してください。各APIの生成結果や人物再現を保証するものではありません。"
+          "本書は候補ソースv1.5.9の操作説明です。公開版は画面と配布先で確認してください。各APIの生成結果や人物再現を保証するものではありません。"
         ],
         [
           "link",
@@ -57,7 +57,7 @@
       "blocks": [
         [
           "text",
-          "1. APIゲートでGeminiまたはOpenAIを選び、対応するキーを入力します。OpenAI文章モデルは8候補から選べ、既定はGPT-6.1 Solです。選択モデルから下位の候補へ切り替える経路を持ちます。"
+          "1. APIゲートでGeminiまたはOpenAIを選び、対応するキーを入力します。OpenAI文章モデルは10候補から選べ、既定はGPT-6 Lunaです。選択モデルから下位の候補へ切り替える経路を持ちます。"
         ],
         [
           "text",
@@ -213,7 +213,7 @@
         ],
         [
           "text",
-          "文章はOpenAIの既定GPT-6.1 SolまたはGeminiの3.8 Flashから始まる候補経路です。画像はOpenAIのGPT Image 2.6 Sunburst / xhigh、GeminiのNano Banana 2.1を使います。"
+          "文章はOpenAIの既定GPT-6 LunaまたはGeminiの3.8 Flashから始まる候補経路です。画像はOpenAIのGPT Image 2.6 Sunburst / xhigh、GeminiのNano Banana 2.1を使います。"
         ],
         [
           "text",
