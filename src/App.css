@@ -522,9 +522,10 @@ html, body { margin: 0; padding: 0; min-height: 100vh; }
 .manual-links a:focus-visible{outline:2px solid var(--indigo-light);outline-offset:3px}
 @media(max-width:360px){.manual-links{grid-template-columns:1fr}}
 
-/* Shown in the configured workspace; outside the header's stacking context. */
-.emergency-stop-bar { flex-shrink:0; height:76px; }
-.emergency-stop-bar ~ div .sticky-top-area { top:76px; }
+/* The fixed manual stop needs room above the toolbar while it is visible. */
+body:not(.furu-mcp-active):has(.emergency-stop-bar) { --manual-stop-band:76px; padding-top:var(--manual-stop-band); }
+.furu-mcp-active .emergency-stop-bar { display:none; }
+body:not(.furu-mcp-active) .emergency-stop-bar ~ div .sticky-top-area { top:var(--manual-stop-band); }
 .ai-emergency-stop { position:fixed; top:20px; right:12px; z-index:10001; max-width:calc(100vw - 24px); background:#b91c1c; color:#fff; border:2px solid #ef4444; border-radius:8px; padding:10px 18px; min-height:44px; font-weight:700; cursor:pointer; }
 .ai-emergency-stop:hover:enabled { background:#991b1b; }
 .ai-emergency-stop:disabled { background:#525252; border-color:#a3a3a3; color:#fff; opacity:1; cursor:not-allowed; }

@@ -46,7 +46,7 @@ AI Character Sheet Maker creates structured character reference sheets from doze
 
 ## Current Release Line / 現行仕様
 
-Version **v1.6.0** is a browser-based React/Vite app with session-only API keys, dual Gemini/OpenAI routing, A/B comparison, parameter locks, deterministic Japanese profile typesetting for form-driven sheets, automatically named prompt-file downloads, exact `1120x1584` output, and provenance watermarking. It also embeds versioned design JSON in generated PNGs so the exact prompt can be restored later. / **v1.6.0** はブラウザ上で動作する React/Vite アプリで、セッション限定APIキー、Gemini/OpenAIの切り替え、A/B比較、項目ロック、フォーム生成時の日本語プロフィール決定的文字合成、自動命名されるプロンプトファイルの直接ダウンロード、1120x1584の固定出力、来歴ウォーターマークを備えています。生成PNGにはバージョン付き設計JSONも埋め込み、後から正確なプロンプトを復元できます。
+Version **v1.6.1** is a browser-based React/Vite app with session-only API keys, dual Gemini/OpenAI routing, A/B comparison, parameter locks, deterministic Japanese profile typesetting for form-driven sheets, automatically named prompt-file downloads, exact `1120x1584` output, and provenance watermarking. It also embeds versioned design JSON in generated PNGs so the exact prompt can be restored later. / **v1.6.1** はブラウザ上で動作する React/Vite アプリで、セッション限定APIキー、Gemini/OpenAIの切り替え、A/B比較、項目ロック、フォーム生成時の日本語プロフィール決定的文字合成、自動命名されるプロンプトファイルの直接ダウンロード、1120x1584の固定出力、来歴ウォーターマークを備えています。生成PNGにはバージョン付き設計JSONも埋め込み、後から正確なプロンプトを復元できます。
 
 | Area / 領域 | Current behavior / 現行挙動 |
 |---|---|
