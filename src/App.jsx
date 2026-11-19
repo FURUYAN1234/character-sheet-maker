@@ -4,6 +4,7 @@ import { OPENAI_TEXT_MODELS, DEFAULT_OPENAI_TEXT_MODEL, setOpenAITextModel, getO
 // 完全独立アプリ。他アプリとは混ぜない。
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import './App.css';
+import { connectFuruMcp, mcpAppError } from './mcp-connection.js';
 import { OPTIONS, DEFAULT_FORM_DATA, BACKUP_DATA, SECTIONS, PRESETS, THEME_PRESETS } from './lib/options';
 import { buildPrompt } from './lib/prompt';
 import { composeCharacterSheet } from './lib/character-sheet-renderer';
@@ -19,7 +20,7 @@ import {
 } from './lib/png-character-sheet-metadata';
 import FieldInput from './components/FieldInput';
 
-const SYSTEM_VERSION = "1.5.9";
+const SYSTEM_VERSION = "1.6.0";
 const APP_NAME = "AIキャラクターシートメーカー";
 
 function ManualLinks() {
@@ -242,54 +243,95 @@ const App = () => {
   };
 
   // === 画像生成（明示的ボタンのみ） ===
-  const handleImageGenerate = async () => {
+  const handleImageGenerate = async (profile = null) => {
     if (isImageGenerating || !isUnlocked) return;
+    const form = profile ? { ...currentFormData, ...profile } : currentFormData;
+    const override = profile ? null : promptOverride;
+    const prompt = profile ? buildPrompt(form) : generatedPrompt;
     const run = startAiWork();
     restoreApiSession();
     setIsImageGenerating(true);
     setImageError('');
     showStatus('🎨 画像生成中...');
     try {
-      const result = await generateImageAI(generatedPrompt, (s) => { if (isCurrentApiWork(run)) showStatus(s); });
-      if (!isCurrentApiWork(run)) return;
+      const result = await generateImageAI(prompt, (s) => { if (isCurrentApiWork(run)) showStatus(s); });
+      if (!isCurrentApiWork(run)) {
+        if (profile) throw new DOMException('Stopped', 'AbortError');
+        return;
+      }
       const rawSrc = `data:${result.mimeType || 'image/png'};base64,${result.base64Img}`;
       // 読み込み・AI推定プロンプトはフォームとは独立。古いフォーム情報を画像へ焼き込まない。
-      const composedSrc = promptOverride !== null
+      const composedSrc = override !== null
         ? rawSrc
-        : await composeCharacterSheet(rawSrc, currentFormData, SYSTEM_VERSION);
-      if (!isCurrentApiWork(run)) return;
+        : await composeCharacterSheet(rawSrc, form, SYSTEM_VERSION);
+      if (!isCurrentApiWork(run)) {
+        if (profile) throw new DOMException('Stopped', 'AbortError');
+        return;
+      }
       const imgSrc = embedCharacterSheetMetadata(
         composedSrc,
         createCharacterSheetMetadata({
           appVersion: SYSTEM_VERSION,
-          prompt: generatedPrompt,
-          character: promptOverride !== null ? {} : currentFormData,
+          prompt,
+          character: override !== null ? {} : form,
           generation: {
             provider: getActiveEngine(),
             model: result.usedModel,
-            ...(promptOverride === null ? { width: 1120, height: 1584 } : {}),
+            ...(override === null ? { width: 1120, height: 1584 } : {}),
           },
         }),
       );
+      if (profile) {
+        if (compareMode && activeSlot === 'B') setSlotBData(form);
+        else {
+          setFormData(form);
+          if (compareMode) setSlotAData(form);
+        }
+      }
       if (compareMode && activeSlot === 'B') { setSlotBImage(imgSrc); }
       else { setGeneratedImage(imgSrc); if (compareMode) setSlotAImage(imgSrc); }
       imageImportRequestRef.current += 1;
       setIsAnalyzingImage(false);
       setImportedImageNotice(null);
-      setImageResultStatus(promptOverrideSource === 'inferred'
+      setImageResultStatus(!profile && promptOverrideSource === 'inferred'
         ? 'この画像はAI推定プロンプトから新規生成しました。元画像は参照せず、左のフォーム情報も合成していません。'
-        : promptOverride !== null
+        : override !== null
           ? 'この画像は読み込んだ設計プロンプトから新規生成しました。左のフォーム情報は合成していません。'
           : 'この画像は現在のフォームから作成した設計プロンプトで新規生成しました。');
       setImageModel(result.usedModel);
       setHistory(prev => [...prev, { image: imgSrc, model: result.usedModel, timestamp: Date.now() }]);
       showStatus(`✅ 画像生成完了 (${result.usedModel})`, true);
+      return { name: form.name || '', model: result.usedModel, png: imgSrc };
     } catch (err) {
-      if (!isCurrentApiWork(run) || isApiWorkCancelled(err)) return;
+      if (!isCurrentApiWork(run) || isApiWorkCancelled(err)) {
+        if (profile) throw new DOMException('Stopped', 'AbortError');
+        return;
+      }
       setImageError(err.message);
       showStatus(`❌ ${err.message}`, true);
     } finally { if (isCurrentApiWork(run)) { setIsImageGenerating(false); setApiBusy(false); } }
   };
+
+  const mcpHandlers = useRef(null);
+  mcpHandlers.current = {
+    async execute(operation, { profile }) {
+      if (operation !== 'generate_sheet') throw mcpAppError('OUTPUT_INVALID');
+      if (!isUnlocked) throw mcpAppError('API_REQUIRED');
+      if (isWorking || apiBusy) throw mcpAppError('APP_BUSY');
+      if (profile && Object.keys(profile).some(key => !Object.hasOwn(DEFAULT_FORM_DATA, key))) throw mcpAppError('OUTPUT_INVALID');
+      const result = await handleImageGenerate(profile ?? {});
+      if (!result) throw mcpAppError('APP_OPERATION_FAILED');
+      return result;
+    },
+    stop: stopAiWork,
+    readiness: () => isUnlocked,
+  };
+  useEffect(() => connectFuruMcp({
+    appId: 'character-sheet-maker',
+    execute: (...args) => mcpHandlers.current.execute(...args),
+    stop: () => mcpHandlers.current.stop(),
+    readiness: () => mcpHandlers.current.readiness(),
+  }), []);
 
   // === 単一フィールドAI生成 ===
   const handleFieldAiGenerate = async (fieldKey, fieldLabel) => {
@@ -774,7 +816,7 @@ const App = () => {
               <button className="btn-gacha" onClick={handleFullRandom} disabled={isWorking || !isUnlocked}>
                 {isGenerating ? '⏳ 生成中...' : '🎲 全項目ランダム'}
               </button>
-              <button className="btn-generate" onClick={handleImageGenerate} disabled={isWorking || !isUnlocked}>
+              <button className="btn-generate" onClick={() => void handleImageGenerate()} disabled={isWorking || !isUnlocked}>
                 {isImageGenerating ? '⏳ 画像生成中...' : '🎨 画像生成'}
               </button>
               <button className="btn-gacha btn-character-lock" onClick={handleCharacterLock} disabled={!!characterLockSnapshot}>
@@ -990,7 +1032,7 @@ const App = () => {
               )}
               <div className="image-actions">
                 <button className="btn-download" onClick={downloadImage} disabled={!displayImage}>📥 ダウンロード</button>
-                <button className="btn-regen" onClick={handleImageGenerate} disabled={isWorking || !isUnlocked}>🔄 {compareMode ? `スロット${activeSlot} 再生成` : '再生成'}</button>
+                <button className="btn-regen" onClick={() => void handleImageGenerate()} disabled={isWorking || !isUnlocked}>🔄 {compareMode ? `スロット${activeSlot} 再生成` : '再生成'}</button>
                 <button className={`btn-compare-toggle${compareMode ? ' active' : ''}`} onClick={toggleCompare}>
                   {compareMode ? '🔀 A/B比較 ON' : '🔀 A/B比較'}
                 </button>

@@ -1,0 +1,3 @@
+interface:
+  display_name: "AI Character Sheet Maker MCP"
+  short_description: "人物設定画を生成して漫画へ連携"

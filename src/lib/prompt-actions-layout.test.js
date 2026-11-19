@@ -62,7 +62,7 @@ test('inferred prompt source remains visible after image regeneration', () => {
   assert.match(appSource, /setPromptOverride\(metadata\.prompt\);\s*setPromptOverrideSource\('restored'\)/);
   assert.match(appSource, /setPromptOverride\(result\.prompt\);\s*setPromptOverrideSource\('inferred'\)/);
   assert.match(appSource, /promptOverrideSource === 'inferred' \? 'AI推定' : 'PNGから復元'/);
-  const generationHandler = appSource.split('const handleImageGenerate = async () => {')[1]
+  const generationHandler = appSource.split('const handleImageGenerate = async (profile = null) => {')[1]
     .split('// ===')[0];
   assert.doesNotMatch(generationHandler, /setPromptOverrideSource\(null\)/);
 });
@@ -76,18 +76,18 @@ test('imported prompt explains its provenance directly below the prompt', () => 
 });
 
 test('regeneration from an imported prompt does not stamp unrelated form details on the image', () => {
-  const generationHandler = appSource.split('const handleImageGenerate = async () => {')[1]
+  const generationHandler = appSource.split('const handleImageGenerate = async (profile = null) => {')[1]
     .split('// ===')[0];
-  assert.match(generationHandler, /generateImageAI\(generatedPrompt,/);
-  assert.match(generationHandler, /promptOverride !== null[\s\S]*?\? rawSrc\s*:\s*await composeCharacterSheet\(rawSrc, currentFormData, SYSTEM_VERSION\)/);
-  assert.match(generationHandler, /character: promptOverride !== null \? \{\} : currentFormData/);
+  assert.match(generationHandler, /const prompt = profile \? buildPrompt\(form\) : generatedPrompt;[\s\S]*?generateImageAI\(prompt,/);
+  assert.match(generationHandler, /const override = profile \? null : promptOverride;[\s\S]*?override !== null[\s\S]*?\? rawSrc\s*:\s*await composeCharacterSheet\(rawSrc, form, SYSTEM_VERSION\)/);
+  assert.match(generationHandler, /character: override !== null \? \{\} : form/);
   assert.match(appSource, /この画像はAI推定プロンプトから新規生成しました/);
 });
 
 test('a retained in-memory API key is restored before image analysis after development reloads', () => {
   assert.match(appSource, /const restoreApiSession = \(\) => \{[\s\S]*?setApiKeys\(selectedEngine === 'gemini'/);
   assert.match(appSource, /if \(!restoreApiSession\(\)\) \{[\s\S]*?AI解析にはAPIキー/);
-  assert.match(appSource, /const handleImageGenerate = async \(\) => \{[\s\S]*?restoreApiSession\(\)/);
+  assert.match(appSource, /const handleImageGenerate = async \(profile = null\) => \{[\s\S]*?restoreApiSession\(\)/);
 });
 
 test('prompt and menu controls collapse without horizontal overflow on narrow screens', () => {

@@ -530,3 +530,9 @@ html, body { margin: 0; padding: 0; min-height: 100vh; }
 .ai-emergency-stop:disabled { background:#525252; border-color:#a3a3a3; color:#fff; opacity:1; cursor:not-allowed; }
 .ai-emergency-stop:focus-visible { outline:3px solid #fca5a5; outline-offset:3px; }
 @media (max-width:900px), (max-height:650px) { .sticky-top-area { position:static; } }
+
+/* The help and MCP toolbar remains usable while the API dialog is open. */
+body:has(.api-gate) .furu-mcp-resources {
+  position: relative;
+  z-index: 101;
+}

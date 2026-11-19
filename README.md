@@ -46,7 +46,7 @@ AI Character Sheet Maker creates structured character reference sheets from doze
 
 ## Current Release Line / 現行仕様
 
-Version **v1.5.9** is a browser-based React/Vite app with session-only API keys, dual Gemini/OpenAI routing, A/B comparison, parameter locks, deterministic Japanese profile typesetting for form-driven sheets, automatically named prompt-file downloads, exact `1120x1584` output, and provenance watermarking. It also embeds versioned design JSON in generated PNGs so the exact prompt can be restored later. / **v1.5.9** はブラウザ上で動作する React/Vite アプリで、セッション限定APIキー、Gemini/OpenAIの切り替え、A/B比較、項目ロック、フォーム生成時の日本語プロフィール決定的文字合成、自動命名されるプロンプトファイルの直接ダウンロード、1120x1584の固定出力、来歴ウォーターマークを備えています。生成PNGにはバージョン付き設計JSONも埋め込み、後から正確なプロンプトを復元できます。
+Version **v1.6.0** is a browser-based React/Vite app with session-only API keys, dual Gemini/OpenAI routing, A/B comparison, parameter locks, deterministic Japanese profile typesetting for form-driven sheets, automatically named prompt-file downloads, exact `1120x1584` output, and provenance watermarking. It also embeds versioned design JSON in generated PNGs so the exact prompt can be restored later. / **v1.6.0** はブラウザ上で動作する React/Vite アプリで、セッション限定APIキー、Gemini/OpenAIの切り替え、A/B比較、項目ロック、フォーム生成時の日本語プロフィール決定的文字合成、自動命名されるプロンプトファイルの直接ダウンロード、1120x1584の固定出力、来歴ウォーターマークを備えています。生成PNGにはバージョン付き設計JSONも埋め込み、後から正確なプロンプトを復元できます。
 
 | Area / 領域 | Current behavior / 現行挙動 |
 |---|---|
@@ -605,3 +605,21 @@ Stopping preserves your inputs and previously accepted results. It cancels local
 
 ### v1.5.8
 Emergency stop is red during AI work and disabled gray while idle, finished, stopped or after errors. API communication, retained inputs/results and cancellation are unchanged. / 緊急停止はAI処理中に赤で有効、待機・完了・停止・エラー後はグレーで無効になります。API通信・入力や結果の保持・中断処理は変更していません。
+
+
+## Local MCP / ローカルMCP
+
+Windows users can start/stop the service, check for a release, and stage an update from `Launch-MCP.cmd`. Open the local app and click **MCP接続** to pair from the application itself. / Windowsでは `Launch-MCP.cmd` からMCPの起動・停止、更新確認・適用を行えます。起動した画面の **MCP接続** でも接続できます。更新候補は公開Releaseが指すコミットのソースから別フォルダへビルドし、成功後に切替先を記録します。作業中の画面は保存後に停止してください。
+
+The MCP server starts a build-verified copy on loopback port `45933`. Install the dependencies and build this application's source before configuring Codex. The API key is entered in the application's normal browser UI and is not passed to MCP. / MCPサーバーはビルドを照合し、ローカルの `45933` 番で対象アプリを起動します。このアプリのソースを展開して依存関係を入れ、ビルドしてからCodexに登録します。APIキーは通常のアプリ画面で入力します。
+
+```powershell
+npm ci
+npm --prefix mcp ci
+npm run build
+codex mcp add character-sheet-maker -- node "C:\absolute\path\to\character_sheet\Launch-Codex-MCP.mjs"
+```
+
+Call `character_connection` and open its one-time URL in the same Codex chat's in-app browser. Wait for `MCP 接続済み`, then run `character_generate_sheet` with a unique `requestId`. Read `character_job_get` until it returns a terminal state. Check the existing result before retrying an `unknown` job. / `character_connection` の一時URLを実行チャットの内蔵ブラウザーで開き、自動接続を確認します。ジョブは `character_job_get` で結果まで追跡してください。MCP接続をAI側で確立できない場合は、対象アプリの画面を示してユーザーに接続を依頼します。
+
+The job returns a validated local PNG path and SHA-256. Give that path to the manga app's `manga_asset_import` tool and assign the imported sheet to the intended character. / 返されたPNGパスを漫画アプリの `manga_asset_import` に渡し、対象人物の資料に割り当てます。
