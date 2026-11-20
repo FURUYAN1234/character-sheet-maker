@@ -20,7 +20,7 @@ import {
 } from './lib/png-character-sheet-metadata';
 import FieldInput from './components/FieldInput';
 
-const SYSTEM_VERSION = "1.6.1";
+const SYSTEM_VERSION = "1.6.2";
 const APP_NAME = "AIキャラクターシートメーカー";
 
 function ManualLinks() {
