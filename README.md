@@ -41,6 +41,11 @@ Japanese A4 guides cover application operation and OpenAI / Gemini API setup. / 
 
 AI Character Sheet Maker creates structured character reference sheets from dozens of editable design axes instead of relying on a single free-form prompt. It is designed to feed downstream systems such as **Super FURU AI 4-koma System**, Story Maker, and manual ChatGPT / Gemini image workflows. / AIキャラクターシートメーカーは、自由入力プロンプトだけに頼らず、多数の編集可能な設計軸からキャラクター参照シートを作るツールです。**Super FURU AI 4-koma System**、Story Maker、ChatGPT / Gemini の画像生成ワークフローへ渡しやすい、構造化されたキャラクター資料を作ることを目的にしています。
 
+
+## Introduction video / 紹介動画
+
+[![Watch the AI Character Sheet Maker introduction / AI Character Sheet Makerの紹介動画を見る](https://i.ytimg.com/vi/0bz__Js60uQ/hqdefault.jpg)](https://youtu.be/0bz__Js60uQ)
+
 > **Demo / 公開版**
 > [https://furuyan1234.github.io/character-sheet-maker/](https://furuyan1234.github.io/character-sheet-maker/)
 
