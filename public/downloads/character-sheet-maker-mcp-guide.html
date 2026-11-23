@@ -9,7 +9,7 @@ h1{font-size:clamp(1.7rem,5vw,2.5rem);line-height:1.25}h2{margin-top:2rem}
 p,li{max-width:47rem}pre{overflow:auto;padding:.9rem 1rem;background:Canvas;border:1px solid GrayText;border-radius:.5rem}a{color:LinkText}
 </style></head>
 <body>
-<header><a href="../">アプリに戻る</a><h1>AI Character Sheet Maker v1.6.2のMCP導入</h1></header>
+<header><a href="../">アプリに戻る</a><h1>AI Character Sheet Maker v1.6.3のMCP導入</h1></header>
 <h2>Windowsで起動する</h2>
 <ol><li>公式GitHubリポジトリのソースZIPを展開し、Node.js 22.16以降を用意します。</li><li><code>Launch-MCP.cmd</code> を開き、「Start MCP and open the application」を選びます。ウィンドウを切り替えるときは、作業を保存してから停止してください。</li><li>画面の「MCP接続」から接続できます。Codexからは実行チャットの内蔵ブラウザーで <code>character_connection</code> が返す一時URLを開くと自動接続します。</li></ol>
 <h2>Codexに登録する</h2>
@@ -18,6 +18,18 @@ p,li{max-width:47rem}pre{overflow:auto;padding:.9rem 1rem;background:Canvas;bord
 <p>通常のアプリ画面でAPIを接続し、<code>character_capabilities</code> の接続状態と <code>providerReady</code> を確認します。APIキーはチャットや設定ファイルの引数に入れません。</p>
 <h2>生成して次のアプリへ渡す</h2>
 <p><code>character_generate_sheet</code> で開始し、<code>character_job_get</code> で完了と成果物を確認します。停止は <code>character_job_cancel</code> で依頼できます。</p>
+<p><code>input.profile</code> に顔や体の特徴を文字列で指定できます。省略した項目は現在のフォームを引き継ぎます。指定を解除する場合は「おまかせ」を渡します。</p>
+<ul>
+  <li>顔の形と特徴 <code>faceOutline</code>（輪郭）、<code>jawShape</code>（顎）、<code>eyeShape</code>（目の形）、<code>eyeSpacing</code>（目の間隔）、<code>browShape</code>（眉）、<code>noseShape</code>（鼻）、<code>philtrumLength</code>（鼻から上唇までの距離）、<code>mouthShape</code>（口）、<code>faceDetails</code>（ほくろや左右差）</li>
+  <li>体のシルエットと立ち姿 <code>shoulderWidth</code>（肩幅）、<code>torsoLegRatio</code>（胴と脚の比率）、<code>standingPosture</code>（立ち姿・重心）</li>
+</ul>
+<h3>画風を決める</h3>
+<p><code>character_style_options</code> で画風と線・塗り・陰影の候補を取得できます。この操作は画像を生成しません。</p>
+<ul>
+  <li>画風の指定があれば、指定どおりの名称または自由記述を <code>input.profile.artStyle</code> に渡します。</li>
+  <li>画風を任された場合は <code>"artStyle": "おまかせ"</code> を渡します。現在と直前の画風を避け、線・塗り・陰影などをまとめて選びます。</li>
+  <li>方向性で仕上がりが変わる場合は、候補から数案を示して相談できます。<code>artStyle</code> を省略すると現在の画風を引き継ぎます。</li>
+</ul>
 <p>返ったPNGパスは、漫画アプリの「素材を取り込む」MCPツールへ渡せます。</p>
 <p><a href="./character-sheet-maker-mcp-skill.zip" download>制作スキルZIPを取得</a>。展開した <code>character-sheet-mcp</code> フォルダーをCodexのスキル用フォルダーに配置し、<code>SKILL.md</code> が見えることを確認します。</p>
 <h2>更新する</h2>

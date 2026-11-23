@@ -1,6 +1,14 @@
 // AIキャラクターシートメーカー — プロンプト生成ロジック V2.0
 // Gemini / Imagen / DALL-E 向け自然言語プロンプト（SD形式ウェイト記法を完全排除）
 
+import { FACE_PARTS, faceValue } from './face-design.js';
+import { BODY_PROPORTIONS } from './options.js';
+
+const describeAppearance = (fields) => fields.flatMap(([label, raw]) => {
+  const value = faceValue(raw);
+  return value ? [`${label}: ${value}`] : [];
+});
+
 // 画風ごとの自然言語スタイル指示
 const ART_STYLE_KEYWORDS = {
   '青年漫画（写実・硬派）': 'seinen manga style with heavy inking, detailed crosshatching, gritty realism, thick bold lines, and muscular detail emphasis',
@@ -59,10 +67,27 @@ export const buildPrompt = (formData) => {
 
   // 性別の自然言語指示
   const genderDesc = (d.sex === '男性')
-    ? 'Depict as unmistakably masculine with strong rugged features. Absolutely no feminine traits.'
+    ? 'Depict the character as male.'
     : (d.sex === '女性')
-      ? 'Depict as clearly feminine with soft graceful anatomy and delicate features.'
-      : 'Depict with androgynous gender-neutral features.';
+      ? 'Depict the character as female.'
+      : d.sex;
+
+  const faceCues = describeAppearance([
+    ['Overall face impression', d.faceType],
+    ['Eye shape', d.eyeShape],
+    ['Iris color', d.eyeColor],
+    ...FACE_PARTS.map(({ key, promptLabel }) => [promptLabel, d[key]]),
+  ]);
+  const faceDesign = [
+    'Facial identity: keep the same facial anatomy across all views and expressions, including the character’s own left/right asymmetry.',
+    'Render the specified facial geometry, proportions and marks faithfully in the requested art style. Prefer specific part shapes and spacing over the general impression, age cues about face shape, or style conventions. Use an explicit distance between the eyes even if a broader eye-shape description implies other spacing. Preserve compatible visible age cues. Do not idealize, slim, enlarge or symmetrize facial features unless specified.',
+    ...faceCues,
+  ].join('\n');
+  const bodyProportions = describeAppearance(BODY_PROPORTIONS.map(({ key, promptLabel }) => [promptLabel, d[key]]));
+  if (bodyProportions.length) {
+    bodyProportions.push('Preserve the shoulder width and torso-to-leg proportions when specified, including in full-body views. Keep general body mass and age cues compatible with the requested silhouette.');
+  }
+  const standingPosture = faceValue(d.standingPosture);
 
   // 年齢ベースの視覚的補強（AIが年齢を無視しないよう具体的な外見描写を追加）
   let ageVisualDesc = '';
@@ -113,14 +138,14 @@ export const buildPrompt = (formData) => {
 An elaborate and professional character design sheet.
 OVERALL LAYOUT: ${layoutMainConcept}
 ART STYLE TO ENFORCE: ${styleKw}
-Line Art: ${d.penStyle}. Rendering: ${d.renderingMode}. ${d.toneStyle !== 'トーンなし' ? `Screentone: ${d.toneStyle}.` : ''} Lighting: ${d.lighting}. Color theme: ${d.colorTheme}.
+Line Art: ${d.penStyle}. Rendering: ${d.renderingMode}. ${d.toneStyle !== 'トーンなし' ? `Screentone: ${d.toneStyle}.` : ''} Lighting: ${d.lighting}. ${d.shadowIntensity ? `Shadows: ${d.shadowIntensity}. ` : ''}Color theme: ${d.colorTheme}.
 
 ## 1. LAYOUT INSTRUCTIONS (ABSOLUTE PRIORITY)
 ${layoutInstruction}
 
 ## 2. ART STYLE INSTRUCTIONS (CRITICAL)
-You MUST strictly follow the requested art style: [ ${styleKw} ].
-Do not use a generic anime style unless requested. The visual aesthetics, shading, and linework must perfectly match the requested style.
+Use the requested art style [ ${styleKw} ] with compatible linework, paint treatment and shading.
+Explicit art direction in Additional user details takes priority for the aspects it specifies. Adapt other rendering settings that conflict with that direction. Preserve the character's physical features and sheet layout.
 
 ## 3. CHARACTER INFORMATION (APPLICATION TYPESET)
 The application will typeset the exact profile data after image generation. The profile below is reference data for the character. Do not draw any text in the illustration.
@@ -130,7 +155,7 @@ ${characterInfoBlock}
 Gender: ${genderDesc}
 Age group: ${d.ageGroup}. ${ageVisualDesc}
 Body build: ${d.bodyBuild} with ${d.muscleType}. ${bodyVisualDesc}
-Face: ${d.faceType} face shape, ${d.eyeShape} eyes, ${d.eyeColor} color.
+${bodyProportions.length ? bodyProportions.join('\n') + '\n' : ''}${faceDesign}
 Hair: ${d.hairStyle}, ${d.hairColor} color.
 Skin: ${d.skinType}.
 Additional body features: ${d.subhumanPart}, ${d.bodyArt}.
@@ -145,7 +170,7 @@ Visual effects: ${d.magicEffect}, Aura: ${d.auraColor}. Makeup: ${d.makeup}.
 
 ## 6. POSE, EXPRESSION & MANNERISM
 Base pose: ${d.basePose}.
-Facial expression: ${d.expressionSet}.
+${standingPosture ? `Habitual standing posture: ${standingPosture}. Apply it to standing views while respecting the layout and the requested base pose in its own view.\n` : ''}Facial expression: ${d.expressionSet}.
 Gaze direction: ${d.gazeDirection}. Hand expression: ${d.handExpression}.
 ${d.voiceType ? `Voice image: ${d.voiceType}. Speech mannerism: ${d.speechStyle}.` : ''}
 

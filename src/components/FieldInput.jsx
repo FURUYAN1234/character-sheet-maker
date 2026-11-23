@@ -4,12 +4,14 @@ import React, { useState } from 'react';
 
 const FieldInput = ({
   fieldKey, label, value, options, type = 'select',
-  colorAccent, locked, onChange, onToggleLock, onAiGenerate, isGenerating
+  colorAccent, locked, onChange, onToggleLock, onAiGenerate, isGenerating, autoLabel
 }) => {
   const hasOptions = options && options.length > 0;
   // テキスト系 or オプションなし → デフォルトはテキストモード
   const defaultMode = (type === 'text' || type === 'textarea' || !hasOptions) ? 'text' : 'select';
   const [mode, setMode] = useState(defaultMode);
+  const customValue = hasOptions && value && !options.includes(value);
+  const inputId = `character-field-${fieldKey}`;
 
   const handleChange = (e) => {
     if (!locked) onChange(fieldKey, e.target.value);
@@ -26,7 +28,7 @@ const FieldInput = ({
     // AI生成を実行（親から結果がvalueに反映される）
     await onAiGenerate(fieldKey, label);
     // 結果をテキストモードで表示（ユーザーが編集可能）
-    setMode('text');
+    setMode(autoLabel ? 'select' : 'text');
   };
 
   const labelClass = `field-label${colorAccent ? ` accent-${colorAccent}` : ''}`;
@@ -34,7 +36,7 @@ const FieldInput = ({
   return (
     <div className="field-container">
       <div className="field-label-row">
-        <span className={labelClass}>{label}</span>
+        <label htmlFor={inputId} className={labelClass}>{label}</label>
         <div className="field-controls">
           {/* モード切替ボタン */}
           {hasOptions && (
@@ -42,20 +44,25 @@ const FieldInput = ({
               className={`field-mode-btn${mode === 'select' ? ' active' : ''}`}
               onClick={() => setMode('select')}
               title="選択モード"
+              aria-label={`${label}の選択モード`}
+              aria-pressed={mode === 'select'}
             >📋</button>
           )}
           <button
             className={`field-mode-btn${mode === 'text' ? ' active' : ''}`}
             onClick={() => setMode('text')}
             title="自由入力モード"
+            aria-label={`${label}の自由入力モード`}
+            aria-pressed={mode === 'text'}
           >✏️</button>
           <button
-            className={`field-mode-btn${mode === 'ai' ? ' active' : ''}`}
+            className={`field-mode-btn${autoLabel ? ' field-auto-btn' : ''}${mode === 'ai' ? ' active' : ''}`}
             onClick={handleAiClick}
             disabled={isGenerating || locked}
-            title="AI自動生成（結果は入力欄に表示）"
+            title={autoLabel ?? 'AI自動生成（結果は入力欄に表示）'}
+            aria-label={autoLabel}
             style={isGenerating ? { opacity: 0.5 } : {}}
-          >{isGenerating ? '⏳' : '🎲'}</button>
+          >{isGenerating ? '⏳' : autoLabel ?? '🎲'}</button>
           {/* ロックボタン */}
           <button
             className={`field-lock-btn${locked ? ' locked' : ''}`}
@@ -68,11 +75,14 @@ const FieldInput = ({
       {/* 選択モード */}
       {mode === 'select' && hasOptions && (
         <select
+          id={inputId}
           value={value}
           onChange={handleChange}
           disabled={locked}
           style={locked ? { opacity: 0.5 } : {}}
         >
+          {!value && <option value="">未指定</option>}
+          {customValue && <option value={value}>{value}</option>}
           {options.map(o => <option key={o} value={o}>{o}</option>)}
         </select>
       )}
@@ -81,6 +91,7 @@ const FieldInput = ({
       {(mode === 'text' || mode === 'ai') && type !== 'textarea' && (
         <div className="field-text-wrap">
           <input
+            id={inputId}
             type="text"
             value={value}
             onChange={handleChange}
@@ -98,6 +109,7 @@ const FieldInput = ({
       {(mode === 'text' || mode === 'ai') && type === 'textarea' && (
         <div className="field-text-wrap">
           <textarea
+            id={inputId}
             value={value}
             onChange={handleChange}
             disabled={locked}

@@ -7,6 +7,8 @@ import './App.css';
 import { connectFuruMcp, mcpAppError } from './mcp-connection.js';
 import { OPTIONS, DEFAULT_FORM_DATA, BACKUP_DATA, SECTIONS, PRESETS, THEME_PRESETS } from './lib/options';
 import { buildPrompt } from './lib/prompt';
+import { ART_STYLE_SETTINGS, chooseArtStyle, resolveArtStyleProfile } from './lib/art-style';
+import { FACE_PARTS, FACE_PRESETS, applyFacePreset, randomFace } from './lib/face-design';
 import { composeCharacterSheet } from './lib/character-sheet-renderer';
 import { generateFieldValueAI, generateGachaTextsAI, generateImageAI, inferPromptFromImageAI, setActiveEngine, getEngineDisplayName, setApiKeys, getActiveEngine } from './lib/ai-provider';
 import { applyRandomProfileText } from './lib/profile-randomizer';
@@ -20,7 +22,7 @@ import {
 } from './lib/png-character-sheet-metadata';
 import FieldInput from './components/FieldInput';
 
-const SYSTEM_VERSION = "1.6.2";
+const SYSTEM_VERSION = "1.6.3";
 const APP_NAME = "AIキャラクターシートメーカー";
 
 function ManualLinks() {
@@ -103,6 +105,8 @@ const App = () => {
   const [isPromptDropActive, setIsPromptDropActive] = useState(false);
   const promptFileInputRef = useRef(null);
   const imageImportRequestRef = useRef(0);
+  const restoredFormPromptRef = useRef(null);
+  const lastArtStyleRef = useRef(null);
 
   // === 生成状態（APIは明示操作のみ） ===
   const [isGenerating, setIsGenerating] = useState(false);
@@ -179,16 +183,18 @@ const App = () => {
   const currentFormData = getCurrentData();
 
   // === フォームデータ更新 ===
-  const updateField = useCallback((key, value) => {
+  const updateFields = useCallback((changes) => {
+    if (!Object.keys(changes).length) return;
     if (compareMode && activeSlot === 'B') {
-      setSlotBData(prev => ({ ...(prev || { ...formData }), [key]: value }));
+      setSlotBData(prev => ({ ...(prev || formData), ...changes }));
     } else if (compareMode && activeSlot === 'A') {
-      setSlotAData(prev => ({ ...(prev || { ...formData }), [key]: value }));
-      setFormData(prev => ({ ...prev, [key]: value }));
+      setSlotAData(prev => ({ ...(prev || formData), ...changes }));
+      setFormData(prev => ({ ...prev, ...changes }));
     } else {
-      setFormData(prev => ({ ...prev, [key]: value }));
+      setFormData(prev => ({ ...prev, ...changes }));
     }
   }, [activeSlot, compareMode, formData]);
+  const updateField = (key, value) => updateFields({ [key]: value });
 
   const toggleLock = useCallback((key) => {
     setLockedFields(prev => ({ ...prev, [key]: !prev[key] }));
@@ -220,6 +226,11 @@ const App = () => {
   );
 
   useEffect(() => {
+    if (restoredFormPromptRef.current === livePrompt) {
+      restoredFormPromptRef.current = null;
+      return;
+    }
+    restoredFormPromptRef.current = null;
     imageImportRequestRef.current += 1;
     setIsAnalyzingImage(false);
     setImportedImageNotice((previous) => previous?.kind === 'analyzing'
@@ -245,7 +256,9 @@ const App = () => {
   // === 画像生成（明示的ボタンのみ） ===
   const handleImageGenerate = async (profile = null) => {
     if (isImageGenerating || !isUnlocked) return;
-    const form = profile ? { ...currentFormData, ...profile } : currentFormData;
+    const form = profile
+      ? resolveArtStyleProfile(currentFormData, profile, lockedFields, lastArtStyleRef.current)
+      : currentFormData;
     const override = profile ? null : promptOverride;
     const prompt = profile ? buildPrompt(form) : generatedPrompt;
     const run = startAiWork();
@@ -281,6 +294,7 @@ const App = () => {
           },
         }),
       );
+      if (override === null) lastArtStyleRef.current = form.artStyle;
       if (profile) {
         if (compareMode && activeSlot === 'B') setSlotBData(form);
         else {
@@ -335,6 +349,15 @@ const App = () => {
 
   // === 単一フィールドAI生成 ===
   const handleFieldAiGenerate = async (fieldKey, fieldLabel) => {
+    if (fieldKey === 'artStyle') {
+      const style = chooseArtStyle(currentFormData, lockedFields, lastArtStyleRef.current);
+      if (style.artStyle) {
+        lastArtStyleRef.current = style.artStyle;
+        updateFields(style);
+        showStatus(`🎨 おまかせ画風: ${style.artStyle}`, true);
+      }
+      return;
+    }
     if (!isUnlocked) return;
     const run = startAiWork();
     restoreApiSession();
@@ -361,17 +384,19 @@ const App = () => {
     try {
       const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
       const newData = { ...currentFormData };
+      const style = chooseArtStyle(currentFormData, lockedFields, lastArtStyleRef.current);
 
     // Step 1: 全選択肢フィールドをランダム化
     SECTIONS.forEach(section => {
       section.fields.forEach(field => {
-        if (lockedFields[field.key]) return;
+        if (lockedFields[field.key] || ART_STYLE_SETTINGS.includes(field.key)) return;
         const opts = OPTIONS[field.key];
         if (opts && opts.length > 0) {
           newData[field.key] = getRandom(opts);
         }
       });
     });
+    Object.assign(newData, style);
 
     // Step 2: スマート連携（ランダム性を尊重しつつ矛盾だけ防ぐ）
     const currentSex = newData.sex;
@@ -516,6 +541,7 @@ const App = () => {
 
     if (compareMode && activeSlot === 'B') { setSlotBData(newData); }
     else { setFormData(newData); if (compareMode) setSlotAData(newData); }
+      if (style.artStyle) lastArtStyleRef.current = style.artStyle;
       setTextModel(aiResult ? 'AI' : 'バックアップ');
       showStatus('✅ 全項目ランダム完了！「画像生成」ボタンで画像を生成できます。', true);
     } catch (err) {
@@ -589,6 +615,15 @@ const App = () => {
       setImageError('');
       if (metadata) {
         setIsAnalyzingImage(false);
+        const saved = metadata.character;
+        if (saved && FACE_PARTS.some(({ key }) => typeof saved[key] === 'string')) {
+          const restored = Object.fromEntries(Object.entries(DEFAULT_FORM_DATA).map(([key, fallback]) => [
+            key, typeof saved[key] === 'string' ? saved[key] : fallback,
+          ]));
+          const restoredLivePrompt = buildPrompt(restored);
+          if (restoredLivePrompt !== livePrompt) restoredFormPromptRef.current = restoredLivePrompt;
+          updateFields(restored);
+        }
         setPromptOverride(metadata.prompt);
         setPromptOverrideSource('restored');
         setImportedImageNotice({ name: file.name, kind: 'restored' });
@@ -707,6 +742,7 @@ const App = () => {
 
   const handleReset = () => {
     imageImportRequestRef.current += 1;
+    lastArtStyleRef.current = null;
     setIsAnalyzingImage(false);
     setFormData({ ...DEFAULT_FORM_DATA }); setSlotAData(null); setSlotBData(null);
     setSlotAImage(null); setSlotBImage(null); setGeneratedImage(null);
@@ -892,6 +928,21 @@ const App = () => {
                 </div>
                 {!collapsedSections[section.id] && (
                   <div className="section-fields">
+                    {section.id === 'face' && (
+                      <div className="face-preset-controls" role="group" aria-label="顔プリセット">
+                        <span className="preset-label">顔プリセット</span>
+                        {FACE_PRESETS.map(preset => (
+                          <button key={preset.label} type="button" className="preset-chip"
+                            onClick={() => updateFields(applyFacePreset(preset, lockedFields))}>
+                            {preset.label}
+                          </button>
+                        ))}
+                        <button type="button" className="preset-chip"
+                          onClick={() => updateFields(randomFace(currentFormData, lockedFields, OPTIONS.eyeShape))}>
+                          顔だけランダム
+                        </button>
+                      </div>
+                    )}
                     {section.fields.map(field => (
                       <FieldInput
                         key={field.key} fieldKey={field.key} label={field.label}
@@ -899,6 +950,7 @@ const App = () => {
                         type={field.type || 'select'} colorAccent={field.colorAccent}
                         locked={!!lockedFields[field.key]} onChange={updateField}
                         onToggleLock={toggleLock} onAiGenerate={handleFieldAiGenerate}
+                        autoLabel={field.key === 'artStyle' ? '画風をおまかせ' : undefined}
                         isGenerating={fieldGenerating === field.key}
                       />
                     ))}

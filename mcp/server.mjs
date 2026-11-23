@@ -12,7 +12,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { verifyMcpBuild } from './build.mjs';
 import { createBridge } from './bridge.mjs';
-import { app, prefix, port, operation, input, output, description } from './app.mjs';
+import { app, prefix, port, operation, input, output, description, describeArtStyleOptions } from './app.mjs';
 
 const program = fileURLToPath(import.meta.url);
 const root = fileURLToPath(new URL('../', import.meta.url));
@@ -39,6 +39,7 @@ function createApplicationMcp(identity, bridge, appUrl) {
     });
   };
   register('capabilities', 'Read the current app, build, connection and operation. No provider call.', empty, bridge.status, true);
+  register('style_options', 'Read available coordinated art styles and how to choose a requested style. Useful when the user wants to choose or the art direction is unclear. No provider call.', empty, describeArtStyleOptions, true);
   register('connection', 'Open the returned local URL in the Codex in-app browser. The one-time pairing activates automatically. Never persist the pairing fragment. If the AI cannot establish it, ask the user to open the target app.',
     z.object({ replaceIdle: z.boolean().optional() }).strict(), ({ replaceIdle }) => bridge.connection(appUrl(), replaceIdle === true));
   register(operation, description, z.object({ requestId: z.string().min(1).max(128), input }).strict(), ({ requestId, input: payload }) => bridge.submit(requestId, payload));

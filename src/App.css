@@ -220,6 +220,13 @@ html, body { margin: 0; padding: 0; min-height: 100vh; }
 .section-collapse-icon { margin-left: auto; font-size: 0.7rem; transition: transform 0.2s; }
 .section-collapse-icon.open { transform: rotate(90deg); }
 .section-fields { display: grid; gap: 0.4rem; }
+.face-preset-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+.face-preset-controls .preset-chip { min-height: 2rem; }
 
 /* === フィールド入力 === */
 .field-container { margin-bottom: 0.2rem; }
@@ -234,6 +241,14 @@ html, body { margin: 0; padding: 0; min-height: 100vh; }
   font-size: 0.6rem; color: var(--text-dim); padding: 0;
 }
 .field-mode-btn:hover { color: var(--text-secondary); background: var(--bg-hover); }
+.field-auto-btn {
+  width: auto;
+  padding-inline: 0.35rem;
+  white-space: nowrap;
+  color: var(--text-secondary);
+  background: var(--bg-surface);
+  border-color: var(--border);
+}
 .field-mode-btn.active { color: var(--indigo-light); border-color: var(--indigo); background: var(--indigo-dim); }
 .field-lock-btn {
   width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;

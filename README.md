@@ -1,6 +1,6 @@
 # AI Character Sheet Maker / AIキャラクターシートメーカー
 
-[Release notes / 更新内容](docs/releases/v1.6.2.md)
+[Release notes / 更新内容](docs/releases/v1.6.3.md)
 
 OpenAI field generation and text gacha now offers **GPT-6.2 Sol** and **GPT-6.2 Astra**. The initial selection is **GPT-6 Luna**. / OpenAIによる項目生成・テキストガチャに **GPT-6.2 Sol** と **GPT-6.2 Astra** を追加しました。初期選択は **GPT-6 Luna** です。
 
@@ -53,7 +53,7 @@ AI Character Sheet Maker creates structured character reference sheets from doze
 
 ## Current Release Line / 現行仕様
 
-Version **v1.6.2** is a browser-based React/Vite app with session-only API keys, dual Gemini/OpenAI routing, A/B comparison, parameter locks, deterministic Japanese profile typesetting for form-driven sheets, automatically named prompt-file downloads, exact `1120x1584` output, and provenance watermarking. It also embeds versioned design JSON in generated PNGs so the exact prompt can be restored later. / **v1.6.2** はブラウザ上で動作する React/Vite アプリで、セッション限定APIキー、Gemini/OpenAIの切り替え、A/B比較、項目ロック、フォーム生成時の日本語プロフィール決定的文字合成、自動命名されるプロンプトファイルの直接ダウンロード、1120x1584の固定出力、来歴ウォーターマークを備えています。生成PNGにはバージョン付き設計JSONも埋め込み、後から正確なプロンプトを復元できます。
+Version **v1.6.3** is a browser-based React/Vite app with session-only API keys, dual Gemini/OpenAI routing, A/B comparison, parameter locks, deterministic Japanese profile typesetting for form-driven sheets, automatically named prompt-file downloads, exact `1120x1584` output, and provenance watermarking. It also embeds versioned design JSON in generated PNGs so the exact prompt can be restored later. / **v1.6.3** はブラウザ上で動作する React/Vite アプリで、セッション限定APIキー、Gemini/OpenAIの切り替え、A/B比較、項目ロック、フォーム生成時の日本語プロフィール決定的文字合成、自動命名されるプロンプトファイルの直接ダウンロード、1120x1584の固定出力、来歴ウォーターマークを備えています。生成PNGにはバージョン付き設計JSONも埋め込み、後から正確なプロンプトを復元できます。
 
 | Area / 領域 | Current behavior / 現行挙動 |
 |---|---|
@@ -122,15 +122,17 @@ The current UI organizes fields into nine main sections: / 現在のUIは、以�
 
 | Section / セクション | Main fields / 主な項目 |
 |---|---|
-| 1. 生体・身体・精神プロファイル | name, sex, species, age, height, weight, body build, personality, likes, dislikes, catchphrase, dialogue  / 名前、性別、種族、年齢、身長、体重、体型、性格、好き嫌い、口癖、台詞|
-| 2. 顔・頭部・メイク詳細 | face type, eye shape, eye color, makeup, hair style, hair color, facial hair, skin type  / 顔立ち、目の形・色、化粧、髪型・髪色、ひげ、肌|
+| 1. 生体・身体・精神プロファイル | name, sex, species, age, height, weight, body build, shoulder width, torso-to-leg proportions, personality, likes, dislikes, catchphrase, dialogue / 名前、性別、種族、年齢、身長、体重、体型、肩幅、胴と脚の比率、性格、好き嫌い、口癖、台詞 |
+| 2. 顔・頭部・メイク詳細 | Face presets, face-only randomizer, outline, jaw, eyes and spacing, brows, nose, philtrum, lips, distinguishing marks, makeup and hair / 顔プリセット、顔だけランダム、輪郭、顎、目の形・間隔、眉、鼻、人中、口、ほくろ・左右差、化粧、髪 |
 | 3. 装飾品・紋様・特殊部位 | glasses, head accessory, earrings, neck accessory, piercings, body art, wings, horns, tail, mechanical arms  / 眼鏡、頭・耳・首の装飾、ピアス、ボディアート、翼、角、尾、機械腕|
 | 4. 衣装・装備・エフェクト | world era, costume, material, outfit condition, fit, weapon, sub weapon, magic effect, aura  / 世界観の時代、衣装、素材、衣装の状態・フィット、武器、補助武器、魔法効果、オーラ|
 | 5. 画風・レンダリング・陰影 | art style, layout, rendering mode, screentone, pen style, lighting, shadow, color theme  / 画風、レイアウト、描画方式、スクリーントーン、ペン、光、影、色テーマ|
-| 6. ポーズ・表現 | base pose, expression, gaze direction, hand expression  / 基本ポーズ、表情、視線、手の表現|
+| 6. ポーズ・表現 | base pose, standing posture, expression, gaze direction, hand expression / 基本ポーズ、立ち姿・重心、表情、視線、手の表現 |
 | 7. ロール・演技設定 | archetype, nickname, organization, voice type, speech style  / 類型、呼び名、所属、声の種類、口調|
 | 8. マンガ演出連携 | action tendency, emotion range, direction style, awakening / transformation  / 得意アクション、感情レンジ、演出傾向、覚醒・変身|
 | 9. 自由記述 | free-form extra detail for anything the fixed controls cannot express  / 固定項目で表現できない内容を補う自由入力|
+
+**画風をおまかせ** chooses a different style with coordinated linework, rendering and shadows. Use the style field or extra instructions to specify your own style. MCP agents can read available sets with `character_style_options` and pass `profile.artStyle` as a requested style or `おまかせ`. / 「画風をおまかせ」は直前と異なる画風を選び、線・塗り・陰影も一緒に切り替えます。画風欄や自由記述で具体的な画風を指定できます。MCPでは `character_style_options` で候補を取得し、`profile.artStyle` に希望の画風または「おまかせ」を渡します。
 
 This structure is intentionally dense. The goal is to make character continuity easier to inspect before an image is generated, not to hide design decisions inside a single paragraph. / この構造は意図的に細かくしています。目的は、画像生成前にキャラクターの一貫性を見て確認できるようにすることであり、設計判断を1つの長文プロンプトの中へ隠すことではありません。
 

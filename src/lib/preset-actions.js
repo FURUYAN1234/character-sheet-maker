@@ -1,9 +1,15 @@
+import { FACE_PARTS } from './face-design.js';
+import { BODY_PROPORTIONS } from './options.js';
+
 export const CHARACTER_IDENTITY_FIELDS = [
   'name', 'sex', 'species', 'ageGroup', 'height', 'weight', 'bodyBuild', 'muscleType', 'ethnicity',
   'personality', 'likes', 'dislikes', 'catchphrase', 'dialogue', 'faceType', 'eyeShape', 'eyeColor',
   'makeup', 'hairStyle', 'hairColor', 'facialHair', 'glassesStyle', 'headAccessory', 'earAccessory',
   'neckAccessory', 'facePiercing', 'bodyArt', 'subhumanPart', 'skinType', 'nickname', 'organization',
   'voiceType', 'speechStyle',
+  ...FACE_PARTS.map(({ key }) => key),
+  ...BODY_PROPORTIONS.map(({ key }) => key),
+  'standingPosture',
 ];
 
 export const applyThemePreset = (current, themeData, lockedFields) => Object.fromEntries(

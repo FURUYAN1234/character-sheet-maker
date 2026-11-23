@@ -191,7 +191,7 @@ export const generateImageOAI = async (prompt, onStatusUpdate) => {
   if (!currentOpenAIApiKey) throw new Error("OpenAI API key is not set.");
 
   const dallePrompt = `Please generate an illustration of a character perfectly reflecting the settings below.
-Make it a masterpiece and highest quality.
+Render a clear, well-crafted character sheet. Preserve any specified facial anatomy and distinguishing features across views.
 Strictly include all elements mentioned in the Character Settings, including hairstyle, clothing, accessories, colors, body type, personality, and mood.
 Strictly adhere to the requested art style, layout, and background rules without automatically overriding them.
 
