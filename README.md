@@ -636,3 +636,9 @@ codex mcp add character-sheet-maker -- node "C:\absolute\path\to\character_sheet
 Call `character_connection` and open its one-time URL in the same Codex chat's in-app browser. Wait for `MCP 接続済み`, then run `character_generate_sheet` with a unique `requestId`. Read `character_job_get` until it returns a terminal state. Check the existing result before retrying an `unknown` job. / `character_connection` の一時URLを実行チャットの内蔵ブラウザーで開き、自動接続を確認します。ジョブは `character_job_get` で結果まで追跡してください。MCP接続をAI側で確立できない場合は、対象アプリの画面を示してユーザーに接続を依頼します。
 
 The job returns a validated local PNG path and SHA-256. Give that path to the manga app's `manga_asset_import` tool and assign the imported sheet to the intended character. / 返されたPNGパスを漫画アプリの `manga_asset_import` に渡し、対象人物の資料に割り当てます。
+
+## CLIP Drop / 習作・ベータ版
+
+クリスタの .clip を SVG・PSD・PNG に変換するWindows用の習作です。 / An experimental Windows converter for Clip Studio Paint files.
+
+- [GitHub](https://github.com/FURUYAN1234/clip-drop) · [note](https://note.com/happy_duck780/n/n8a38199a75db)
